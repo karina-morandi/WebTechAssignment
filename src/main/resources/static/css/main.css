@@ -1,0 +1,38 @@
+@charset "UTF-8";
+
+.top-nav {
+	background-color: #722f37;
+}
+
+.navbar-brand {
+		font-size: 30px;
+		color: #FFFFFF;
+}
+
+.offcanvas-title {
+	color: #722f37;
+}
+
+.theScroll {
+	color: rgb(0, 0, 0);
+	background-color: #FFFFFF;
+}
+
+
+
+
+.container mt-3{
+	padding:left;
+	border: 1em;
+}
+.form-check-input{
+	width: 1em;
+}
+.form-check-label{
+	color: #FFFFFF;
+}
+
+.form-check-input:checked {
+    background-color: black;
+    border-color: black;
+}
