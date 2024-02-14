@@ -1,39 +1,52 @@
 package com.tus.jpa.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import javax.validation.Valid;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.tus.jpa.dto.Users;
-import com.tus.jpa.repositories.UserRepository;
+import com.tus.jpa.dto.Admin;
+import com.tus.jpa.repositories.AdminRepository;
 
-@Controller
+@RestController
+@RequestMapping("/user")
 public class LoginController {
-	
-	@Autowired
-    private UserRepository userRepository;
 
-	 @GetMapping("/loginpage")
-	    public String login(Model model) {
-	        return "login"; // Return the name of the HTML template file (without the file extension)
-	    }
-
-	    @PostMapping("/loginpage")
-	    public String loginSubmit(String username, String password, RedirectAttributes redirectAttributes) {
-	        // Retrieve user from the database based on the provided username
-	        Users user = userRepository.findByLogin(username);
-	        
-	        if (user != null && user.getPassword().equals(password)) {
-	            // Redirect to admin dashboard after successful login
-	            return "redirect:/admin";
-	        } else {
-	            // Add an error message to be displayed on the login page
-	            redirectAttributes.addFlashAttribute("error", "Invalid username or password");
-	            // Redirect back to the login page
-	            return "redirect:/loginpage";
-	        }
-	    }
+    private AdminRepository adminRepo;
+    private final PasswordEncoder passwordEncoder;
+    
+    public LoginController(AdminRepository adminRepo, PasswordEncoder passwordEncoder) {
+		this.adminRepo = adminRepo;
+		this.passwordEncoder = passwordEncoder;
 	}
+
+    @GetMapping("/login/{login}")
+	public ResponseEntity<Boolean> getUser(@PathVariable("login") String login){
+		Admin foundUser=adminRepo.findByLogin(login);
+	    return ResponseEntity.ok(foundUser != null);
+	}
+    
+	@PostMapping("/login")
+    public ResponseEntity<?> authenticate(@Valid @RequestBody Admin admin) {
+        // Retrieve user from the database based on the provided login
+		Admin storedAdmin = adminRepo.findByLogin(admin.getLogin());
+        
+        if (storedAdmin != null && storedAdmin.getPassword().equals(admin.getPassword())) {
+            // Return the authenticated user details
+        	return ResponseEntity.status(HttpStatus.FOUND).header(HttpHeaders.LOCATION, "/wines").build();        
+        } else {
+            // Return 401 Unauthorized status if authentication fails
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+}

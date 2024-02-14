@@ -1,38 +1,41 @@
 package com.tus.jpa.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import javax.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.tus.jpa.dto.Users;
-import com.tus.jpa.repositories.UserRepository;
+import com.tus.jpa.dto.Admin;
+import com.tus.jpa.repositories.AdminRepository;
 
-@Controller
+@RestController
+@RequestMapping("/user")
 public class RegistrationController {
-
-    @Autowired
-    private UserRepository userRepository;
+	
+	private final AdminRepository adminRepo;
+	private final PasswordEncoder passwordEncoder;
+	
+	public RegistrationController(AdminRepository adminRepo, PasswordEncoder passwordEncoder) {
+		this.adminRepo = adminRepo;
+		this.passwordEncoder = passwordEncoder;
+	}
 
     @PostMapping("/register")
-    public String register(@RequestParam("username") String username, @RequestParam("password") String password, Model model) {
-        // Optionally, implement logic for validating user input, checking for existing usernames, etc.
-        // For simplicity, I'm skipping validation and assuming unique usernames.
-        
-        // Check if the username already exists in the database
-        if (userRepository.findByLogin(username) != null) {
-            model.addAttribute("error", "Username already exists");
-            return "redirect:/loginpage"; // Return to the registration page with error message
-        }
-        
-        // Create a new user object with the provided username and password
-        Users newUser = new Users(username, password);
-
-        // Save the new user to the database
-        userRepository.save(newUser);
-
-        // Redirect to login page or any other page after successful registration
-        return "redirect:/loginpage";
-    }
+    public ResponseEntity<?> createUser(@Valid @RequestBody Admin admin) {
+		admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+		Admin savedUser = adminRepo.save(admin);
+		return ResponseEntity.status(HttpStatus.OK).body(savedUser);
+	}
+	
+	@GetMapping("/name/{name}")
+	public ResponseEntity<Boolean> getUserByName(@PathVariable("name") String name){
+		Admin foundUser=adminRepo.findByLogin(name);
+        return ResponseEntity.ok(foundUser != null);
+	}	
 }

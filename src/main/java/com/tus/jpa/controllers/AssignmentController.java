@@ -29,9 +29,9 @@ public class AssignmentController {
 	private WineRepository wineRepository;
 	
 //	@GetMapping("/")
-//	public String index() {
-//		return "<h1>WineCellar Application</h1>";
-//	}
+//    public String home() {
+//        return "index"; // Return the name of the HTML file for the home page
+//    }
 	
 	@GetMapping("/wines")
 	public Iterable<Wines> getAllWines(){

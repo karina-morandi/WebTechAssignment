@@ -4,7 +4,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name="Admin")
 public class Admin {
 
 	@Id
@@ -12,23 +11,28 @@ public class Admin {
 	@Column(name="id")
 	private long id;
 	
-	private String name;
+	@Column(nullable = false, unique = true, length = 45)
+	private String login;
+	
+	@Column(nullable = false, unique = true, length = 45)
 	private String email;
+	
+	@Column(nullable = false, length = 75)
 	private String password;
 	
-	public Admin(String name, String email, String password) {
+	public Admin(String login, String email, String password) {
 		super();
-		this.name = name;
+		this.login = login;
 		this.email = email;
 		this.password = password;
 	}
 
-	public String getName() {
-		return name;
+	public String getLogin() {
+		return login;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setLogin(String login) {
+		this.login = login;
 	}
 
 	public String getEmail() {
@@ -53,6 +57,6 @@ public class Admin {
 
 	@Override
 	public String toString() {
-		return "Admin [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + "]";
+		return "Admin [id=" + id + ", login=" + login + ", email=" + email + ", password=" + password + "]";
 	}
 }

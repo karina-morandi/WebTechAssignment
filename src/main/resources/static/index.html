@@ -11,39 +11,26 @@
 <!-- Bootstrap JavaScript (Optional, for some components)  -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
-<script src="js/main.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
 <link href="css/main.css" rel="stylesheet">
  
 </head>
 
 <body>
 
-<!-- HOME PAGE PART -->
+<!-- HOME PAGE -->
 <div id="homePage" class="container-fluid">
     <div class="row">
         <div class="col-md-8">
             <h2>Welcome to the Wine Management System</h2>
             <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam eget ante justo.
-                Integer suscipit mi id nulla congue, sit amet congue nisi consectetur. Donec
-                vel sapien vel nulla maximus bibendum. Sed id libero sit amet ligula efficitur
-                euismod. Morbi hendrerit ipsum sit amet justo venenatis, vitae pharetra mauris
-                fermentum. Fusce scelerisque diam nisi, sed convallis justo vestibulum vel.
-                Vivamus efficitur ligula magna, nec fermentum neque pulvinar eget. Fusce ac
-                tempor justo. Nam tempus vel est sit amet iaculis. Cras non eros eget odio
-                placerat posuere. Nullam euismod, magna nec vestibulum consequat, mi risus
-                ultrices turpis, et placerat mi sapien id sem.
+                Wines
             </p>
             <p>
-                Sed ut dapibus nisi. Praesent ac risus eu risus cursus eleifend. Ut nec ex
-                suscipit, sagittis mi vel, finibus eros. Vivamus id fringilla nulla. In hac
-                habitasse platea dictumst. Nulla vestibulum ipsum sed nulla aliquam scelerisque.
-                Aliquam euismod lacinia nunc, vel congue nulla fermentum ut. Vivamus id volutpat
-                neque. Curabitur vitae sem magna. Duis quis ipsum auctor, efficitur lorem eget,
-                cursus odio.
+                World
             </p>
             <!--  Login button! -->
-            <button type="button" id="loginButtonHome">Login</button>
+            <button type="button" class="btn btn-primary" id="loginButtonHome">Login</button>
         </div>
         <div class="col-md-4">
             <!-- Add any additional content or features here -->
@@ -52,33 +39,52 @@
 </div>
 
 <!-- LOGIN FORM -->
-<div id="loginFormContainer" style="display: none;">
+<div id="loginForm" style="display: none;">
     <h2>Login Page</h2>
-    <form id="loginForm" action="/loginpage" method="post">
+    <form id="loginForm">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required><br>
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required><br>
-        <button type="button" id="loginButton">Login</button>
+        <button type="submit" id="loginButton">Login</button>
         <button type="button" id="registerButton" class="btn btn-secondary">Register</button>
     </form>
 </div>
 
 <!-- REGISTRATION FORM -->
-<div id="registrationFormContainer" style="display: none;">
-    <h2>Registration Form</h2>
-    <form id="registrationForm" action="/register" method="post">
-        <div class="mb-3">
-            <label for="usernameReg" class="form-label">Username:</label>
-            <input type="text" class="form-control" id="usernameReg" name="username" required>
-        </div>
-        <div class="mb-3">
-            <label for="passwordReg" class="form-label">Password:</label>
-            <input type="password" class="form-control" id="passwordReg" name="password" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Register</button>
-    </form>
+<div class="modal fade" id="registrationForm" style="display: none;">
+	 <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Registration Form</h2>
+                </div>
+                <div class="modal-body" id="contents">
+                	<form>
+	                	<div class="form-group">
+				            <label for="usernameReg">Username:</label>
+				            <input type="username" class="form-control" id="usernameReg" name="usernameReg" required>
+				        </div>
+				         <div class="form-group">
+				            <label for="emailReg">Email:</label>
+				            <input type="email" class="form-control" id="emailReg" name="emailReg" required>
+				        </div>
+				        <div class="form-group">
+				            <label for="passwordReg">Password:</label>
+				            <input type="password" class="form-control" id="passwordReg" name="passwordReg" required>
+				        </div>
+				         <div class="form-group">
+				             <label for="confirmpasswordReg">Confirm Password:</label>
+				             <input type="password" class="form-control" id="confirmpasswordReg" name="confirmpasswordReg" required>
+				         </div>
+				        <button type="submit" class="btn btn-primary" id="btnCreate">Register</button>
+			    	</form>
+			    </div>
+			   </div>
+		</div>
 </div>
+        
+
 
 <!-- ADMIN DASHBOARD -->
 <div id="admin" class="container-fluid" style="display: none;">
