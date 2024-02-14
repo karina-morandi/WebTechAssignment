@@ -28,14 +28,20 @@ public class RegistrationController {
 
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@Valid @RequestBody Admin admin) {
-		admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-		Admin savedUser = adminRepo.save(admin);
-		return ResponseEntity.status(HttpStatus.OK).body(savedUser);
+    	try {
+            admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+            admin.setEmail(admin.getEmail());
+            admin.setLogin(admin.getLogin());
+            Admin savedUser = adminRepo.save(admin);
+            return ResponseEntity.status(HttpStatus.OK).body(savedUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error creating user: " + e.getMessage());
+        }
 	}
 	
-	@GetMapping("/name/{name}")
-	public ResponseEntity<Boolean> getUserByName(@PathVariable("name") String name){
-		Admin foundUser=adminRepo.findByLogin(name);
+	@GetMapping("/name/{login}")
+	public ResponseEntity<Boolean> getUserByName(@PathVariable("login") String login){
+		Admin foundUser=adminRepo.findByLogin(login);
         return ResponseEntity.ok(foundUser != null);
 	}	
 }

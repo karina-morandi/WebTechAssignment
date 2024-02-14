@@ -20,6 +20,10 @@ public class Admin {
 	@Column(nullable = false, length = 75)
 	private String password;
 	
+    public Admin() {
+    	
+    }
+	
 	public Admin(String login, String email, String password) {
 		super();
 		this.login = login;

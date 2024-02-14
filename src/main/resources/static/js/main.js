@@ -2,22 +2,35 @@ function HomePageDashboard() {
     $('#homePage').show();
     $('#loginForm').hide();
     $('#registrationForm').hide();
+    $('#admin').hide();
 }
 
 function LoginDashboard() {
     $('#homePage').hide();
     $('#loginForm').show();
     $('#registrationForm').hide();
+    $('#admin').hide();
 }
 
 function RegistrationDashboard() {
+	console.log("Showing registration form");
     $('#homePage').hide();
     $('#loginForm').hide();
     $('#registrationForm').show();
+    $('#admin').hide();
+}
+
+function AdminDashboard() {
+	console.log("Showing admin dashboard");
+    $('#homePage').hide();
+    $('#loginForm').hide();
+    $('#registrationForm').hide();
+    $('#admin').show();
 }
 
 // Function to check if the user is authenticated
-function checkAuthentication() {
+//var login = "root";
+function checkAuthentication(login) {
     // Make an AJAX call to the server to check if the user is authenticated
     $.ajax({
         type: 'GET',
@@ -47,7 +60,7 @@ var findAll = function(){
         success: function(data){
             console.log("AJAX request successful - Raw response:", data);
             wineData = data;
-            $('#dashboard_title').text("All Products");
+//            $('#dashboard_title').text("All Products");
             renderContent();
         },
         error: function(xhr, status, error) {
@@ -128,7 +141,6 @@ $(document).ready(function () {
 	// Handle click on login button in the home page
 	$(document).on("click", "#loginButtonHome", function () {
 	    console.log("Login button on home page clicked");
-	    alert('login!!');
 	    LoginDashboard(); // Show the login form
 	});
 	    
@@ -147,8 +159,8 @@ $(document).ready(function () {
 	
 	    // Send login credentials via AJAX
 	    $.ajax({
-	        type: "POST",
-	        url: rootURL + "/login",
+	        type: "GET",
+	        url: rootURL + "/login" + login,
 	        data: {
 	            username: username,
 	            password: password
@@ -157,9 +169,7 @@ $(document).ready(function () {
 				console.log("Login successful:", data);
 	            // Redirect to admin dashboard upon successful login
 	            window.location.href = "/admin";
-	            
-	            // Call findAll function after successful login
-	            findAll();
+	            aAdminDashboard();
 	        },
 	        error: function(xhr, status, error) {
 	            // Handle login error, display error message, etc.
@@ -171,15 +181,17 @@ $(document).ready(function () {
 	 // Handle click on register button in the login form
 	$(document).on("click", "#registerButton", function () { 
 	    console.log("Register button clicked");
-	    showRegistrationForm(); // Show the registration form
+	    RegistrationDashboard(); // Show the registration form
 	});
 	
 	// Handle form submission for registration
-	$(document).on("submit", "#registrationForm", function(event) {
+	$(document).on("submit", "#registrationForm form", function(event) {
+		event.preventDefault(); // Prevent default form submission behavior
+
 	
 	    console.log("Registration form submitted");
-	    var username = $("#usernameReg").val().trim();
-	    console.log("Username:", username);
+	    var login = $("#usernameReg").val().trim();
+	    console.log("Username:", login);
 	    var email = $("#emailReg").val().trim();
 	    console.log("Email:", email)
 	    var password = $("#passwordReg").val().trim();
@@ -187,12 +199,12 @@ $(document).ready(function () {
 	    var confirmpassword = $("#confirmpasswordReg").val().trim();
 	    console.log("Password:", password);
 	    
-	    if (!username || !email || !password || !confirmPassword) {
+	    if (!login || !email || !password || !confirmpassword) {
 	        console.error("All fields are required");
 	        return;
 	    }
 	    
-	    if (password !== confirmPassword) {
+	    if (password !== confirmpassword) {
 	        console.error("Passwords do not match");
 	        return;
 	    }
@@ -202,19 +214,18 @@ $(document).ready(function () {
 	        type: "POST",
 	        url: rootURL + "/user/register",
 	        data: {
-	            username: username,
-	            email:email,
+	            login: login,
+	            email: email,
 	            password: password
 	        },
 	        success: function(data) {
 	            console.log("Registration successful:", data);
-	            // Redirect to a success page or handle accordingly
-	            window.location.href = "/login";
-	            
+	            alert("Registration successful!!!!!!!!!!!!!!!!!!!");
+	           	AdminDashboard();          
 	        },
 	        error: function(xhr, status, error) {
 	            console.error("Registration failed:", error);
-	            // Handle registration error, display error message, etc.
+	            alert("Registration failed: " + error);
 	        }
 	    });
 	});
