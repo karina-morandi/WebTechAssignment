@@ -1,38 +1,72 @@
 package com.tus.jpa.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
+	
+	@Autowired
+	private UserDetailsService userDetailsService;
+	
+    @Bean
+    public PasswordEncoder encoder() {
+        return new BCryptPasswordEncoder();
+    }
+    
+    @Bean
+    AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider
+                 = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(encoder());
+        return  provider;
+    }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
+    @Bean
+    protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf().disable()
             .authorizeRequests()
-                .antMatchers("/", "/login", "/css/**", "/js/**").permitAll()
+                .antMatchers("/", "/login","/user/register", "/css/**", "/js/**").permitAll()
+                .antMatchers("/admin").hasRole("admin") // Redirect based on role
                 .anyRequest().authenticated()
                 .and()
             .formLogin()
-                .loginPage("/login")
-                .defaultSuccessUrl("/admin", true)
-                .permitAll()
+//                .loginPage("/login")
+//                .defaultSuccessUrl("/", true)
+//                .permitAll()
                 .and()
-            .logout()
-                .permitAll();
+            .logout();
+//                .permitAll();
+        return http.build();
     }
+}
+//
+
+
+
 //}
 
 
 
-
+//// Handle redirection to login page
+//if (xhr.status == 302 && xhr.getResponseHeader('Location') == '/login') {
+//  console.log("Redirected to login page");
+//  window.location.href = "/login"; // Redirect to login page
+//} else {
+//  // Log the error message
 
 
 
@@ -50,38 +84,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //@Configuration
 //@EnableWebSecurity
 //public class SecurityConfig extends WebSecurityConfigurerAdapter {
-//	
-//	@Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http.authorizeRequests()
-//                .antMatchers("/","/login" ,"/user/register").permitAll()
-//                .antMatchers("/wines").authenticated()
-//                .anyRequest().authenticated()
-//                .and()
-//            .formLogin()
-//                .loginPage("/login")
-//                .defaultSuccessUrl("/wines", true)
-//                .permitAll()
-//                .and()
-//            .logout()
-//                .logoutSuccessUrl("/login?logout")
-//                .permitAll();
-//    }
-
-
-//    @Autowired
-//    private UserDetailsService userDetailsService;
-//    
-    @Bean
-    public PasswordEncoder encoder() {
-        return new BCryptPasswordEncoder();
-    }
-}
 //
+//@Override
+//protected void configure(HttpSecurity http) throws Exception {
+//  http.authorizeRequests()
+//          .antMatchers("/","/login" ,"/user/register").permitAll()
+//          .antMatchers("/wines").authenticated()
+//          .anyRequest().authenticated()
+//          .and()
+//      .formLogin()
+//          .loginPage("/login")
+//          .defaultSuccessUrl("/wines", true)
+//          .permitAll()
+//          .and()
+//      .logout()
+//          .logoutSuccessUrl("/login?logout")
+//          .permitAll();
+//}
 
 
-
-
+//@Autowired
+//private UserDetailsService userDetailsService;
+//
 
 
 

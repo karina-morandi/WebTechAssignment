@@ -13,7 +13,7 @@ function LoginDashboard() {
 }
 
 function RegistrationDashboard() {
-	console.log("Showing registration form");
+//	console.log("Showing registration form");
     $('#homePage').hide();
     $('#loginForm').hide();
     $('#registrationForm').show();
@@ -21,33 +21,14 @@ function RegistrationDashboard() {
 }
 
 function AdminDashboard() {
-	console.log("Showing admin dashboard");
+//	console.log("Showing admin dashboard");
     $('#homePage').hide();
     $('#loginForm').hide();
     $('#registrationForm').hide();
     $('#admin').show();
 }
 
-// Function to check if the user is authenticated
-//var login = "root";
-function checkAuthentication(login) {
-    // Make an AJAX call to the server to check if the user is authenticated
-    $.ajax({
-        type: 'GET',
-        url: rootURL + '/user/name/' + login,
-        success: function(response) {
-            // User is authenticated
-            return true;
-        },
-        error: function(xhr, status, error) {
-            // User is not authenticated, redirect to login page
-            window.location.href = "/login";
-            return false;
-        }
-    });
-}
-
-var rootURL = "http://localhost:9090";
+let rootURL = "http://localhost:9090";
 var currentViewType = 'list'; // Default view type
 var wineData;
 
@@ -64,14 +45,7 @@ var findAll = function(){
             renderContent();
         },
         error: function(xhr, status, error) {
-            // Handle redirection to login page
-            if (xhr.status == 302 && xhr.getResponseHeader('Location') == '/login') {
-                console.log("Redirected to login page");
-                window.location.href = "/login"; // Redirect to login page
-            } else {
-                // Log the error message
                 console.error("AJAX request error:", error);
-            }
         }
     });
 }
@@ -149,27 +123,25 @@ $(document).ready(function () {
 		event.preventDefault(); // Prevent default form submission behavior
 	
 	    console.log("Login button clicked");
-	    var username = $("#username").val().trim();
-	    var password = $("#password").val().trim();
+	    let login = $("#loginUsername").val().trim();
+	    let password = $("#loginPassword").val().trim();
 	
-	    if (!username || !password) {
+	    if (!login || !password) {
 	        console.error("Username or password cannot be empty");
 	        return;
 	    }
 	
 	    // Send login credentials via AJAX
 	    $.ajax({
-	        type: "GET",
-	        url: rootURL + "/login" + login,
+	        type: "POST",
+	        url: rootURL + "/login/" + login,
 	        data: {
-	            username: username,
+	            login: login,
 	            password: password
 	        },
 	        success: function(data) {
 				console.log("Login successful:", data);
-	            // Redirect to admin dashboard upon successful login
-	            window.location.href = "/admin";
-	            aAdminDashboard();
+	           	AdminDashboard();          
 	        },
 	        error: function(xhr, status, error) {
 	            // Handle login error, display error message, etc.
@@ -185,19 +157,19 @@ $(document).ready(function () {
 	});
 	
 	// Handle form submission for registration
-	$(document).on("submit", "#registrationForm form", function(event) {
+	$(document).on("submit", "#registerForm", function(event) {
 		event.preventDefault(); // Prevent default form submission behavior
 
 	
 	    console.log("Registration form submitted");
-	    var login = $("#usernameReg").val().trim();
-	    console.log("Username:", login);
-	    var email = $("#emailReg").val().trim();
+	    let login = $("#usernameReg").val();
+	    console.log("Login:", login);
+	    let email = $("#emailReg").val();
 	    console.log("Email:", email)
-	    var password = $("#passwordReg").val().trim();
+	    let password = $("#passwordReg").val();
 	    console.log("Password:", password);
-	    var confirmpassword = $("#confirmpasswordReg").val().trim();
-	    console.log("Password:", password);
+	    let confirmpassword = $("#confirmpasswordReg").val();
+	    console.log("Confirm password:", confirmpassword);
 	    
 	    if (!login || !email || !password || !confirmpassword) {
 	        console.error("All fields are required");
@@ -209,18 +181,20 @@ $(document).ready(function () {
 	        return;
 	    }
 	    
+	    let admin = {
+	        login: login,
+	        email: email,
+	        password: password,
+	    };
+		    
 	    // Send registration data via AJAX
 	    $.ajax({
 	        type: "POST",
 	        url: rootURL + "/user/register",
-	        data: {
-	            login: login,
-	            email: email,
-	            password: password
-	        },
+	        contentType: 'application/json',
+	        data: JSON.stringify(admin),
 	        success: function(data) {
-	            console.log("Registration successful:", data);
-	            alert("Registration successful!!!!!!!!!!!!!!!!!!!");
+	            console.log("Registration successful:", login, email, password);
 	           	AdminDashboard();          
 	        },
 	        error: function(xhr, status, error) {
@@ -230,3 +204,9 @@ $(document).ready(function () {
 	    });
 	});
 });
+
+function logout() {
+	console.log('Logout');
+  //	window.location.href = rootURL + "/logout";
+    HomePageDashboard();
+}

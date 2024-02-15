@@ -4,11 +4,12 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 
 @Entity
+@Table(name="admin")
 public class Admin {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="id")
+	@Column(name="id", unique = true)
 	private long id;
 	
 	@Column(nullable = false, unique = true, length = 45)
@@ -17,18 +18,22 @@ public class Admin {
 	@Column(nullable = false, unique = true, length = 45)
 	private String email;
 	
-	@Column(nullable = false, length = 75)
+	@Column(nullable = false, length = 64)
 	private String password;
+	
+	@Column(name="role")
+	private String role = "admin";
 	
     public Admin() {
     	
     }
 	
-	public Admin(String login, String email, String password) {
+	public Admin(String login, String email, String password, String role) {
 		super();
 		this.login = login;
 		this.email = email;
 		this.password = password;
+		this.role = "admin";
 	}
 
 	public String getLogin() {
@@ -58,9 +63,17 @@ public class Admin {
 	public long getId() {
 		return id;
 	}
+	
+	public String getRole() {
+		return "admin";
+	}
+	
+	public String setRole(String role) {
+		return "admin";
+	}
 
 	@Override
 	public String toString() {
-		return "Admin [id=" + id + ", login=" + login + ", email=" + email + ", password=" + password + "]";
+		return "Admin [id=" + id + ", login=" + login + ", email=" + email + ", password=" + password + ", role=" + role + "]";
 	}
 }

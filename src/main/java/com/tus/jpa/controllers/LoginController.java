@@ -1,7 +1,14 @@
 package com.tus.jpa.controllers;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +28,7 @@ import com.tus.jpa.repositories.AdminRepository;
 @RestController
 public class LoginController {
 
+	@Autowired
     private AdminRepository adminRepo;
     private final PasswordEncoder passwordEncoder;
     
@@ -36,22 +44,26 @@ public class LoginController {
     }
 
     @GetMapping("/login/{login}")
-	public ResponseEntity<Boolean> getUser(@PathVariable("login") String login){
+	public boolean getUser(@PathVariable("login") String login){
 		Admin foundUser = adminRepo.findByLogin(login);
-	    return ResponseEntity.ok(foundUser != null);
+		if(foundUser != null) {
+			return true;
+		}else {
+			return false;
+		}
 	}
     
-	@PostMapping("/login")
-    public ResponseEntity<?> authenticate(@Valid @RequestBody Admin admin) {
+    @PostMapping("/login")  
+    public ResponseEntity<?> authenticate(@Valid @RequestParam String login, @RequestParam String password, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Retrieve user from the database based on the provided login
-		Admin storedAdmin = adminRepo.findByLogin(admin.getLogin());
-        
-        if (storedAdmin != null && passwordEncoder.matches(admin.getPassword(), storedAdmin.getPassword())) {
+        Admin storedAdmin = adminRepo.findByLogin(login);
+            
+        if (storedAdmin != null && passwordEncoder.matches(password, storedAdmin.getPassword())) {
             // Return the authenticated user details
-            return ResponseEntity.ok().build(); // Return success status
+            return ResponseEntity.ok().body("Login successful");
         } else {
             // Return 401 Unauthorized status if authentication fails
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }
     }
 }

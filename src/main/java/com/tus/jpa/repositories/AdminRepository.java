@@ -7,5 +7,6 @@ import com.tus.jpa.dto.Admin;
 
 @Repository
 public interface AdminRepository extends JpaRepository<Admin,Long>{
+	
 	Admin findByLogin(String login);
 }

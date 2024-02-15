@@ -42,11 +42,11 @@
 <div id="loginForm" style="display: none;">
     <h2>Login Page</h2>
     <form id="loginForm">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br>
-        <button type="submit" id="loginButton">Login</button>
+        <label for="loginUsername">Username:</label>
+        <input type="text" id="loginUsername" name="loginUsername" required><br>
+        <label for="loginPassword">Password:</label>
+        <input type="password" id="loginPassword" name="loginPassword" required><br>
+        <button type="submit">Login</button>
         <button type="button" id="registerButton" class="btn btn-secondary">Register</button>
     </form>
 </div>
@@ -54,21 +54,21 @@
 <!-- REGISTRATION FORM -->
 <div id="registrationForm" style="display: none;">
        <h2>Registration Form</h2>
-   	<form id="registrationForm">
+   	<form id="registerForm">
 
          <label for="usernameReg">Username:</label>
-         <input type="username" class="form-control" id="usernameReg" name="usernameReg" required>
+         <input type="text"id="usernameReg" name="usernameReg" required><br>
 
          <label for="emailReg">Email:</label>
-         <input type="email" class="form-control" id="emailReg" name="emailReg" required>
+         <input type="email" id="emailReg" name="emailReg" required><br>
 
          <label for="passwordReg">Password:</label>
-         <input type="password" class="form-control" id="passwordReg" name="passwordReg" required>
+         <input type="password" id="passwordReg" name="passwordReg" required><br>
 
           <label for="confirmpasswordReg">Confirm Password:</label>
-          <input type="password" class="form-control" id="confirmpasswordReg" name="confirmpasswordReg" required>
+          <input type="password" id="confirmpasswordReg" name="confirmpasswordReg" required><br>
 
-     <button type="submit" class="btn btn-primary" id="btnCreate">Register</button>
+     <button type="submit">Register</button>
 	</form>
 </div>
         
@@ -153,6 +153,10 @@
 	        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
 	        <button class="btn btn-outline-success" type="submit">Search</button>
 	      </form>
+	      <button type="button" class="btn btn-primary" id="logoutButton" onclick="logout()">
+             <span class="align-text-bottom"></span>
+             Logout
+         </button>
 	    </div>
 	  </div>
 	</nav>

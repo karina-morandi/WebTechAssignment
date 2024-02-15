@@ -15,10 +15,15 @@ public class AssignmentRunner implements ApplicationRunner {
 	@Autowired
 	private AdminRepository adminRepo;
 	
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
-        Admin admin = new Admin("admin", "admin@gmail.com","admin");
-        adminRepo.save(admin);
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+	    // Check if admin user already exists
+	    Admin existingAdmin = adminRepo.findByLogin("admin");
+	    if (existingAdmin == null) {
+	        // Create and save admin user
+	        Admin admin = new Admin("admin", "admin@gmail.com", "admin", "admin");
+	        adminRepo.save(admin);
+	    }
     }
 
 }
