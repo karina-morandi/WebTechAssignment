@@ -28,7 +28,6 @@ import com.tus.jpa.repositories.AdminRepository;
 @RestController
 public class LoginController {
 
-	@Autowired
     private AdminRepository adminRepo;
     private final PasswordEncoder passwordEncoder;
     
@@ -54,16 +53,19 @@ public class LoginController {
 	}
     
     @PostMapping("/login")  
-    public ResponseEntity<?> authenticate(@Valid @RequestParam String login, @RequestParam String password, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Retrieve user from the database based on the provided login
-        Admin storedAdmin = adminRepo.findByLogin(login);
-            
-        if (storedAdmin != null && passwordEncoder.matches(password, storedAdmin.getPassword())) {
-            // Return the authenticated user details
-            return ResponseEntity.ok().body("Login successful");
-        } else {
-            // Return 401 Unauthorized status if authentication fails
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
-        }
-    }
-}
+    public ResponseEntity<?> authenticate(@Valid @RequestParam String login, @RequestParam String password) {
+       
+	    if (adminRepo.findByLogin(login) == null) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This user does not exist!!");
+	    } else {
+	        // User exists, proceed with authentication
+	        if (passwordEncoder.matches(password, adminRepo.findByLogin(login).getPassword())) {
+	            // Return the authenticated user details
+	            return ResponseEntity.ok().body("{\"message\": \"Login successful\"}");
+	        } else {
+	            // Return 401 Unauthorized status if authentication fails
+	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"error\": \"Invalid username or password\"}");
+	        }
+	    }
+	}        
+}     

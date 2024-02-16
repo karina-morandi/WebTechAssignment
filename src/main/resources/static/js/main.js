@@ -1,13 +1,13 @@
 function HomePageDashboard() {
     $('#homePage').show();
-    $('#loginForm').hide();
+    $('#loginFormDiv').hide();
     $('#registrationForm').hide();
     $('#admin').hide();
 }
 
 function LoginDashboard() {
     $('#homePage').hide();
-    $('#loginForm').show();
+    $('#loginFormDiv').show();
     $('#registrationForm').hide();
     $('#admin').hide();
 }
@@ -15,7 +15,7 @@ function LoginDashboard() {
 function RegistrationDashboard() {
 //	console.log("Showing registration form");
     $('#homePage').hide();
-    $('#loginForm').hide();
+    $('#loginFormDiv').hide();
     $('#registrationForm').show();
     $('#admin').hide();
 }
@@ -23,7 +23,7 @@ function RegistrationDashboard() {
 function AdminDashboard() {
 //	console.log("Showing admin dashboard");
     $('#homePage').hide();
-    $('#loginForm').hide();
+    $('#loginFormDiv').hide();
     $('#registrationForm').hide();
     $('#admin').show();
 }
@@ -49,7 +49,6 @@ var findAll = function(){
         }
     });
 }
-
 
 var renderContent = function() {
     if (currentViewType === 'list') {
@@ -85,10 +84,11 @@ var renderGrid = function() {
     $('.details').remove();
     var list = wineData == null ? [] : (wineData instanceof Array ? wineData : [wineData]);
     $.each(list, function(index, wine){
-        var image = "images/" + wine.picture;
         var htmlStr = '<div class="details col-sm-4 text-center p-3">';
+        var image = "../images/"+wine.picture;
+        
         htmlStr += '<h1>' + wine.winery + '</h1>';
-        htmlStr += '<img src="' + image + '" class=displayCenter>';
+		htmlStr += '<img src="' + image + '" class=displayCenter>';
         htmlStr += '<p><b>' + wine.name + '</b></p>';
         htmlStr += '<p>' + wine.country + '</p>';
         htmlStr += '<button type="button" class="infoButton btn btn-primary" data-id="' + wine.id + '">More Details</button>';
@@ -124,7 +124,9 @@ $(document).ready(function () {
 	
 	    console.log("Login button clicked");
 	    let login = $("#loginUsername").val().trim();
+	    console.log("login= ",login)
 	    let password = $("#loginPassword").val().trim();
+	    console.log("password= ", password)
 	
 	    if (!login || !password) {
 	        console.error("Username or password cannot be empty");
@@ -132,23 +134,32 @@ $(document).ready(function () {
 	    }
 	
 	    // Send login credentials via AJAX
-	    $.ajax({
-	        type: "POST",
-	        url: rootURL + "/login/" + login,
-	        data: {
-	            login: login,
-	            password: password
-	        },
-	        success: function(data) {
-				console.log("Login successful:", data);
-	           	AdminDashboard();          
-	        },
-	        error: function(xhr, status, error) {
-	            // Handle login error, display error message, etc.
-	            console.error("Login failed:", error);
-	        }
-	    });
-	});
+	     $.ajax({
+	     type: "POST",
+	     url: rootURL + "/login",
+	     data: {
+	         login: login,
+	         password: password
+	     },
+	     success: function(data) {
+	         if (data && data.message) {
+	             console.log("Login successful:", login, password);
+	             AdminDashboard();
+	             findAll();
+	         } else {
+	             console.error("Login failed:", data.error || "Unknown error");
+	             // Display appropriate error message to the user
+	             alert("Login failed: " + (data.error || "Unknown error"));
+	         }
+	     },
+	     error: function(xhr, status, error) {
+	         console.error("Login failed:", error);
+	         // Display appropriate error message to the user
+	         alert("Login failed: " + error);
+	     }
+	 });
+});
+
 	
 	 // Handle click on register button in the login form
 	$(document).on("click", "#registerButton", function () { 
