@@ -308,5 +308,50 @@ $(document).ready(function(){
 	        }
 	    });
     });
-//    findAll();
+});
+
+
+$(document).ready(function() {
+	// Handle form submission for search
+	$('#searchForm').submit(function(event) {
+	    event.preventDefault(); // Prevent default form submission behavior
+	
+	    let searchQuery = $('#searchInput').val().trim(); // Get the search query from the input
+	
+	    // Send search query via AJAX
+	    $.ajax({
+	        type: "GET",
+	        url: rootURL + "/wines/name/" + searchQuery,
+	        success: function(data) {
+	            console.log("Search successful:", data);
+	            renderSearchResults(data); // Render search results
+	        },
+	        error: function(xhr, status, error) {
+	            console.error("Search failed:", error);
+	            // Display appropriate error message to the user
+	            alert("Search failed: " + error);
+	        }
+	    });
+	});
+	
+	
+	// Function to render search results
+	function renderSearchResults(data) {
+	    $('#winesContent').empty(); // Clear previous search results
+	
+	    if (data.length > 0) {
+	        // Render each wine in the search results
+	        $.each(data, function(index, wine) {
+	            var htmlStr = '<div class="details col-sm-12 mb-3">';
+	            htmlStr += '<h1>' + wine.winery + '</h1>';
+	            htmlStr += '<p><b>' + wine.name + '</b></p>';
+	            htmlStr += '<p>' + wine.country + '</p>';
+	            htmlStr += '<button type="button" class="infoButton btn btn-primary" data-id="' + wine.id + '">More Details</button>';
+	            $('#winesContent').append(htmlStr);
+	        });
+	    } else {
+	        // If no wines found, display a message to the user
+	        $('#winesContent').html('<p>No wines found</p>');
+	    }
+	}
 });

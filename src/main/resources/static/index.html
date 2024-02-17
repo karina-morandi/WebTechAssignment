@@ -159,14 +159,14 @@
 	      <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
 	        <li class="nav-item">
 	          <a class="nav-link active" aria-current="page">
-	          	<button type="button" id="homeButton">Home</button></a>
+	          	<button type="button" class="form-control btn btn-primary submit px-3" id="homeButton">Home</button></a>
 	        </li>
 	        <li class="nav-item">
-	          <button class="nav-link" id="findallWine">All Wines</button>
+	          <button type="button" class="form-control btn btn-primary submit px-3" id="findallWine">All Wines</button>
 	        </li>
 	        <li class="nav-item dropdown">
-	          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-	            Edit
+	          <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+	            Wine Management
 	          </a>
 	          <ul class="dropdown-menu">
 	            <li><a class="dropdown-item" id="newWine">Add a wine</a></li>
@@ -179,9 +179,9 @@
 	          </ul>
 	        </li>
 	      </ul>
-	      <form class="d-flex mt-3" role="search">
-	        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-	        <button class="btn btn-outline-success" type="submit">Search</button>
+	      <form id="searchForm" class="d-flex mt-3" role="search">
+	        <input id="searchInput" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+	        <button id="searchButton" class="btn btn-outline-success" type="submit">Search</button>
 	      </form>
 	      <button type="button" class="btn btn-primary" id="logoutButton" onclick="logout()">
              <span class="align-text-bottom"></span>

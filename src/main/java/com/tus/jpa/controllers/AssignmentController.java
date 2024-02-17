@@ -1,5 +1,6 @@
 package com.tus.jpa.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tus.jpa.dto.Wines;
@@ -65,30 +67,6 @@ public class AssignmentController {
 			}
 		}
 	
-	@PutMapping("/wines/{id}")
-	public ResponseEntity updateWine(@PathVariable("id") Long id, @RequestBody Wines wine) throws ResourceNotFoundException {
-		Optional <Wines> savedWine = wineRepository.findById(id);
-		if (savedWine.isPresent()) {
-			wineRepository.save(wine);
-			//just return 200 ok
-			return ResponseEntity.status(HttpStatus.OK).body(wine);
-		} else {
-			throw new ResourceNotFoundException("No wine with id: " + id);
-		}
-	}
-	
-//	@RequestMapping("/wines/name/{name}")
-//	public ResponseEntity<List<Wines>> getBookByName(@PathVariable("name") String name){
-//		List<Wines> winesByName = new ArrayList<>();
-//		//winesByName=wineRepo.findByName(name); this is exact match
-//		winesByName=wineRepository.findByNameContaining(name);
-//		if (winesByName.size()>0) {
-//			return new ResponseEntity(winesByName, HttpStatus.OK);
-//		}else {
-//			return new ResponseEntity(winesByName, HttpStatus.NO_CONTENT);
-//		}
-//	}
-	
 	@DeleteMapping("/wines/{name}")
 	public ResponseEntity<String> deleteWineByName(@PathVariable("name") String name) {
 		try {
@@ -104,5 +82,30 @@ public class AssignmentController {
 	    } catch (Exception e) {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting wine(s) with name " + name + ".");
 	    }
+	}
+	
+	
+	@PutMapping("/wines/{id}")
+	public ResponseEntity updateWine(@PathVariable("id") Long id, @RequestBody Wines wine) throws ResourceNotFoundException {
+		Optional <Wines> savedWine = wineRepository.findById(id);
+		if (savedWine.isPresent()) {
+			wineRepository.save(wine);
+			//just return 200 ok
+			return ResponseEntity.status(HttpStatus.OK).body(wine);
+		} else {
+			throw new ResourceNotFoundException("No wine with id: " + id);
+		}
+	}
+	
+	@RequestMapping("/wines/name/{name}")
+	public ResponseEntity<List<Wines>> getWineByName(@PathVariable("name") String name){
+		List<Wines> winesByName = new ArrayList<>();
+		//winesByName=wineRepo.findByName(name); this is exact match
+		winesByName=wineRepository.findByNameContaining(name);
+		if (winesByName.size()>0) {
+			return new ResponseEntity(winesByName, HttpStatus.OK);
+		}else {
+			return new ResponseEntity(winesByName, HttpStatus.NO_CONTENT);
+		}
 	}
 }
