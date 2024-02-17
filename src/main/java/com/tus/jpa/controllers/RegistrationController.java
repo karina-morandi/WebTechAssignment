@@ -24,8 +24,8 @@ import com.tus.jpa.repositories.AdminRepository;
 @RequestMapping("/user")
 public class RegistrationController {
 
-	private AdminRepository adminRepo;
-	private PasswordEncoder passwordEncoder;
+	AdminRepository adminRepo;
+	PasswordEncoder passwordEncoder;
 	
 	public RegistrationController(AdminRepository adminRepo, PasswordEncoder passwordEncoder) {
 		this.adminRepo = adminRepo;

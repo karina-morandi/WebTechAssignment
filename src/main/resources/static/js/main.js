@@ -132,25 +132,22 @@ $(document).ready(function () {
 	        console.error("Username or password cannot be empty");
 	        return;
 	    }
+	    
+	    let loginInfo = {
+			login: login,
+	        password: password,
+		}
 	
 	    // Send login credentials via AJAX
 	     $.ajax({
 	     type: "POST",
 	     url: rootURL + "/login",
-	     data: {
-	         login: login,
-	         password: password
-	     },
+	     contentType: 'application/json',
+	     data: JSON.stringify(loginInfo),
 	     success: function(data) {
-	         if (data && data.message) {
 	             console.log("Login successful:", login, password);
 	             AdminDashboard();
 	             findAll();
-	         } else {
-	             console.error("Login failed:", data.error || "Unknown error");
-	             // Display appropriate error message to the user
-	             alert("Login failed: " + (data.error || "Unknown error"));
-	         }
 	     },
 	     error: function(xhr, status, error) {
 	         console.error("Login failed:", error);
@@ -221,3 +218,95 @@ function logout() {
   //	window.location.href = rootURL + "/logout";
     HomePageDashboard();
 }
+
+$(document).ready(function(){
+    $(document).on("click", '#newWine', function(){
+        console.log("Add wine clicked!");
+        $('#createWineModal').modal('show');
+    });
+
+    // Handle submit button click inside the modal
+    $(document).on("click", "#submitWine", function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+		let name = $('#Name').val();
+		let grapes = $('#Grapes').val();
+		let country = $('#Country').val();
+		let year = $('#Year').val();
+		let color = $('#Color').val();
+		let winery = $('#Winery').val();
+		let region = $('#Region').val();
+		let picture = $('#Picture').val();
+		
+		let wine = {
+			name: name,
+			grapes: grapes,
+			country: country,
+			year: year,
+			color: color,
+			winery: winery,
+			region: region,
+			picture: picture,
+		}
+		
+		$.ajax({
+	        type: "POST",		
+	        url: rootURL + "/wines/createNewWine",
+			contentType: 'application/json',
+	        data: JSON.stringify(wine),
+	        success: function(data) {
+	            console.log("wine added");
+	            alert("Wine added successfully")
+	            findAll();      
+	        },
+	        error: function(xhr, status, error) {
+	            console.log("Error response:", xhr.responseText);
+			    var message = JSON.parse(xhr.responseText);
+			    alert(message.errorMessage)
+			    $('#errorMsg p').remove();
+			    $('#successMsg p').remove();
+			    $('#errorMsg').append('<p>'+message.errorMessage+'</p>');
+	        }
+	    });
+		
+   
+    });
+    findAll();
+});
+
+
+
+$(document).ready(function(){
+    $(document).on("click", '#deleteWine', function(){
+        console.log("Delete wine clicked!");
+        $('#deleteWineModal').modal('show');
+    });
+
+    // Handle submit button click inside the modal
+    $(document).on("click", "#submitDeleteWine", function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+		let name = $('#Name').val();
+		
+		$.ajax({
+	        type: "DELETE",		
+	        url: rootURL + "/wines/" + name,
+			contentType: 'application/json',
+			data: name = name,
+	        success: function(data) {
+	            console.log("wine deleted");
+	            alert("Wine deleted successfully")
+	            findAll();      
+	        },
+	        error: function(xhr, status, error) {
+	            console.log("Error response:", xhr.responseText);
+			    var message = JSON.parse(xhr.responseText);
+			    alert(message.errorMessage)
+			    $('#errorMsg p').remove();
+			    $('#successMsg p').remove();
+			    $('#errorMsg').append('<p>'+message.errorMessage+'</p>');
+	        }
+	    });
+    });
+//    findAll();
+});
