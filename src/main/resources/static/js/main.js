@@ -286,7 +286,7 @@ $(document).ready(function(){
     $(document).on("click", "#submitDeleteWine", function(event) {
         event.preventDefault(); // Prevent the default form submission
 
-		let name = $('#Name').val();
+		let name = $('#deleteName').val();
 		
 		$.ajax({
 	        type: "DELETE",		

@@ -1,6 +1,5 @@
 package com.tus.jpa.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tus.jpa.dto.Wines;
@@ -92,14 +90,19 @@ public class AssignmentController {
 //	}
 	
 	@DeleteMapping("/wines/{name}")
-	public void deleteWineByName(@PathVariable("name") String name) throws ResourceNotFoundException {
-		List<Wines> wines = wineRepository.findByName(name);
-		if (wines.isEmpty()) {
-			throw new ResourceNotFoundException("No wine with name: " + name);
-		}else {
-			for (Wines wine : wines) {
-	            wineRepository.delete(wine);		
-			}
-		}	
+	public ResponseEntity<String> deleteWineByName(@PathVariable("name") String name) {
+		try {
+	        List<Wines> wines = wineRepository.findByName(name);
+	        if (wines.isEmpty()) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No wine with name: " + name);
+	        } else {
+	            for (Wines wine : wines) {
+	                wineRepository.delete(wine);
+	            }
+	            return ResponseEntity.ok().body("Wine(s) with name " + name + " deleted successfully.");
+	        }
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting wine(s) with name " + name + ".");
+	    }
 	}
 }
