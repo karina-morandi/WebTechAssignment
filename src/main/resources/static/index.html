@@ -200,7 +200,7 @@
                 <div class="modal-header">
                     <h4 class="modal-title">Add a Wine</h4>
                 </div>
-                <form id="createWineForm" class="modal-body" id="contents">
+                <form id="createWineForm" class="modal-body" enctype="multipart/form-data">
                     <label>Name</label>
                     <input type="text" id="Name" name="Name"><br />
                     
@@ -223,8 +223,31 @@
                     <input type="text" id="Region" name="Region"><br />
                     
                     <label>Picture</label>
-                    <input type="text" id="Picture" name="Picture"><br />
+                    <input type="file" id="Picture" name="pictureFile"><br />
                 </form>
+                
+                <!-- start of file upload modal -->
+                    <div class="modal fade" id="uploadFileModal" role="dialog">
+                        <div class="modal-dialog">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Upload File</h4>
+                                </div>
+                                <div class="modal-body" id="contents">
+                                    <form id="fileUploadForm" enctype="multipart/form-data">
+                                        <div class="form-group">
+                                            <label for="fileToUpload">Select file to upload:</label>
+                                            <input type="file" class="form-control" id="fileToUpload" name="fileToUpload" required>
+                                        </div>
+                                        <button type="button" class="btn btn-primary" id="btnUpload">Upload File</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+				<!-- end of file upload modal -->
+				
                 <div class="modal-footer">
                     <button type="button" id="submitWine" class="form-control btn btn-primary submit px-3">Submit</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -253,6 +276,48 @@
             </div>
         </div>
     </div>
+
+<!-- This modal will prompt the user for info to edit a wine -->
+<div class="modal fade" id="editWineModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Edit Wine</h4>
+            </div>
+            <form id="editWineForm" class="modal-body">
+                <!-- Input fields for editing wine properties -->
+                <label>Name</label>
+                <input type="text" id="editName" name="editName"><br />
+                
+                <label>Year</label>
+                <input type="number" id="editYear" name="editYear"><br />
+                
+                <label>Color</label>
+                <input type="text" id="editColor" name="editColor"><br />
+                
+                <label>Winery</label>
+                <input type="text" id="editWinery" name="editWinery"><br />
+                
+                <label>Grapes</label>
+                <input type="text" id="editGrapes" name="editGrapes"><br />
+                
+                <label>Country</label>
+                <input type="text" id="editCountry" name="editCountry"><br />
+                
+                <label>Region</label>
+                <input type="text" id="editRegion" name="editRegion"><br />
+                
+                <label>Picture</label>
+                <input type="text" id="editPicture" name="editPicture"><br />
+            <!-- Add other input fields as needed -->
+            </form>
+            <div class="modal-footer">
+                <button type="button" id="submitEditWine" class="form-control btn btn-primary submit px-3">Save Changes</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
