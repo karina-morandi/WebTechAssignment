@@ -39,16 +39,16 @@ public class SecurityConfig {
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
             .authorizeRequests()
-                .antMatchers("/", "/wines/**","/login/**", "/user/register", "/css/**", "/js/**", "../static/**","/src/main/resources/**", "/images/**").permitAll()
+                .antMatchers("/","/wines/" ,"/wines/**","/login","/login/**", "/user/register", "/css/**", "/js/**", "../static/**","/src/main/resources/**", "/images/**").permitAll()
                 .antMatchers("/admin").hasRole("admin") // Redirect based on role
-                .anyRequest().authenticated()
-                .and()
-            .formLogin()
-                .loginPage("/login")
+                .anyRequest().authenticated();
+//                .and()
+//            .formLogin()
+//                .loginPage("/login")
 //                .defaultSuccessUrl("/", true)
-                .permitAll()
-                .and()
-            .logout();
+//                .permitAll()
+//                .and()
+//            .logout();
 //                .permitAll();
         return http.build();
     }

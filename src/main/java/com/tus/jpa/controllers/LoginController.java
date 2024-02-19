@@ -42,19 +42,35 @@ public class LoginController {
 	}
     
     @PostMapping("/login")  
-    public ResponseEntity authenticate(@Valid @RequestParam String login, @RequestParam String password) {   
-    	
-    	if (adminRepo.findByLogin(login) == null) {
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This user does not exit!!");
-	    } else {
-	        // User doesn't exist, proceed with registration
-	    	if (passwordEncoder.matches(password, password)) {
-	            // Return the authenticated user details
-	            return ResponseEntity.ok().body("Login successful");
-	        } else {
-	            // Return 401 Unauthorized status if authentication fails
-	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"error\": \"Invalid username or password\"}");
-	        }
-	    }	
-	}
+    public ResponseEntity authenticate(@RequestParam String login, @RequestParam String password) {   
+        Admin user = adminRepo.findByLogin(login);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This user does not exist!");
+        } else {
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                return ResponseEntity.ok().body("Login successful");
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+            }
+        }   
+    }
+    
+//    @PostMapping("/login")  
+//    public ResponseEntity authenticate(@Valid @RequestParam String login, @RequestParam String password) {   
+//    	
+//    	if (adminRepo.findByLogin(login) == null) {
+//	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This user does not exit!!");
+//	    } else {
+//	        // User doesn't exist, proceed with registration
+//	    	if (passwordEncoder.matches(password, password)) {
+//	            // Return the authenticated user details
+//	            return ResponseEntity.ok().body("Login successful");
+//	        } else {
+//	            // Return 401 Unauthorized status if authentication fails
+//	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"error\": \"Invalid username or password\"}");
+//	        }
+//	    }	
+//	}
 }    	
+
+

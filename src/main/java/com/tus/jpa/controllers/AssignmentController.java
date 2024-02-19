@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -57,15 +56,15 @@ public class AssignmentController {
 		return wineRepository.findAll();
 	}
 	
-	@GetMapping("/wines/{id}")
-	public Optional<Wines> getWineById(@PathVariable(value = "id") Long wineId)throws ResourceNotFoundException{
-		Optional<Wines> wine = wineRepository.findById(wineId);
-		if(wine.isPresent())
-			return wine;
-		else
-			throw new ResourceNotFoundException("No wine with id: "+wineId );
-			
-	}
+//	@GetMapping("/wines/{id}")
+//	public Optional<Wines> getWineById(@PathVariable(value = "id") Long wineId)throws ResourceNotFoundException{
+//		Optional<Wines> wine = wineRepository.findById(wineId);
+//		if(wine.isPresent())
+//			return wine;
+//		else
+//			throw new ResourceNotFoundException("No wine with id: "+wineId );
+//			
+//	}
 	
 	@PostMapping("/wines/createNewWine")
 	public ResponseEntity<?> createWine(@Valid @RequestParam("name") String name, @RequestParam("grapes") String grapes,@RequestParam("country") String country, @RequestParam("year") int year, @RequestParam("color") String color, @RequestParam("winery") String winery, @RequestParam("region") String region, @RequestPart("pictureFile") MultipartFile pictureFile) {
@@ -79,7 +78,9 @@ public class AssignmentController {
 			wine.setRegion(region);
 			wine.setWinery(winery);
 			wine.setYear(year);
-	        wine.setPicture(savePicture(pictureFile)); // Save the picture and set the path
+			
+			String picturePath = savePicture(pictureFile);
+	        wine.setPicture(picturePath); // Save the picture and set the path
 			wineValidator.validateWine(wine);
 			Wines savedWine=wineRepository.save(wine);
 			return ResponseEntity.status(HttpStatus.CREATED).body(savedWine);
@@ -131,28 +132,45 @@ public class AssignmentController {
 	    }
 	}
 	
+	@GetMapping("/wines/{id}")
+	public ResponseEntity<?> getWineById(@PathVariable(value = "id") Long wineId) {
+	    Optional<Wines> wine = wineRepository.findById(wineId);
+	    if (wine.isPresent())
+	        return ResponseEntity.ok(wine.get());
+	    else
+	        return ResponseEntity.notFound().build();
+	}
+
 	@PutMapping("/wines/{id}")
-	public ResponseEntity<?> updateWine(@PathVariable("id") Long id, @RequestBody Wines updatedWine) throws ResourceNotFoundException {
+	public ResponseEntity<?> updateWine(
+	    @PathVariable("id") Long id,
+	    @RequestParam(value = "name", required = false) String name,
+	    @RequestParam(value = "grapes", required = false) String grapes,
+	    @RequestParam(value = "country", required = false) String country,
+	    @RequestParam(value = "year", required = false) Integer year,
+	    @RequestParam(value = "color", required = false) String color,
+	    @RequestParam(value = "winery", required = false) String winery,
+	    @RequestParam(value = "region", required = false) String region,
+	    @RequestParam(value = "pictureFile", required = false) MultipartFile pictureFile
+	) throws ResourceNotFoundException {
 	    Optional<Wines> savedWine = wineRepository.findById(id);
 	    if (savedWine.isPresent()) {
 	        Wines existingWine = savedWine.get();
-	        existingWine.setName(updatedWine.getName());
-	        existingWine.setGrapes(updatedWine.getGrapes());
-	        existingWine.setCountry(updatedWine.getCountry());
-	        existingWine.setYear(updatedWine.getYear());
-	        existingWine.setColor(updatedWine.getColor());
-	        existingWine.setWinery(updatedWine.getWinery());
-	        existingWine.setRegion(updatedWine.getRegion());
-	        existingWine.setPicture(updatedWine.getPicture());
-	        // Update other fields as needed
-	        
-	        // Save the updated wine
+	        if (name != null) existingWine.setName(name);
+	        if (grapes != null) existingWine.setGrapes(grapes);
+	        if (country != null) existingWine.setCountry(country);
+	        if (year != null) existingWine.setYear(year);
+	        if (color != null) existingWine.setColor(color);
+	        if (winery != null) existingWine.setWinery(winery);
+	        if (region != null) existingWine.setRegion(region);
+	        if (pictureFile != null) existingWine.setPicture(savePicture(pictureFile));
 	        wineRepository.save(existingWine);
 	        return ResponseEntity.ok(existingWine);
 	    } else {
 	        throw new ResourceNotFoundException("No wine with id: " + id);
 	    }
 	}
+
 
 	@RequestMapping("/wines/name/{name}")
 	public ResponseEntity<List<Wines>> getWineByName(@PathVariable("name") String name){

@@ -284,7 +284,7 @@
             <div class="modal-header">
                 <h4 class="modal-title">Edit Wine</h4>
             </div>
-            <form id="editWineForm" class="modal-body">
+            <form id="editWineForm" class="modal-body" enctype="multipart/form-data">
                 <!-- Input fields for editing wine properties -->
                 <label>Name</label>
                 <input type="text" id="editName" name="editName"><br />
@@ -308,7 +308,7 @@
                 <input type="text" id="editRegion" name="editRegion"><br />
                 
                 <label>Picture</label>
-                <input type="text" id="editPicture" name="editPicture"><br />
+                <input type="file" id="editPicture" name="editPicture"><br />
             <!-- Add other input fields as needed -->
             </form>
             <div class="modal-footer">
