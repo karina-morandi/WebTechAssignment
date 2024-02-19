@@ -23,8 +23,8 @@ public class Wines {
 	private String country;
 	private String region;
 	
-    @Column(name = "picture_path") // Store the path to the image in the database
-    private String picturePath;
+    @Column(name = "picture") // Store the path to the image in the database
+    private String picture;
 	
 //	@Lob
 //	private String picture;
@@ -33,7 +33,7 @@ public class Wines {
 		
 	}
 	
-	public Wines(Long id, String name, String winery, int year, String color, String grapes, String country, String region, String picturePath) {
+	public Wines(Long id, String name, String winery, int year, String color, String grapes, String country, String region, String picture) {
 	    this.id = id;
 	    this.name = name;
 	    this.winery = winery;
@@ -42,7 +42,7 @@ public class Wines {
 	    this.grapes = grapes;
 	    this.country = country;
 	    this.region = region;
-	    this.picturePath = picturePath;
+	    this.picture = picture;
 	}
 	
 	public Long getId() {
@@ -118,12 +118,12 @@ public class Wines {
 //	}
 
     // Getters and setters for picturePath
-    public String getPicturePath() {
-        return picturePath;
+    public String getPicture() {
+        return picture;
     }
 
-    public void setPicturePath(String picturePath) {
-        this.picturePath = picturePath;
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 	
 	@Override

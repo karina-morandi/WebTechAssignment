@@ -79,7 +79,7 @@ public class AssignmentController {
 			wine.setRegion(region);
 			wine.setWinery(winery);
 			wine.setYear(year);
-	        wine.setPicturePath(savePicture(pictureFile)); // Save the picture and set the path
+	        wine.setPicture(savePicture(pictureFile)); // Save the picture and set the path
 			wineValidator.validateWine(wine);
 			Wines savedWine=wineRepository.save(wine);
 			return ResponseEntity.status(HttpStatus.CREATED).body(savedWine);
@@ -143,7 +143,7 @@ public class AssignmentController {
 	        existingWine.setColor(updatedWine.getColor());
 	        existingWine.setWinery(updatedWine.getWinery());
 	        existingWine.setRegion(updatedWine.getRegion());
-	        existingWine.setPicturePath(updatedWine.getPicturePath());
+	        existingWine.setPicture(updatedWine.getPicture());
 	        // Update other fields as needed
 	        
 	        // Save the updated wine
