@@ -30,7 +30,7 @@ public class wineValidator {
 	public void validateWine(Wines wine) throws WineValidationException {
 		this.wine = wine;
 		checkEmptyFields(wine);
-		checkForVintage(wine);
+//		checkForVintage(wine);
 	}
 	
 
@@ -41,14 +41,14 @@ public class wineValidator {
 		}
 	}
 
-	 //if wine with name and year already exists
-	private void checkForVintage(Wines wine) throws WineValidationException {
-		this.wine = wine;
-		Optional<Wines> savedWine = wineRepo.findByNameAndYear(wine.getName(), wine.getYear());
-		if (savedWine.isPresent()){
-			throw new WineValidationException(ErrorMessages.ALREADY_EXISTS.getMsg());
-		}
-	}
+//	 //if wine with name and year already exists
+//	private void checkForVintage(Wines wine) throws WineValidationException {
+//		this.wine = wine;
+//		Optional<Wines> savedWine = wineRepo.findByNameAndYear(wine.getName(), wine.getYear());
+//		if (savedWine.isPresent()){
+//			throw new WineValidationException(ErrorMessages.ALREADY_EXISTS.getMsg());
+//		}
+//	}
 	
 	private String savePicture(MultipartFile pictureFile) throws WineValidationException {
 	    // Get the filename

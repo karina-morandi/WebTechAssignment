@@ -3,6 +3,8 @@ package com.tus.jpa.controllers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.util.StringUtils;
 
@@ -11,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import javax.validation.Valid;
 
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -67,7 +71,7 @@ public class AssignmentController {
 //	}
 	
 	@PostMapping("/wines/createNewWine")
-	public ResponseEntity<?> createWine(@Valid @RequestParam("name") String name, @RequestParam("grapes") String grapes,@RequestParam("country") String country, @RequestParam("year") int year, @RequestParam("color") String color, @RequestParam("winery") String winery, @RequestParam("region") String region, @RequestPart("pictureFile") MultipartFile pictureFile) {
+	public ResponseEntity<?> createWine(@Valid @RequestParam("name") String name, @RequestParam("grapes") String grapes,@RequestParam("country") String country, @RequestParam("year") int year, @RequestParam("color") String color, @RequestParam("winery") String winery, @RequestParam("region") String region, @RequestPart("pictureFile") MultipartFile pictureFile) throws IOException {
 //	public ResponseEntity createWine(@Valid @RequestBody Wines wine, @RequestPart("pictureFile") MultipartFile pictureFile) {
 		try {	
 			Wines wine = new Wines();
@@ -90,30 +94,55 @@ public class AssignmentController {
 		}
 	}
 	
-	private String savePicture(MultipartFile pictureFile) {
-		// Get the filename
-	    String fileName = StringUtils.cleanPath(pictureFile.getOriginalFilename());
-	    
-	    // Create the directory if it doesn't exist
-	    File directory = new File(UPLOAD_DIR);
-	    if (!directory.exists()) {
-	        directory.mkdirs();
-	    }
+	@PostMapping("/uploadImage")
+    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
+        try {
+            String picturePath = savePicture(file);
+            return ResponseEntity.ok(picturePath);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading image: " + e.getMessage());
+        }
+    }
 
-	    // Create the path where the file will be saved
-	    Path uploadPath = Paths.get(UPLOAD_DIR + fileName);
+    private String savePicture(MultipartFile pictureFile) throws IOException {
+        // Define the directory where you want to save the uploaded files
+        String uploadDir = "src/main/resources/static/images/";
 
-	    // Copy the file to the upload path
-	    try {
-			Files.copy(pictureFile.getInputStream(), uploadPath);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        // Create a unique file name to prevent overwriting existing files
+        String fileName = UUID.randomUUID().toString() + "_" + pictureFile.getOriginalFilename();
 
-	    // Return the path where the file was saved
-	    return fileName;
-	}
+        // Save the file to the upload directory
+        Path filePath = Paths.get(uploadDir, fileName);
+        Files.copy(pictureFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        // Return the file path or URL where the file is stored
+        return fileName;
+    }	
+	
+//	private String savePicture(MultipartFile pictureFile) {
+//		// Get the filename
+//	    String fileName = StringUtils.cleanPath(pictureFile.getOriginalFilename());
+//	    
+//	    // Create the directory if it doesn't exist
+//	    File directory = new File(UPLOAD_DIR);
+//	    if (!directory.exists()) {
+//	        directory.mkdirs();
+//	    }
+//
+//	    // Create the path where the file will be saved
+//	    Path uploadPath = Paths.get(UPLOAD_DIR + fileName);
+//
+//	    // Copy the file to the upload path
+//	    try {
+//			Files.copy(pictureFile.getInputStream(), uploadPath);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//	    // Return the path where the file was saved
+//	    return fileName;
+//	}
 	
 	@DeleteMapping("/wines/{name}")
 	public ResponseEntity<String> deleteWineByName(@PathVariable("name") String name) {
@@ -142,36 +171,34 @@ public class AssignmentController {
 	}
 
 	@PutMapping("/wines/{id}")
-	public ResponseEntity<?> updateWine(
-	    @PathVariable("id") Long id,
-	    @RequestParam(value = "name", required = false) String name,
-	    @RequestParam(value = "grapes", required = false) String grapes,
-	    @RequestParam(value = "country", required = false) String country,
-	    @RequestParam(value = "year", required = false) Integer year,
-	    @RequestParam(value = "color", required = false) String color,
-	    @RequestParam(value = "winery", required = false) String winery,
-	    @RequestParam(value = "region", required = false) String region,
-	    @RequestParam(value = "pictureFile", required = false) MultipartFile pictureFile
-	) throws ResourceNotFoundException {
-	    Optional<Wines> savedWine = wineRepository.findById(id);
-	    if (savedWine.isPresent()) {
-	        Wines existingWine = savedWine.get();
-	        if (name != null) existingWine.setName(name);
-	        if (grapes != null) existingWine.setGrapes(grapes);
-	        if (country != null) existingWine.setCountry(country);
-	        if (year != null) existingWine.setYear(year);
-	        if (color != null) existingWine.setColor(color);
-	        if (winery != null) existingWine.setWinery(winery);
-	        if (region != null) existingWine.setRegion(region);
-	        if (pictureFile != null) existingWine.setPicture(savePicture(pictureFile));
-	        wineRepository.save(existingWine);
-	        return ResponseEntity.ok(existingWine);
-	    } else {
-	        throw new ResourceNotFoundException("No wine with id: " + id);
+	public ResponseEntity<?> updateWine(@PathVariable("id") Long id, @RequestBody Wines updatedWine) {
+	    try {
+	        Wines existingWine = wineRepository.findById(id).orElseThrow(() -> new RuntimeException("Wine not found!"));
+	        existingWine.setName(updatedWine.getName());
+	        existingWine.setGrapes(updatedWine.getGrapes());
+	        existingWine.setCountry(updatedWine.getCountry());
+	        existingWine.setYear(updatedWine.getYear());
+	        existingWine.setColor(updatedWine.getColor());
+	        existingWine.setWinery(updatedWine.getWinery());
+	        existingWine.setRegion(updatedWine.getRegion());
+	     
+	        Wines savedWine = wineRepository.save(existingWine);
+	        return ResponseEntity.ok(savedWine);
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating wine: " + e.getMessage());
 	    }
 	}
-
-
+    
+	  
+//	        if (pictureFile != null && !pictureFile.isEmpty()) {
+//	            existingWine.setPicture(savePicture(pictureFile));}
+//	        Wines updatedWine = wineRepository.save(existingWine);
+//	        System.out.print("Java OK: " + updatedWine);
+//	        return ResponseEntity.ok(updatedWine);
+//	    } else {
+//	        throw new ResourceNotFoundException("No wine with id: " + id);
+//	    }
+	
 	@RequestMapping("/wines/name/{name}")
 	public ResponseEntity<List<Wines>> getWineByName(@PathVariable("name") String name){
 		List<Wines> winesByName = new ArrayList<>();

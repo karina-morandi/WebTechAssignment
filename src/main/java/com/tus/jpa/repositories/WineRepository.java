@@ -10,5 +10,6 @@ import com.tus.jpa.dto.Wines;
 public interface WineRepository extends JpaRepository<Wines, Long> {
 	List<Wines> findByName(String name);
 	List<Wines> findByNameContaining(String name);
-	Optional<Wines> findByNameAndYear(String name, int year);
+	Wines findByNameAndYear(String name, int year);
+	Optional<Wines> findById(Long id);
 }
