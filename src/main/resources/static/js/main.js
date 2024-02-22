@@ -28,6 +28,12 @@ function AdminDashboard() {
     $('#admin').show();
 }
 
+function clearList(){
+	console.log("Clear button clicked!");
+	$('#winesContent').empty(); // Clear the content of the wines list
+    $('#winesTable').hide(); // Hide the table containing the wines list
+}
+
 let rootURL = "http://localhost:9090";
 var currentViewType = 'list'; // Default view type
 var wineData;
@@ -139,12 +145,17 @@ $(document).ready(function () {
         console.log("Home button clicked - list all");
         HomePageDashboard();
      });
+     
      $(document).on("click", "#findallWine", function () { 
-        console.log("findallWine button clicked - list all");
-        findAll();
-     });
+	    console.log("findallWine button clicked - list all");
+	    $('#winesContent').show(); // Ensure the wine list container is visible
+	    $('#winesTable').show(); // Hide the table containing the wines list
+	    findAll(); // Fetch and render all wines
+	});
+
     $('#listView, #gridView').on('change', function() {
         currentViewType = $(this).val();
+        AdminDashboard();
         renderContent(); // Render content based on the current view type
     });
 

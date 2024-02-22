@@ -90,7 +90,7 @@
              <label class="label" for="passwordReg">Password</label>
              <input type="password" class="form-control" id="passwordReg" name="passwordReg" required>
 
-           	<label class="label" for="confirmpasswordReg">Password</label>
+           	<label class="label" for="confirmpasswordReg">Confirm Password</label>
              <input type="password" class="form-control" id="confirmpasswordReg" name="confirmpasswordReg" required>
 
            <div class="form-group">
@@ -176,12 +176,11 @@
 	          </a>
 	          <ul class="dropdown-menu">
 	            <li><a class="dropdown-item" id="newWine">Add a wine</a></li>
-	             <li><a class="dropdown-item" href="#">Edit a wine</a></li>
 	            <li><a class="dropdown-item" id="deleteWine">Delete a wine</a></li>
 	            <li>
 	              <hr class="dropdown-divider">
 	            </li>
-	            <li><a class="dropdown-item" href="#">Clear List</a></li>
+	            <li><a class="dropdown-item" id="clearList" onclick="clearList()">Clear List</a></li>
 	          </ul>
 	        </li>
 	      </ul>
