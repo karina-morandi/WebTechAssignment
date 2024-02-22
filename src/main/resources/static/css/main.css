@@ -38,17 +38,6 @@
     border-color: black;
 }
 
-/* .homePage {
-    font-family: Arial, sans-serif;
-    font-size: 70px;
-    background-image: url('../images/Backg.png'); Replace 'static/images/backg.jpeg' with the path to your image
-    background-size: cover;
-    background-size: cover;
-    background-position: center; 
-    color: white; Set text color to contrast with background
-    padding: 210px 100px; Add padding to ensure content is visible
-} */
-
 .homePage {
     font-family: Arial, sans-serif;
     font-size: 70px;
@@ -99,14 +88,6 @@ html, body {
     margin-right: auto;
 }
 
-/* 
-.editButton {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-} */
-
 .wine-row td {
     width: 33.33%; /* Each column takes up one-third of the table width */
 }
@@ -135,13 +116,6 @@ html, body {
     transform: translateX(-50%);
 }
 
-/* .wine-card {
-	height: 100%; Set the height of the wine card to 100%
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
- */
 .image-container {
     position: relative;
     overflow: hidden;
@@ -151,13 +125,7 @@ html, body {
 .wine-image {
     width: 130px;
     height: 500px;
-/*      object-fit: cover; */
  }
-/*  
- .wine-image {
-    width: 100%;
-    height: auto; Maintain aspect ratio
-} */
 
 .winery,
 .country {
@@ -171,3 +139,24 @@ html, body {
     color: black; /* Ensure button text color is black */
 }
 
+/* Add wine-colored text shadow */
+.welcome-text,
+.vinoteca-text {
+    text-shadow: 2px 2px 4px #8B0000; /* Adjust the values as needed */
+}
+
+.settings-button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-right: 1px; /* Adjust margin to position the button */
+    cursor: pointer;
+}
+
+.hamburger-icon {
+    width: 30px; /* Adjust size as needed */
+    height: 3px;
+    background-color: #f35588; /* Line color */
+    margin: 6px 0;
+    border-radius: 5px;
+}

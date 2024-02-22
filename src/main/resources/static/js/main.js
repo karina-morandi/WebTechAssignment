@@ -133,42 +133,6 @@ var renderGrid = function() {
     }
 }
 
-/*var renderGrid = function() {
-    $('#winesContent').empty(); // Clear previous content
-    var list = wineData == null ? [] : (wineData instanceof Array ? wineData : [wineData]);
-
-    $.each(list, function(index, wine){
-        var col = $('<div>').addClass('col-sm-4 text-center p-3 wine-card');
-
-        // Wine Name
-        var wineName = $('<h3>').addClass('wine-name').text(wine.name);
-        col.append(wineName);
-
-        // Image Container
-        var imageContainer = $('<div>').addClass('image-container');
-        var image = "../images/" + wine.picture;
-        var img = $('<img>').attr('src', image).addClass('wine-image').attr('alt', wine.name);
-        imageContainer.append(img);
-        col.append(imageContainer);
-
-        // Winery
-        var winery = $('<p>').addClass('winery').text('Winery: ' + wine.winery);
-        col.append(winery);
-
-        // Country
-        var country = $('<p>').addClass('country').text('Country: ' + wine.country);
-        col.append(country);
-
-        // Edit Button
-        var editBtn = $('<button>').attr('type', 'button').addClass('editButton btn btn-secondary').attr('data-id', wine.id).text('Edit');
-        col.append(editBtn);
-
-        // Append column to the wines content
-        $('#winesContent').append(col);
-    });
-}*/
-
-
 //When DOM is ready
 $(document).ready(function () {
 	$(document).on("click", "#homeButton", function () { 
@@ -320,16 +284,12 @@ $(document).ready(function(){
 	        success: function(response) {
 	            console.log("wine added", response);
 	            alert("Wine added successfully");
+	            $('#createWineModal').modal('hide');
 	            AdminDashboard();
 	            findAll();      
 	        },
 	        error: function(xhr, status, error) {
 	            console.error("Error adding wine:", error);
-	          //  var message = JSON.parse(xhr.responseText);
-	          //  alert(message.errorMessage);
-	          //  $('#errorMsg p').remove();
-	          //  $('#successMsg p').remove();
-	          //  $('#errorMsg').append('<p>'+message.errorMessage+'</p>');
 	        }
 	    });
     });
@@ -358,6 +318,7 @@ $(document).ready(function(){
 	        success: function(data) {
 	            console.log("wine deleted");
 	            alert("Wine deleted successfully")
+	            $('#deleteWineModal').modal('hide');
 	            findAll();      
 	        },
 	        error: function(xhr, status, error) {
@@ -394,10 +355,67 @@ $(document).ready(function() {
 	            alert("Search failed: " + error);
 	        }
 	    });
-	});
+	});   
+	
+	
+	
+	
 	
 	
 	// Function to render search results
+	function renderSearchResults(data) {
+	    $('#winesContent').empty(); // Clear previous search results
+	
+	    if (data.length > 0) {
+	        // Create a row to contain the search results
+	        var row = $('<div>').addClass('row');
+	        
+	        // Render each wine in the search results
+	        $.each(data, function(index, wine) {
+	            // Create a column for the wine
+	            var col = $('<div>').addClass('col-sm-4 text-center p-3 wine-card');
+	            
+	            // Wine Name
+	            var wineName = $('<h3>').addClass('wine-name').text(wine.name);
+	            col.append(wineName);
+	            
+	            // Image Container
+	            var imageContainer = $('<div>').addClass('image-container');
+	            var image = "../images/" + wine.picture;
+	            var img = $('<img>').attr('src', image).addClass('wine-image').attr('alt', wine.name);
+	            imageContainer.append(img);
+	            col.append(imageContainer);
+	            
+	            // Winery
+	            var winery = $('<p>').addClass('winery').text('Winery: ' + wine.winery);
+	            col.append(winery);
+	            
+	            // Country
+	            var country = $('<p>').addClass('country').text('Country: ' + wine.country);
+	            col.append(country);
+	            
+	            // Edit Button
+	            var editBtn = $('<button>').attr('type', 'button').addClass('editButton btn btn-secondary').attr('data-id', wine.id).text('Edit');
+	            col.append(editBtn);
+	            
+	            // Append the column to the row
+	            row.append(col);
+	            
+	            // If 3 wines are added or it's the last wine, append the row to the content
+	            if ((index + 1) % 3 === 0 || index === data.length - 1) {
+	                $('#winesContent').append(row);
+	                row = $('<div>').addClass('row'); // Create a new row
+	            }
+	        });
+	    } else {
+	        // If no wines found, display a message to the user
+	        $('#winesContent').html('<p>No wines found</p>');
+	    }
+	}
+	
+	
+	
+/*	// Function to render search results
 	function renderSearchResults(data) {
 	    $('#winesContent').empty(); // Clear previous search results
 	
@@ -408,88 +426,15 @@ $(document).ready(function() {
 	            htmlStr += '<h1>' + wine.winery + '</h1>';
 	            htmlStr += '<p><b>' + wine.name + '</b></p>';
 	            htmlStr += '<p>' + wine.country + '</p>';
-	            htmlStr += '<button type="button" class="infoButton btn btn-primary" data-id="' + wine.id + '">More Details</button>';
+	            htmlStr += '<button type="button" class="editButton btn btn-secondary" data-id="' + wine.id + '">Edit</button>';
 	            $('#winesContent').append(htmlStr);
 	        });
 	    } else {
 	        // If no wines found, display a message to the user
 	        $('#winesContent').html('<p>No wines found</p>');
 	    }
-	}
+	}*/
 });
-
-/*// Function to handle click on "Edit" button for a wine
-$(document).on("click", ".editButton", function() {
-    let wineId = $(this).data('id');
-    console.log("Edit wine clicked for ID:", wineId);
-    // Fetch wine details by ID
-    $.ajax({
-        type: "GET",
-        url: rootURL + "/wines/" + wineId,
-        success: function(wine) {
-            console.log("Fetched wine details:", wine);
-            // Populate the edit modal with current wine information
-            $('#editName').val(wine.name);
-            $('#editGrapes').val(wine.grapes);
-            $('#editCountry').val(wine.country);
-            $('#editYear').val(wine.year);
-            $('#editColor').val(wine.color);
-            $('#editWinery').val(wine.winery);
-            $('#editRegion').val(wine.region);
-            
-            // Display the current image
-            $('#currentPicture').attr('src', '../images/' + wine.picture);
-            
-             // Set data-id attribute for the submit button to identify which wine is being edited
-            $('#submitEditWine').data('id', wineId);
-            
-            // Show the edit modal
-            $('#editWineModal').modal('show');
-        },
-        error: function(xhr, status, error) {
-            console.error("Error fetching wine details:", error);
-            alert("Error fetching wine details: " + error);
-        }
-    });
-});
-
-// Function to handle submit button click inside the edit wine modal
-$(document).on("click", "#submitEditWine", function(event) {
-    event.preventDefault(); // Prevent default form submission
-    let wineId = $(this).data('id'); // This line might be causing the issue
-    
-    // Get updated wine information from the modal fields
-    let updatedWine = {
-        name: $('#editName').val(),
-        grapes: $('#editGrapes').val(),
-        country: $('#editCountry').val(),
-        year: $('#editYear').val(),
-        color: $('#editColor').val(),
-        winery: $('#editWinery').val(),
-        region: $('#editRegion').val(),
-        pictureFile: $('#editPicture')[0].files[0]
-    };
-    
-    // Send AJAX request to update the wine
-    $.ajax({
-        type: "PUT",
-        url: rootURL + "/wines/" + wineId,
-        contentType: false, // Set contentType to false when using FormData
-        processData: false, // Set processData to false when using FormData
-        data: updatedWine,
-        success: function(data) {
-            console.log("Wine updated successfully:", data);
-            $('#editWineModal').modal('hide'); // Hide the edit modal
-            findAll(); // Refresh wine list or perform necessary updates
-        },
-        error: function(xhr, status, error) {
-            console.error("Error updating wine:", error);
-            alert("Error updating wine: " + error);
-        }
-    });
-});
-*/
-
 
 // Function to handle submit button click inside the edit wine modal
 $(document).on("click", ".editButton", function(event) {
@@ -526,101 +471,6 @@ $(document).on("click", ".editButton", function(event) {
         }
     });
 });
-/*
-// Function to handle submit button click inside the edit wine modal
-$(document).on("click", "#submitEditWine", function(event) {
-    event.preventDefault(); // Prevent default form submission
-    
-    // Retrieve wine ID from modal data attribute
-    let wineId = $('#editWineModal').data('wineId');
-    
-    // Get updated wine information from the modal fields
-    let updatedWine = {
-        name: $('#editName').val(),
-        grapes: $('#editGrapes').val(),
-        country: $('#editCountry').val(),
-        year: $('#editYear').val(),
-        color: $('#editColor').val(),
-        winery: $('#editWinery').val(),
-        region: $('#editRegion').val(),
-        pictureFile: $('#editPicture')[0].files[0]
-    };
-    
-    // Send AJAX request to update the wine
-    $.ajax({
-        type: "PUT",
-        url: rootURL + "/wines/" + wineId,
-        contentType: false, // Set contentType to false when using FormData
-        processData: false, // Set processData to false when using FormData
-        data: updatedWine,
-        success: function(data) {
-            console.log("Wine updated successfully:", data);
-            $('#editWineModal').modal('hide'); // Hide the edit modal
-            findAll(); // Refresh wine list or perform necessary updates
-        },
-        error: function(xhr, status, error) {
-            console.error("Error updating wine:", error);
-            alert("Error updating wine: " + error);
-        }
-    });
-});
-*/
-
-/*// Function to handle submit button click inside the edit wine modal
-$(document).on("click", "#submitEditWine", function(event) {
-    event.preventDefault(); // Prevent default form submission
-    
-    // Retrieve wine ID from modal data attribute
-    let wineId = $('#editWineModal').data('wineId');
-    
-    // Get updated wine information from the modal fields
-    let updatedWine = {
-        name: $('#editName').val(),
-        grapes: $('#editGrapes').val(),
-        country: $('#editCountry').val(),
-        year: $('#editYear').val(),
-        color: $('#editColor').val(),
-        winery: $('#editWinery').val(),
-        region: $('#editRegion').val(),
-        pictureFile: $('#editPicture')[0].files[0]
-    };
-    
-    var updatedWine = new FormData(); // Use FormData for handling file uploads
-	    updatedWine.append('editName', $('#editName').val());
-	    updatedWine.append('editGrapes', $('#editGrapes').val());
-	    updatedWine.append('editCountry', $('#editCountry').val());
-	    updatedWine.append('editYear', $('#editYear').val());
-	    updatedWine.append('editColor', $('#editColor').val());
-	    updatedWine.append('editWinery', $('#editWinery').val());
-	    updatedWine.append('editRegion', $('#editRegion').val());
-//	    updatedWine.append('editPictureFile', $('#editPicture')[0].files[0]); // Append the picture file to the form data
-	
-		var pictureFile = $('#editPicture')[0].files[0];
-		if (pictureFile) {
-		    updatedWine.append('editPictureFile', pictureFile);
-		}	
-	console.log(updatedWine);
-    
-    // Send AJAX request to update the wine
-    $.ajax({
-        type: "PUT",
-        url: rootURL + "/wines/" + wineId,
-        contentType: "application/json", // Set contentType to false when using FormData
-        processData: false, // Set processData to false when using FormData
-        data: updatedWine,
-        success: function(data) {
-            console.log("Wine updated successfully:", data);
-            console.log("AJAX response:", data); // Log the entire response object
-            $('#editWineModal').modal('hide'); // Hide the edit modal
-            findAll(); // Refresh wine list or perform necessary updates
-        },
-        error: function(xhr, status, error) {
-            console.error("Error updating wine:", error);
-            alert("Error updating wine: " + error);
-        }
-    });
-});*/
-
 
 // Function to handle image upload
 function uploadImage(file) {
