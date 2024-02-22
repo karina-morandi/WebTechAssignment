@@ -65,37 +65,109 @@ $('#listView, #gridView').on('change', function() {
     renderContent(); // Render content based on the current view type
 });
 
-
 var renderList = function() {
-    $('.details').remove();
+    $('#winesContent').empty(); // Clear previous content
+    var table = $('<table>').addClass('table');
+    var header = $('<thead>').html('<tr><th>Winery</th><th>Name</th><th>Country</th><th>Edit</th></tr>');
+    var tbody = $('<tbody>');
+    $('#winesContent').append(table.append(header).append(tbody));
+
     var list = wineData == null ? [] : (wineData instanceof Array ? wineData : [wineData]);
     $.each(list, function(index, wine){
-        var htmlStr = '<div class="details col-sm-12 mb-3">';
-        htmlStr += '<h1>' + wine.winery + '</h1>';
-        htmlStr += '<p><b>' + wine.name + '</b></p>';
-        htmlStr += '<p>' + wine.country + '</p>';
-       // htmlStr += '<button type="button" class="infoButton btn btn-primary" data-id="' + wine.id + '">More Details</button>';
-        htmlStr += '<button type="button" class="editButton btn btn-secondary" data-id="' + wine.id + '">Edit</button>'; // Add edit button
-        $('#winesContent').append(htmlStr);
+        var row = $('<tr>');
+        row.append('<td>' + wine.winery + '</td>');
+        row.append('<td>' + wine.name + '</td>');
+        row.append('<td>' + wine.country + '</td>');
+
+        var editCell = $('<td>'); // Create a new cell for the edit button
+        var editBtn = $('<button>').attr('type', 'button').addClass('editButton btn btn-secondary').attr('data-id', wine.id).text('Edit');
+        editCell.append(editBtn); // Append the edit button to the cell
+        row.append(editCell); // Append the cell to the row
+
+        tbody.append(row); // Append the row to the tbody
     });
 }
 
 var renderGrid = function() {
-    $('.details').remove();
+    $('#winesContent').empty(); // Clear previous content
     var list = wineData == null ? [] : (wineData instanceof Array ? wineData : [wineData]);
-    $.each(list, function(index, wine){
-        var htmlStr = '<div class="details col-sm-4 text-center p-3">';
-        var image = "../images/"+wine.picture;
+
+    // Iterate over the wine list
+    for (var i = 0; i < list.length; i++) {
+        var wine = list[i];
         
-        htmlStr += '<h1>' + wine.winery + '</h1>';
-		htmlStr += '<img src="' + image + '" class=displayCenter>';
-        htmlStr += '<p><b>' + wine.name + '</b></p>';
-        htmlStr += '<p>' + wine.country + '</p>';
-       // htmlStr += '<button type="button" class="infoButton btn btn-primary" data-id="' + wine.id + '">More Details</button>';
-        htmlStr += '<button type="button" class="editButton btn btn-secondary" data-id="' + wine.id + '">Edit</button>'; // Add edit button
-        $('#winesContent').append(htmlStr);
-    });
+        // Create a new row for every third wine or for the last wine
+        if (i % 3 === 0 || i === list.length - 1) {
+            var row = $('<div>').addClass('row');
+            $('#winesContent').append(row);
+        }
+        
+        // Create a column for the wine
+        var col = $('<div>').addClass('col-sm-4 text-center p-3 wine-card');
+        
+        // Wine Name
+        var wineName = $('<h3>').addClass('wine-name').text(wine.name);
+        col.append(wineName);
+        
+        // Image Container
+        var imageContainer = $('<div>').addClass('image-container');
+        var image = "../images/" + wine.picture;
+        var img = $('<img>').attr('src', image).addClass('wine-image').attr('alt', wine.name);
+        imageContainer.append(img);
+        col.append(imageContainer);
+        
+        // Winery
+        var winery = $('<p>').addClass('winery').text('Winery: ' + wine.winery);
+        col.append(winery);
+        
+        // Country
+        var country = $('<p>').addClass('country').text('Country: ' + wine.country);
+        col.append(country);
+        
+        // Edit Button
+        var editBtn = $('<button>').attr('type', 'button').addClass('editButton btn btn-secondary').attr('data-id', wine.id).text('Edit');
+        col.append(editBtn);
+        
+        // Append the column to the current row
+        row.append(col);
+    }
 }
+
+/*var renderGrid = function() {
+    $('#winesContent').empty(); // Clear previous content
+    var list = wineData == null ? [] : (wineData instanceof Array ? wineData : [wineData]);
+
+    $.each(list, function(index, wine){
+        var col = $('<div>').addClass('col-sm-4 text-center p-3 wine-card');
+
+        // Wine Name
+        var wineName = $('<h3>').addClass('wine-name').text(wine.name);
+        col.append(wineName);
+
+        // Image Container
+        var imageContainer = $('<div>').addClass('image-container');
+        var image = "../images/" + wine.picture;
+        var img = $('<img>').attr('src', image).addClass('wine-image').attr('alt', wine.name);
+        imageContainer.append(img);
+        col.append(imageContainer);
+
+        // Winery
+        var winery = $('<p>').addClass('winery').text('Winery: ' + wine.winery);
+        col.append(winery);
+
+        // Country
+        var country = $('<p>').addClass('country').text('Country: ' + wine.country);
+        col.append(country);
+
+        // Edit Button
+        var editBtn = $('<button>').attr('type', 'button').addClass('editButton btn btn-secondary').attr('data-id', wine.id).text('Edit');
+        col.append(editBtn);
+
+        // Append column to the wines content
+        $('#winesContent').append(col);
+    });
+}*/
+
 
 //When DOM is ready
 $(document).ready(function () {

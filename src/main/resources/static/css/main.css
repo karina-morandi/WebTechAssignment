@@ -38,12 +38,136 @@
     border-color: black;
 }
 
+/* .homePage {
+    font-family: Arial, sans-serif;
+    font-size: 70px;
+    background-image: url('../images/Backg.png'); Replace 'static/images/backg.jpeg' with the path to your image
+    background-size: cover;
+    background-size: cover;
+    background-position: center; 
+    color: white; Set text color to contrast with background
+    padding: 210px 100px; Add padding to ensure content is visible
+} */
+
 .homePage {
     font-family: Arial, sans-serif;
     font-size: 70px;
-    background-image: url('../images/backg.jpeg'); /* Replace 'static/images/backg.jpeg' with the path to your image */
-  /*   background-size: cover;
-    background-position: center; */ 
-    color: white; /* Set text color to contrast with background */
-    padding: 50px 0; /* Add padding to ensure content is visible */
+    background-image: url('../images/Backg.png');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 250px 100px;
+    position: relative; /* Add position relative to make absolute positioning work */
 }
+
+/* Adjustments to make the background cover the whole screen */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.homePage {
+    height: 100%;
+}
+
+/* Centering content vertically */
+.homePage .row {
+    height: 100%;
+    display: flex;
+}
+
+/* Centering content horizontally */
+.homePage .col-md-8 {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Positioning the login button */
+#loginButtonHome {
+    position: absolute;
+    top: 2px; /* Adjust as needed */
+    right: 2px; /* Adjust as needed */
+}
+
+.details {
+    position: relative;
+}
+
+.displayCenter {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 
+.editButton {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+} */
+
+.wine-row td {
+    width: 33.33%; /* Each column takes up one-third of the table width */
+}
+
+.col-sm-4 {
+    width: 33.33%; /* Each column takes up one-third of the row width */
+    float: left; /* Float columns left to create a grid layout */
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.wine-name {
+    font-size: 1.5em;
+    color: black;
+    margin-bottom: 10px; /* Adjust spacing as needed */
+}
+
+.wine-info {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* .wine-card {
+	height: 100%; Set the height of the wine card to 100%
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+ */
+.image-container {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 10px; /* Adjust spacing as needed */
+}
+
+.wine-image {
+    width: 130px;
+    height: 500px;
+/*      object-fit: cover; */
+ }
+/*  
+ .wine-image {
+    width: 100%;
+    height: auto; Maintain aspect ratio
+} */
+
+.winery,
+.country {
+    font-size: 1em;
+    color: black;
+    margin-bottom: 5px; /* Adjust spacing as needed */
+}
+
+.editButton {
+    margin-top: 10px; /* Adjust spacing as needed */
+    color: black; /* Ensure button text color is black */
+}
+

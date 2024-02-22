@@ -24,7 +24,25 @@
 
 <body>
 
+
 <!-- HOME PAGE -->
+<div id="homePage" class="container-fluid homePage">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>Welcome to the Wine Management System</h2>
+            <p>Wines</p>
+            <p>World</p>
+        </div>
+        <div class="col-md-4 text-right">
+            <!-- Move the login button to the top right corner -->
+            <button type="button" class="btn btn-primary" id="loginButtonHome">Login</button>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- <!-- HOME PAGE
 <div id="homePage" class="container-fluid homePage">
     <div class="row">
         <div class="col-md-8">
@@ -35,14 +53,14 @@
             <p>
                 World
             </p>
-            <!--  Login button! -->
+             Login button!
             <button type="button" class="btn btn-primary" id="loginButtonHome">Login</button>
         </div>
         <div class="col-md-4">
-            <!-- Add any additional content or features here -->
+            Add any additional content or features here
         </div>
     </div>
-</div>
+</div> --> -->
 
 <!-- LOGIN FORM -->
 <div id="loginFormDiv" style="display:none;" class="row justify-content-center">
@@ -143,8 +161,19 @@
 		</div>
 	  </div>
 	  <div class="container theScroll">
-	      <div id="winesContent" class="row">
-	      </div>
+	      <table class="table" id="winesTable">
+        <thead>
+           <!--  <tr>
+                <th>Winery</th>
+                <th>Name</th>
+                <th>Country</th>
+                <th>Edit</th>
+            </tr> -->
+        </thead>
+        <tbody id="winesContent">
+            <!-- Wine entries will be dynamically added here -->
+        </tbody>
+    </table>
 	  </div>
 	</nav>
 	
