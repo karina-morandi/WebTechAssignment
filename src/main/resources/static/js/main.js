@@ -301,6 +301,7 @@ $(document).ready(function(){
 	        },
 	        error: function(xhr, status, error) {
 	            console.error("Error adding wine:", error);
+	            alert("Error creating wine!");
 	        }
 	    });
     });

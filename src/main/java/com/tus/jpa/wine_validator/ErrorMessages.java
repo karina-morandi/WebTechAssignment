@@ -2,7 +2,7 @@ package com.tus.jpa.wine_validator;
 
 public enum ErrorMessages {
 	EMPTY_FIELDS("One or more empty fields"),
-	ALREADY_EXISTS("Wine with given name and year already exists"),
+	ALREADY_EXISTS("Wine with given name already exists"),
 	INVALID_COUNTRY("Not accepting more wines from that country"),
 	BAD_GRAPES("Type of grape not acceptable");
 	

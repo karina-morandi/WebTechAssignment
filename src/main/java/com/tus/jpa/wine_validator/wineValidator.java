@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,25 +30,52 @@ public class wineValidator {
 	public void validateWine(Wines wine) throws WineValidationException {
 		this.wine = wine;
 		checkEmptyFields(wine);
-//		checkForVintage(wine);
+		checkExistingWine(wine);
+//		savePicture(wine.getPicture());
 	}
 	
 
 	private void checkEmptyFields(Wines wine) throws WineValidationException {
-		if ((wine.getName().length() == 0) || (wine.getCountry().length() == 0) || (wine.getYear() == 0)|| (wine.getColor().length() == 0)
-				|| (wine.getGrapes().length() == 0)|| (wine.getWinery().length() == 0) || (wine.getRegion().length() == 0) || (wine.getPicture().isEmpty())) {
-			throw new WineValidationException(ErrorMessages.EMPTY_FIELDS.getMsg());
+		if (wine.getName().isEmpty()) {
+	        throw new WineValidationException("Name field is empty");
+	    }
+	    if (wine.getCountry().isEmpty()) {
+	        throw new WineValidationException("Country field is empty");
+	    }
+	    
+	    if (wine.getYear() == 0) {
+	        throw new WineValidationException("Year field is empty");
+	    }
+	    if (wine.getColor().isEmpty()) {
+	        throw new WineValidationException("Color field is empty");
+	    }
+	    if (wine.getGrapes().isEmpty()) {
+	        throw new WineValidationException("Grapes field is empty");
+	    }
+	    if (wine.getWinery().isEmpty()) {
+	        throw new WineValidationException("Winery field is empty");
+	    }
+	    if (wine.getRegion().isEmpty()) {
+	        throw new WineValidationException("Region field is empty");
+	    }
+	    if (wine.getPicture().isEmpty()) {
+	        throw new WineValidationException("Picture field is empty");
+	    }
+	    
+//		if ((wine.getName().length() == 0) || (wine.getCountry().length() == 0) || (wine.getYear() == 0)|| (wine.getColor().length() == 0)
+//				|| (wine.getGrapes().length() == 0)|| (wine.getWinery().length() == 0) || (wine.getRegion().length() == 0) || (wine.getPicture().isEmpty())) {
+//	        throw new WineValidationException("One or more empty fields!");
+//		}
+	}
+	
+	 //if wine with name and year already exists
+	private void checkExistingWine(Wines wine) throws WineValidationException {
+		this.wine = wine;
+		List<Wines> savedWine = wineRepo.findByName(wine.getName());
+		if (savedWine.size() > 0){
+			throw new WineValidationException(ErrorMessages.ALREADY_EXISTS.getMsg());
 		}
 	}
-
-//	 //if wine with name and year already exists
-//	private void checkForVintage(Wines wine) throws WineValidationException {
-//		this.wine = wine;
-//		Optional<Wines> savedWine = wineRepo.findByNameAndYear(wine.getName(), wine.getYear());
-//		if (savedWine.isPresent()){
-//			throw new WineValidationException(ErrorMessages.ALREADY_EXISTS.getMsg());
-//		}
-//	}
 	
 	private String savePicture(MultipartFile pictureFile) throws WineValidationException {
 	    // Get the filename

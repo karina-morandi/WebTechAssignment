@@ -28,15 +28,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tus.jpa.exceptions.WineValidationException;
 import com.tus.jpa.dto.Wines;
 import com.tus.jpa.exceptions.WineException;
 import com.tus.jpa.repositories.WineRepository;
 import com.tus.jpa.wine_validator.ErrorMessage;
+import com.tus.jpa.wine_validator.ErrorMessages;
 import com.tus.jpa.wine_validator.wineValidator;
 
-
 @RestController
-public class AssignmentController {
+public class WinesController {
 
 	@Autowired
 	WineRepository wineRepository;
@@ -46,30 +47,19 @@ public class AssignmentController {
 	
 	private static final String UPLOAD_DIR = "src/main/resources/static/images/";
 	
-//	@GetMapping("/")
-//    public String home() {
-//        return "index"; // Return the name of the HTML file for the home page
-//    }
-	
 	@GetMapping("/wines")
 	public Iterable<Wines> getAllWines(){
 		return wineRepository.findAll();
 	}
-	
-//	@GetMapping("/wines/{id}")
-//	public Optional<Wines> getWineById(@PathVariable(value = "id") Long wineId)throws ResourceNotFoundException{
-//		Optional<Wines> wine = wineRepository.findById(wineId);
-//		if(wine.isPresent())
-//			return wine;
-//		else
-//			throw new ResourceNotFoundException("No wine with id: "+wineId );
-//			
-//	}
-	
+
 	@PostMapping("/wines/createNewWine")
-	public ResponseEntity<?> createWine(@Valid @RequestParam("name") String name, @RequestParam("grapes") String grapes,@RequestParam("country") String country, @RequestParam("year") int year, @RequestParam("color") String color, @RequestParam("winery") String winery, @RequestParam("region") String region, @RequestPart("pictureFile") MultipartFile pictureFile) throws IOException {
+	public ResponseEntity<?> createWine(@Valid @RequestParam("name") String name, @RequestParam("grapes") String grapes,@RequestParam("country") String country, @RequestParam("year") int year, @RequestParam("color") String color, @RequestParam("winery") String winery, @RequestParam("region") String region, @RequestPart("pictureFile") MultipartFile pictureFile) throws WineValidationException, IOException {
 //	public ResponseEntity createWine(@Valid @RequestBody Wines wine, @RequestPart("pictureFile") MultipartFile pictureFile) {
 		try {	
+			List<Wines> existingWines = wineRepository.findByName(name);
+	        if (!existingWines.isEmpty()) {
+	            throw new WineValidationException(ErrorMessages.ALREADY_EXISTS.getMsg());
+	        }
 			Wines wine = new Wines();
 			wine.setName(name);
 			wine.setColor(color);
@@ -84,9 +74,8 @@ public class AssignmentController {
 			wineValidator.validateWine(wine);
 			Wines savedWine=wineRepository.save(wine);
 			return ResponseEntity.status(HttpStatus.CREATED).body(savedWine);
-		} catch(WineException e) {
-			ErrorMessage errorMessage=new ErrorMessage(e.getMessage());
-			return ResponseEntity.badRequest().body(errorMessage);
+		} catch(WineValidationException  e) {
+	        throw e;
 		}
 	}
 	
@@ -153,8 +142,10 @@ public class AssignmentController {
 	            return ResponseEntity.ok().body("Wine(s) with name " + name + " deleted successfully.");
 	        }
 	    } catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting wine(s) with name " + name + ".");
-	    }
+            System.out.println(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error deleting wine(s) with name " + name + ".");
+        }
 	}
 	
 	@GetMapping("/wines/{id}")
