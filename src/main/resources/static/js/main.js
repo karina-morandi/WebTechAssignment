@@ -117,17 +117,17 @@ var renderGrid = function() {
         
         // Image Container
         var imageContainer = $('<div>').addClass('image-container');
-		var image = "/images/" + wine.picture;
+		var image = "../images/" + wine.picture;
         var img = $('<img>').attr('src', image).addClass('wine-image').attr('alt', wine.name);
         imageContainer.append(img);
         col.append(imageContainer);
         
         // Winery
-        var winery = $('<p>').addClass('winery').text('Winery: ' + wine.winery);
+        var winery = $('<p>').addClass('winery').text(wine.winery);
         col.append(winery);
         
         // Country
-        var country = $('<p>').addClass('country').text('Country: ' + wine.country);
+        var country = $('<p>').addClass('country').text(wine.country);
         col.append(country);
         
         // Edit Button
@@ -393,7 +393,7 @@ $(document).ready(function() {
 	            
 	            // Image Container
 	            var imageContainer = $('<div>').addClass('image-container');
-				var image = rootURL + "/images/" + wine.picture;
+				var image = rootURL + "../images/" + wine.picture;
 	            var img = $('<img>').attr('src', image).addClass('wine-image').attr('alt', wine.name);
 	            imageContainer.append(img);
 	            col.append(imageContainer);
@@ -447,7 +447,7 @@ $(document).on("click", ".editButton", function(event) {
             $('#editWinery').val(data.winery);
             $('#editRegion').val(data.region);
             // Assuming you have a picture preview element in your modal
-            $('#editPicturePreview').attr('src', rootURL + '/images/' + data.picture);
+            $('#editPicturePreview').attr('src', rootURL + '../images/' + data.picture);
 
             // Store wine ID in modal data attribute
             $('#editWineModal').data('wineId', wineId);

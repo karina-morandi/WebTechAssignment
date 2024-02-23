@@ -105,46 +105,42 @@ public class WinesController {
 	    }
 	}
 	
+//	private String savePicture(MultipartFile pictureFile) throws WineValidationException {
+//	    // Get the filename
+//	    String fileName = StringUtils.cleanPath(pictureFile.getOriginalFilename());
+//
+//	    // Create the directory if it doesn't exist
+//	    String rootDirectory = servletContext.getRealPath(UPLOAD_DIR);
+//	    File directory = new File(rootDirectory);
+//	    if (!directory.exists()) {
+//	        directory.mkdirs();
+//	    }
+//
+//	    // Create the path where the file will be saved
+//	    Path uploadPath = Paths.get(rootDirectory, fileName);
+//
+//	    // Copy the file to the upload path
+//	    try {
+//	        Files.copy(pictureFile.getInputStream(), uploadPath);
+//	    } catch (IOException e) {
+//	        // Handle the case where the image cannot be saved
+//	        throw new WineValidationException("Failed to save picture: " + e.getMessage());
+//	    }
+//
+//	    // Return the path where the file was saved
+//	    return fileName;
+//	}
+
 	private String savePicture(MultipartFile pictureFile) throws WineValidationException {
-	    // Get the filename
-	    String fileName = StringUtils.cleanPath(pictureFile.getOriginalFilename());
-
-	    // Create the directory if it doesn't exist
-	    String rootDirectory = servletContext.getRealPath(UPLOAD_DIR);
-	    File directory = new File(rootDirectory);
-	    if (!directory.exists()) {
-	        directory.mkdirs();
-	    }
-
-	    // Create the path where the file will be saved
-	    Path uploadPath = Paths.get(rootDirectory, fileName);
-
-	    // Copy the file to the upload path
 	    try {
-	        Files.copy(pictureFile.getInputStream(), uploadPath);
+	        String fileName = StringUtils.cleanPath(pictureFile.getOriginalFilename());
+	        Path uploadPath = Paths.get("src", "main", "resources", "static", "images", fileName);
+	        Files.copy(pictureFile.getInputStream(), uploadPath, StandardCopyOption.REPLACE_EXISTING);
+	        return fileName;
 	    } catch (IOException e) {
-	        // Handle the case where the image cannot be saved
 	        throw new WineValidationException("Failed to save picture: " + e.getMessage());
 	    }
-
-	    // Return the path where the file was saved
-	    return fileName;
 	}
-
-//    private String savePicture(MultipartFile pictureFile) throws IOException {
-//        // Define the directory where you want to save the uploaded files
-//        String uploadDir = "src/main/resources/static/images/";
-//
-//        // Create a unique file name to prevent overwriting existing files
-//        String fileName = UUID.randomUUID().toString() + "_" + pictureFile.getOriginalFilename();
-//
-//        // Save the file to the upload directory
-//        Path filePath = Paths.get(uploadDir, fileName);
-//        Files.copy(pictureFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-//
-//        // Return the file path or URL where the file is stored
-//        return fileName;
-//    }	
 	
 	@DeleteMapping("/wines/{name}")
 	public ResponseEntity<String> deleteWineByName(@PathVariable("name") String name) {
