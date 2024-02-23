@@ -105,31 +105,6 @@ public class WinesController {
         return fileName;
     }	
 	
-//	private String savePicture(MultipartFile pictureFile) {
-//		// Get the filename
-//	    String fileName = StringUtils.cleanPath(pictureFile.getOriginalFilename());
-//	    
-//	    // Create the directory if it doesn't exist
-//	    File directory = new File(UPLOAD_DIR);
-//	    if (!directory.exists()) {
-//	        directory.mkdirs();
-//	    }
-//
-//	    // Create the path where the file will be saved
-//	    Path uploadPath = Paths.get(UPLOAD_DIR + fileName);
-//
-//	    // Copy the file to the upload path
-//	    try {
-//			Files.copy(pictureFile.getInputStream(), uploadPath);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//	    // Return the path where the file was saved
-//	    return fileName;
-//	}
-	
 	@DeleteMapping("/wines/{name}")
 	public ResponseEntity<String> deleteWineByName(@PathVariable("name") String name) {
 		try {
@@ -157,26 +132,6 @@ public class WinesController {
 	    else
 	        return ResponseEntity.notFound().build();
 	}
-
-//	@PutMapping("/wines/{id}")
-//	public ResponseEntity<?> updateWine(@PathVariable("id") Long id, @RequestBody Wines updatedWine) {
-//	    try {
-//	        Wines existingWine = wineRepository.findById(id).orElseThrow(() -> new WineValidationException("Wine not found!"));
-//	        existingWine.setName(updatedWine.getName());
-//	        existingWine.setGrapes(updatedWine.getGrapes());
-//	        existingWine.setCountry(updatedWine.getCountry());
-//	        existingWine.setYear(updatedWine.getYear());
-//	        existingWine.setColor(updatedWine.getColor());
-//	        existingWine.setWinery(updatedWine.getWinery());
-//	        existingWine.setRegion(updatedWine.getRegion());
-//	     
-//	        Wines savedWine = wineRepository.save(existingWine);
-//	        return ResponseEntity.ok(savedWine);
-//	    } catch (Exception e) {
-//            System.out.println(e);
-//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating wine: " + e.getMessage());
-//	    }
-//	}
 	
 	@PutMapping("/wines/{id}")
 	public ResponseEntity<?> updateWine(Long id, @Valid @RequestBody Wines wine) throws WineValidationException, ResourceNotFoundException {
@@ -203,16 +158,6 @@ public class WinesController {
 	    // Return response entity
 	    return ResponseEntity.ok(updatedWine);
 	}
-	
-	  
-//	        if (pictureFile != null && !pictureFile.isEmpty()) {
-//	            existingWine.setPicture(savePicture(pictureFile));}
-//	        Wines updatedWine = wineRepository.save(existingWine);
-//	        System.out.print("Java OK: " + updatedWine);
-//	        return ResponseEntity.ok(updatedWine);
-//	    } else {
-//	        throw new ResourceNotFoundException("No wine with id: " + id);
-//	    }
 	
 	@RequestMapping("/wines/name/{name}")
 	public ResponseEntity<List<Wines>> getWineByName(@PathVariable("name") String name){

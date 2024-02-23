@@ -259,6 +259,37 @@ import org.junit.jupiter.api.extension.ExtendWith;
 	    assertEquals("Wine not found with id: " + wineOne.getId(), exception.getMessage());
 	}
 	
+	@Test
+    void getWineByName_WithExistingName_ReturnsWines() {
+        // Mock behavior of wineRepository.findByNameContaining
+        List<Wines> wines = new ArrayList<>();
+        Wines wine = new Wines();
+        wine.setName("Wine");
+        wines.add(wine);
+        when(wineRepo.findByNameContaining("Wine")).thenReturn(wines);
+
+        // Call the method under test
+        ResponseEntity<List<Wines>> response = winesCont.getWineByName("Wine");
+
+        // Assert the response
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(wines, response.getBody());
+    }
+
+    @Test
+    void getWineByName_WithNonExistingName_ReturnsNoContent() {
+        // Mock behavior of wineRepository.findByNameContaining
+        List<Wines> wines = new ArrayList<>();
+        when(wineRepo.findByNameContaining(anyString())).thenReturn(wines);
+
+        // Call the method under test
+        ResponseEntity<List<Wines>> response = winesCont.getWineByName("NonExistingWine");
+
+        // Assert the response
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertEquals(wines, response.getBody());
+    }
+	
 	
 	Wines buildWine() {
 		Wines wine = new Wines();
