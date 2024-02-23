@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tus.jpa.controllers.WinesController;
 import com.tus.jpa.dto.Wines;
+import com.tus.jpa.exceptions.ResourceNotFoundException;
 import com.tus.jpa.exceptions.WineValidationException;
 import com.tus.jpa.repositories.WineRepository;
 import com.tus.jpa.wine_validator.ErrorMessage;
@@ -178,40 +179,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 		assertEquals(HttpStatus.NOT_FOUND,response.getStatusCode());
 		assertNull(response.getBody());
     }  
-	
 
-//	@Test 
-//	void deleteWineOK() throws WineValidationException, IOException {
-//	    // Prepare test data for wine creation
-//	    String name = "NEW Wine";
-//	    String grapes = "Malbec";
-//	    String country = "Australia";
-//	    int year = 2020;
-//	    String color = "Red";
-//	    String winery = "New Winery";
-//	    String region = "Henty";
-//	    MultipartFile pictureFile = mock(MultipartFile.class);
-//	    when(pictureFile.getInputStream()).thenReturn(mock(InputStream.class));
-//
-//	    // Call the createWine method to save the wine
-//	    ResponseEntity<?> creationResponse = winesCont.createWine(name, grapes, country, year, color, winery, region, pictureFile);
-//
-//	    // Verify that wine was created successfully
-//	    assertEquals(HttpStatus.CREATED, creationResponse.getStatusCode());
-//	    Wines createdWine = (Wines) creationResponse.getBody();
-//	    assertNotNull(createdWine);
-//
-//	    // Now, attempt to delete the wine
-//	    ResponseEntity<String> deletionResponse = winesCont.deleteWineByName(name);
-//
-//	    // Assert the response status code
-//	    assertEquals(HttpStatus.NO_CONTENT, deletionResponse.getStatusCode());
-//
-//	    // Verify that the wine was deleted by checking if it's no longer present in the repository
-//	    List<Wines> foundWines = wineRepo.findByName(name);
-//	    assertTrue(foundWines.isEmpty(), "The wine should have been deleted from the repository.");
-//	}
-	
 	@Test
 	void deleteWineOK() {
 	    // Arrange
@@ -233,6 +201,64 @@ import org.junit.jupiter.api.extension.ExtendWith;
 	    // Verify that the delete method of WineRepository is called
 	    verify(wineRepo, times(1)).delete(wineToDelete);
 	}
+	
+	@Test
+	void deleteWineNotFound() throws WineValidationException {
+	    String wineName = "TestWine";
+
+	    ResponseEntity<String> responseEntity = winesCont.deleteWineByName(wineName);
+	    assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+	    assertEquals("No wine with name: " + wineName, responseEntity.getBody());
+	}
+	
+	@Test
+	void updateWineOK() throws WineValidationException, ResourceNotFoundException {
+	    // Arrange
+	    Wines wineOne = buildWine(); // Initialize a sample wine
+	    wineOne.setId(1L); // Set the ID of the wine
+	    wineOne.setName("Testing Wine"); // Change the name to "Testing Wine"
+
+	    // Mock the behavior of wineRepo.findById() to return an Optional containing the wine
+	    when(wineRepo.findById(1L)).thenReturn(Optional.of(wineOne));
+
+	    // Mock the behavior of wineRepo.save() to return the updated wine
+	    when(wineRepo.save(wineOne)).thenReturn(wineOne);
+
+	    // Act
+	    ResponseEntity<?> response = winesCont.updateWine(1L, wineOne);
+
+	    // Assert
+	    assertEquals(HttpStatus.OK, response.getStatusCode()); // Verify HTTP status code
+	    assertEquals(wineOne, response.getBody()); // Verify that the response body contains the updated wine
+	}
+	
+
+	
+	@Test
+	void updateWineValidationException() throws WineValidationException, ResourceNotFoundException {
+	    // Prepare test data
+	    Wines wineOne = buildWine(); // Create a sample wine object
+	    wineOne.setId(1L); // Set the ID of the wine
+	
+	    // Mock the behavior of wineValidator to throw WineValidationException
+	    doThrow(new WineValidationException("Validation failed")).when(wineValidator).validateWine(wineOne);
+	
+	    // Call the updateWine method and assert the thrown exception
+	    WineValidationException exception = assertThrows(WineValidationException.class, () -> winesCont.updateWine(1L, wineOne));
+	    assertEquals("Validation failed", exception.getMessage());
+	}
+	
+	@Test
+	void updateWineResourceNotFoundException() throws WineValidationException, ResourceNotFoundException {
+	    // Prepare test data
+	    Wines wineOne = buildWine();
+	    wineOne.setId(1L);
+
+	    // Perform the test and assert the thrown exception
+	    ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> winesCont.updateWine(1L, wineOne));
+	    assertEquals("Wine not found with id: " + wineOne.getId(), exception.getMessage());
+	}
+	
 	
 	Wines buildWine() {
 		Wines wine = new Wines();

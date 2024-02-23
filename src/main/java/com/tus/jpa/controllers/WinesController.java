@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tus.jpa.exceptions.WineValidationException;
 import com.tus.jpa.dto.Wines;
+import com.tus.jpa.exceptions.ResourceNotFoundException;
 import com.tus.jpa.exceptions.WineException;
 import com.tus.jpa.repositories.WineRepository;
 import com.tus.jpa.wine_validator.ErrorMessage;
@@ -157,25 +158,52 @@ public class WinesController {
 	        return ResponseEntity.notFound().build();
 	}
 
+//	@PutMapping("/wines/{id}")
+//	public ResponseEntity<?> updateWine(@PathVariable("id") Long id, @RequestBody Wines updatedWine) {
+//	    try {
+//	        Wines existingWine = wineRepository.findById(id).orElseThrow(() -> new WineValidationException("Wine not found!"));
+//	        existingWine.setName(updatedWine.getName());
+//	        existingWine.setGrapes(updatedWine.getGrapes());
+//	        existingWine.setCountry(updatedWine.getCountry());
+//	        existingWine.setYear(updatedWine.getYear());
+//	        existingWine.setColor(updatedWine.getColor());
+//	        existingWine.setWinery(updatedWine.getWinery());
+//	        existingWine.setRegion(updatedWine.getRegion());
+//	     
+//	        Wines savedWine = wineRepository.save(existingWine);
+//	        return ResponseEntity.ok(savedWine);
+//	    } catch (Exception e) {
+//            System.out.println(e);
+//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating wine: " + e.getMessage());
+//	    }
+//	}
+	
 	@PutMapping("/wines/{id}")
-	public ResponseEntity<?> updateWine(@PathVariable("id") Long id, @RequestBody Wines updatedWine) {
-	    try {
-	        Wines existingWine = wineRepository.findById(id).orElseThrow(() -> new RuntimeException("Wine not found!"));
-	        existingWine.setName(updatedWine.getName());
-	        existingWine.setGrapes(updatedWine.getGrapes());
-	        existingWine.setCountry(updatedWine.getCountry());
-	        existingWine.setYear(updatedWine.getYear());
-	        existingWine.setColor(updatedWine.getColor());
-	        existingWine.setWinery(updatedWine.getWinery());
-	        existingWine.setRegion(updatedWine.getRegion());
-	     
-	        Wines savedWine = wineRepository.save(existingWine);
-	        return ResponseEntity.ok(savedWine);
-	    } catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating wine: " + e.getMessage());
+	public ResponseEntity<?> updateWine(Long id, @Valid @RequestBody Wines wine) throws WineValidationException, ResourceNotFoundException {
+	    // Validate the wine object
+	    wineValidator.validateWine(wine); // This may throw WineValidationException if validation fails
+	    
+	    // Update the wine in the repository
+	    Optional<Wines> existingWine = wineRepository.findById(id);
+	    if (!existingWine.isPresent()) {
+	        throw new ResourceNotFoundException("Wine not found with id: " + id);
 	    }
+
+	    Wines updatedWine = existingWine.get();
+	    updatedWine.setName(wine.getName());
+	    updatedWine.setGrapes(wine.getGrapes());
+	    updatedWine.setCountry(wine.getCountry());
+	    updatedWine.setYear(wine.getYear());
+	    updatedWine.setColor(wine.getColor());
+	    updatedWine.setWinery(wine.getWinery());
+	    updatedWine.setRegion(wine.getRegion());
+
+	    wineRepository.save(updatedWine);
+
+	    // Return response entity
+	    return ResponseEntity.ok(updatedWine);
 	}
-    
+	
 	  
 //	        if (pictureFile != null && !pictureFile.isEmpty()) {
 //	            existingWine.setPicture(savePicture(pictureFile));}
