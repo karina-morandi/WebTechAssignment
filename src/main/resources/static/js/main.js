@@ -233,6 +233,7 @@ $(document).ready(function () {
 	    
 	    if (password !== confirmpassword) {
 	        console.error("Passwords do not match");
+	        alert("Passwords don't match!")
 	        return;
 	    }
 	    
