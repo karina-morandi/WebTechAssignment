@@ -7,5 +7,6 @@ import com.tus.jpa.dto.Users;
 
 @Repository
 public interface UserRepository extends JpaRepository<Users,Long>{
+	
 	Users findByLogin(String login);
 }

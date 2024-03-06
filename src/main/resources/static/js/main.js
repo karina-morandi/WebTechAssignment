@@ -178,30 +178,38 @@ $(document).ready(function () {
 	    if (!login || !password) {
 	        console.error("Username or password cannot be empty");
 	        return;
-	    }
-	    
-	    let loginInfo = {
-			login: login,
-	        password: password,
 		}
 	
 	    // Send login credentials via AJAX
 	     $.ajax({
-	     type: "POST",
-	     url: rootURL + "/login?login=" + login + "&password=" + password,
-	  //   contentType: 'application/json',
-	//     data: JSON.stringify(loginInfo),
-	     success: function(data) {
-	             console.log("Login successful:", login, password);
-	             AdminDashboard();
-	             findAll();
-	     },
-	     error: function(xhr, status, error) {
-	         console.error("Login failed:", error);
-	         // Display appropriate error message to the user
-	         alert("Login failed: " + error);
-	     }
-	 });
+			 url: rootURL + "/login",
+		     type: 'POST',
+		     data: {
+				 login: login,
+				 password: password
+			 },
+		     /*contentType: 'application/json',
+		     data: JSON.stringify(loginInfo),*/
+		     dataType: 'json',
+   			 contentType: 'application/x-www-form-urlencoded; charset=UTF-8', // Set contentType to url-encoded
+		     success: function(data) {
+		             console.log("Login successful:", data);
+		              if (data === "ADMIN") {
+				        AdminDashboard(); // Redirect to the admin dashboard
+				        findAll();
+				    } else if (data === "CUSTOMER") {
+						HomePageDashboard();
+				    }
+				    else {
+						console.error("Invalid response from server:" + data);
+					}
+		     },
+		     error: function(xhr, status, error) {
+		         console.error("Login failed:", error);
+		         // Display appropriate error message to the user
+		         alert("Login failed: " + error);
+		     }
+		 });
 });
 
 	
@@ -225,8 +233,10 @@ $(document).ready(function () {
 	    console.log("Password:", password);
 	    let confirmpassword = $("#confirmpasswordReg").val();
 	    console.log("Confirm password:", confirmpassword);
+	    let role = $("#role").val();
+	    console.log("Role:", role);
 	    
-	    if (!login || !email || !password || !confirmpassword) {
+	    if (!login || !email || !password || !confirmpassword || !role) {
 	        console.error("All fields are required");
 	        return;
 	    }
@@ -241,6 +251,7 @@ $(document).ready(function () {
 	        login: login,
 	        email: email,
 	        password: password,
+	        role: role,
 	    };
 		    
 	    // Send registration data via AJAX
@@ -250,8 +261,16 @@ $(document).ready(function () {
 	        contentType: 'application/json',
 	        data: JSON.stringify(admin),
 	        success: function(data) {
-	            console.log("Registration successful:", login, email, password);
-	           	AdminDashboard();          
+	            console.log("Registration successful:", login, email, password, role);
+	           	if (data === "Admin registered successfully") {
+			        AdminDashboard(); // Redirect to the admin dashboard
+			        findAll();
+			    } else if (data === "Customer registered successfully") {
+			        HomePageDashboard(); // Redirect to the home page
+			    } else {
+			        console.error("Registration failed:", data);
+			        alert("Registration failed: " + data);
+			    }           
 	        },
 	        error: function(xhr, status, error) {
 	            console.error("Registration failed:", error);

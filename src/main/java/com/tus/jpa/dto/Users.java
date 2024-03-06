@@ -4,7 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name="Customers")
+@Table(name="Users")
 public class Users {
 
 	@Id
@@ -14,14 +14,34 @@ public class Users {
 	
 	@Column(nullable = false, unique = true, length = 45)
 	private String login;
-//	private String pword;
+	
+	@Column(nullable = false, unique = true, length = 45)
+	private String email;
+
 	@Column(nullable = false, length = 75)
 	private String password;
 	
-	public Users(String login, String password) {
+	@Column(name="role")
+	private String role;
+
+	public Users () {
+		
+	}
+
+	public Users(String login, String email, String password, String role) {
+		super();
 		this.login = login;
-//		this.pword = pword;
+		this.email = email;
 		this.password = password;
+		this.role = role;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getLogin() {
@@ -32,13 +52,13 @@ public class Users {
 		this.login = login;
 	}
 
-//	public String getPword() {
-//		return pword;
-//	}
-//
-//	public void setPword(String pword) {
-//		this.pword = pword;
-//	}
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
 	public String getPassword() {
 		return password;
@@ -48,9 +68,12 @@ public class Users {
 		this.password = password;
 	}
 
-	@Override
-	public String toString() {
-		return "Users [login=" + login + ", password=" + password + "]";
+	public String getRole() {
+		return role;
 	}
 
+	public void setRole(String role) {
+		this.role = role;
+	}
+	
 }

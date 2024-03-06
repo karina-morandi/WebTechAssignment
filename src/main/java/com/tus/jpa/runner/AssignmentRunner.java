@@ -4,26 +4,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-import com.tus.jpa.dto.Admin;
-import com.tus.jpa.repositories.AdminRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.tus.jpa.dto.Users;
+import com.tus.jpa.repositories.UserRepository;
 
 @Component
 public class AssignmentRunner implements ApplicationRunner {
 
-//	private static final String PWORD = "$2a$12$t0Urtv6ZcmtmQEAYKzm82.wgq2aZEGiUU6BtgzH266qQRQBfhWGR.";
+	private static final Logger logger = LoggerFactory.getLogger(AssignmentRunner.class);
+
+	private static final String PWORD = "$2a$12$t0Urtv6ZcmtmQEAYKzm82.wgq2aZEGiUU6BtgzH266qQRQBfhWGR.";
+	
+	public static final String GREEN = "\u001B[32m";
+	public static final String RED = "\u001B[31m";
+	public static final String RESET = "\u001B[0m"; 	
 	
 	@Autowired
-	private AdminRepository adminRepo;
+	private UserRepository userRepo;
 	
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-	    // Check if admin user already exists
-	    Admin existingAdmin = adminRepo.findByLogin("admin");
-	    if (existingAdmin == null) {
-	        // Create and save admin user
-	        Admin admin = new Admin("admin", "admin@gmail.com", "admin", "admin");
-	        adminRepo.save(admin);
-	    }
+		Users admin = new Users("admin", "admin@gmail.com", PWORD, "ADMIN");
+        userRepo.save(admin);
+        Users customer = new Users("custoner", "customer@gmail.com", PWORD, "CUSTOMER");
+        userRepo.save(customer);
+        logger.info("\u001B[32m Users Created \u001B[0m");
     }
 
 }

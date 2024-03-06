@@ -4,34 +4,34 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.tus.jpa.dto.Admin;
+//import com.tus.jpa.dto.Admin;
+import com.tus.jpa.dto.Users;
 
 import java.util.Collection;
 import java.util.Collections;
 
-
 public class CustomUserDetails implements UserDetails {
 
-    private Admin admin;
+    private Users user;
 
-    public CustomUserDetails(Admin admin) {
+    public CustomUserDetails(Users user) {
         super();
-        this.admin = admin;
+        this.user = user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(admin.getRole()));
+        return Collections.singleton(new SimpleGrantedAuthority(user.getRole()));
     }
 
     @Override
     public String getPassword() {
-        return admin.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return admin.getLogin();
+        return user.getLogin();
     }
 
     @Override
