@@ -47,9 +47,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
             .authorizeRequests()
-                .antMatchers("/", "/css/**", "/js/**", "/images/**", "/user/register","/user/login").permitAll()
+                .antMatchers("/", "/css/**", "/js/**", "/images/**", "/user/register","/user/login","/wines/**","/uploadImage").permitAll()
                 .antMatchers(HttpMethod.POST, "/login").permitAll() // Allow only POST requests for login
-                .antMatchers("/admin/**","/wines/**","/uploadImage").hasRole("ADMIN") 
+                .antMatchers("/admin/**").hasRole("ADMIN") 
                 .anyRequest().authenticated()
             .and()
             	.formLogin()

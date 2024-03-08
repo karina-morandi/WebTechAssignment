@@ -22,8 +22,11 @@ import java.nio.file.StandardCopyOption;
 
 import javax.validation.Valid;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,6 +49,7 @@ import com.tus.jpa.wine_validator.ErrorMessages;
 import com.tus.jpa.wine_validator.wineValidator;
 
 @RestController
+@PreAuthorize("hasRole('ADMIN')")
 public class WinesController {
 
 	@Autowired
@@ -55,17 +59,22 @@ public class WinesController {
 	wineValidator wineValidator;
 	
 	@Autowired
-    private Environment env;
-
-    @Autowired
     private ServletContext servletContext;
 	
     private static final String UPLOAD_DIR = "static/images/";
 	
-	@GetMapping("/wines")
-	public Iterable<Wines> getAllWines(){
-		return wineRepository.findAll();
-	}
+    @GetMapping("/wines")
+    public ResponseEntity<List<Wines>> getAllWines() {
+        List<Wines> wines = wineRepository.findAll();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(wines, headers, HttpStatus.OK);
+    }
+    
+//	@GetMapping("/wines")
+//	public Iterable<Wines> getAllWines(){
+//		return wineRepository.findAll();
+//	}
 
 	@PostMapping("/wines/createNewWine")
 	public ResponseEntity<?> createWine(@Valid @RequestParam("name") String name, @RequestParam("grapes") String grapes,@RequestParam("country") String country, @RequestParam("year") int year, @RequestParam("color") String color, @RequestParam("winery") String winery, @RequestParam("region") String region, @RequestPart("pictureFile") MultipartFile pictureFile) throws WineValidationException, IOException {

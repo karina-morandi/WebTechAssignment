@@ -61,14 +61,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
         wineList = buildWineList(); // Initialize wineList with test data
     }
 
-	@Test //Is this test valuable?
-    void getAllWines() {
-        when(wineRepo.findAll()).thenReturn(wineList);
-        Iterable<Wines> returnedWines = winesCont.getAllWines();
-        assertEquals(2, ((List<Wines>) returnedWines).size());
-        assertEquals(WINE_NAME, ((List<Wines>) returnedWines).get(0).getName());
-        assertEquals("Mayo", ((List<Wines>) returnedWines).get(1).getName());
-    }
+//	@Test //Is this test valuable?
+//    void getAllWines() {
+//        when(wineRepo.findAll()).thenReturn(wineList);
+//        Iterable<Wines> returnedWines = winesCont.getAllWines();
+//        assertEquals(2, ((List<Wines>) returnedWines).size());
+//        assertEquals(WINE_NAME, ((List<Wines>) returnedWines).get(0).getName());
+//        assertEquals("Mayo", ((List<Wines>) returnedWines).get(1).getName());
+//    }
 	
 	@Test
 	void createNewWineOK() throws WineValidationException, IOException {

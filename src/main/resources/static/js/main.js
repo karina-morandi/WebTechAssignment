@@ -47,7 +47,22 @@ var findAll = function(){
         url: rootURL + '/wines',
         dataType: "json",
         success: function(data){
-            console.log("AJAX request successful - Raw response:", data);
+			try {
+                wineData = JSON.parse(data); // Parse JSON response
+                console.log("AJAX request successful - Raw response:", data);
+                wineData = data; // If parsing is successful, assign the parsed data to wineData
+                renderContent();
+            } catch (error) {
+                console.error("Error parsing JSON response:", error);
+                alert("An error occurred while loading wines. Please try reloading the page.");
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("AJAX request error:", error);
+        }
+    });
+}
+            /*console.log("AJAX request successful - Raw response:", data);
             wineData = data;
 //            $('#dashboard_title').text("All Products");
             renderContent();
@@ -56,7 +71,7 @@ var findAll = function(){
                 console.error("AJAX request error:", error);
         }
     });
-}
+}*/
 
 var renderContent = function() {
     if (currentViewType === 'list') {
