@@ -79,12 +79,29 @@ public class RegistrationController {
 //		}
 	}	
 	
+//  @GetMapping("/login")
+//  public ResponseEntity<?> getLoginPage() {
+//      // Return whatever data is appropriate for a GET request to /login
+//      return ResponseEntity.ok().build();
+//  }
+  
   @GetMapping("/login")
-  public ResponseEntity<?> getLoginPage() {
-      // Return whatever data is appropriate for a GET request to /login
-      return ResponseEntity.ok().build();
+  public ResponseEntity<?> getLoginPage(@RequestParam(name = "error", required = false) String error) {
+      if (error != null) {
+          return ResponseEntity.badRequest().body("Login failed.");
+      }
+
+      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+      if (auth != null && auth.isAuthenticated()) {
+          if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"))) {
+              return ResponseEntity.ok().body("Admin");
+          } else {
+              return ResponseEntity.ok().body("Customer");
+          }
+      } else {
+          return ResponseEntity.ok().body("Guest");
+      }
   }
-	
 //	@GetMapping("/login")
 //	public ResponseEntity<?> getLoginPage(@ModelAttribute UserInfo userInfo) {
 //		String username = userInfo.getUsername();

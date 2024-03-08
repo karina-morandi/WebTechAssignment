@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -21,17 +22,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private UserDetailsService userDetailsService;
 	
-    @Bean
-    public PasswordEncoder encoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Autowired
+    private PasswordEncoder passwordEncoder;
+	
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
     
     @Bean
     AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(encoder());
+        provider.setPasswordEncoder(passwordEncoder);
         return  provider;
+    }
+    
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
     
     @Override
@@ -39,14 +48,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
             .authorizeRequests()
                 .antMatchers("/", "/css/**", "/js/**", "/images/**", "/user/register","/user/login").permitAll()
-                .antMatchers(HttpMethod.POST, "/user/login").permitAll() // Allow only POST requests for login
-                .antMatchers("/admin/**").hasRole("ADMIN") 
+                .antMatchers(HttpMethod.POST, "/login").permitAll() // Allow only POST requests for login
+                .antMatchers("/admin/**","/wines/**","/uploadImage").hasRole("ADMIN") 
                 .anyRequest().authenticated()
             .and()
             	.formLogin()
 			            .loginPage("/user/login")
 			            .permitAll()
-			            .loginProcessingUrl("/user/login") // Add this line
+			            .loginProcessingUrl("/login") // Change this line
 			            .defaultSuccessUrl("/admin/dashboard", true)
 			            .failureUrl("/login?error")
 			            .permitAll()
@@ -54,6 +63,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		                .logout()
 		                .permitAll();
     }
+
+}
     
 //    @Bean
 //    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {  	
@@ -88,4 +99,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 ////                .permitAll();
 //        return http.build();
 //    }
-}
+

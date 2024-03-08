@@ -1,27 +1,4 @@
-class UserInfo {
-	
-	constructor() {
-		this.username = '';
-		this.password = '';
-	}
-	
-	setUsername(username) {
-		this.username = username;
-	}
-	
-	setPassword(password) {
-		this.password = password;
-	}
-	
-	toJSON() {
-		return {
-			username: this.username,
-			password: this.password
-		};
-	}
-}
-
-export default UserInfo;
+import UserInfo from './UserInfo.js';
 
 function HomePageDashboard() {
     $('#homePage').show();
@@ -198,16 +175,52 @@ $(document).ready(function () {
     console.log("login= ", loginUsername);
     var passwordLog = $("#loginPassword").val().trim();
     console.log("password= ", passwordLog);
+    login();
+});
 
-    if (!loginUsername || !passwordLog) {
+function login() {
+    var username = document.getElementById("loginUsername").value;
+    console.log("login= ", username);
+    var password = document.getElementById("loginPassword").value;
+    console.log("password= ", password);
+
+    $.ajax({
+        type: "POST",
+        url: "/user/login",
+        data: {
+            username: username,
+            password: password
+        },
+        success: function (data) {
+            console.log("Login successful:", data);
+            if (data === "Admin") {
+            console.log("Admin");
+            AdminDashboard(); // Redirect to the admin dashboard
+            findAll();
+        } else if (data === "Customer") {
+            console.log("Customer");
+            HomePageDashboard();
+        } else {
+            console.error("Invalid response from server: " + data);
+        }
+
+        },
+        error: function (xhr, status, error) {
+            console.log("Login failed:", error);
+            // Display appropriate error message to the user
+            alert("Login failed: " + error);
+        }
+    });
+}
+/*    if (!loginUsername || !passwordLog) {
         console.error("Username or password cannot be empty");
         return;
     }
 
-   /* var loginInfo = {
+    var loginInfo = {
         username: loginUsername,
         password: passwordLog
-    };*/
+    };
     
     var loginInfo = new UserInfo();
     loginInfo.username = loginUsername;
@@ -215,33 +228,32 @@ $(document).ready(function () {
 
     console.log(loginInfo);
 
-    // Send login credentials via AJAX
     $.ajax({
-        url: rootURL + "/user/login",
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify(loginInfo),
-        dataType: "json",
-        success: function(data) {
-            console.log("Login successful:", data);
-            if (data === "Admin") {
-                console.log("Admin");
-                AdminDashboard(); // Redirect to the admin dashboard
-                findAll();
-            } else if (data === "Customer") {
-                console.log("Customer");
-                HomePageDashboard();
-            } else {
-                console.error("Invalid response from server:" + data);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error("Login failed:", error);
-            // Display appropriate error message to the user
-            alert("Login failed: " + error);
+    url: rootURL + "/user/login",
+    type: "POST",
+    contentType: "application/json",
+    data: JSON.stringify(loginInfo),
+    dataType: "json",
+    success: function(data) {
+        console.log("Login successful:", data);
+        if (data === "Admin") {
+            console.log("Admin");
+            AdminDashboard(); // Redirect to the admin dashboard
+            findAll();
+        } else if (data === "Customer") {
+            console.log("Customer");
+            HomePageDashboard();
+        } else {
+            console.error("Invalid response from server: " + data);
         }
-    });
-});	
+    },
+    error: function(xhr, status, error) {
+        console.error("Login failed:", error);
+        // Display appropriate error message to the user
+        alert("Login failed: " + error);
+    }
+});*/
+
 	 // Handle click on register button in the login form
 	$(document).on("click", "#registerButton", function () { 
 	    console.log("Register button clicked");
