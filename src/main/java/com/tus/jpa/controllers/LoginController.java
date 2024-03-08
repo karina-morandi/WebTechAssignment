@@ -1,43 +1,43 @@
-package com.tus.jpa.controllers;
-
-import org.springframework.http.ResponseEntity;
-
-import java.util.Collections;
-
-import javax.validation.Valid;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.tus.jpa.dto.Users;
-import com.tus.jpa.repositories.UserRepository;
-
-@CrossOrigin(origins = "*", allowedHeaders = "*") // Enable CORS for all origins and headers
-@RestController
-public class LoginController {
-
-	private final UserRepository userRepo;
-	private final PasswordEncoder passwordEncoder;
-    
-    public LoginController(UserRepository userRepo, PasswordEncoder passwordEncoder) {
-		this.userRepo = userRepo;
-		this.passwordEncoder = passwordEncoder;
-	}
-    
-    @GetMapping("/login")
-    public ResponseEntity<?> getLogin() {
-        // Return whatever data is appropriate for a GET request to /login
-        return ResponseEntity.ok().build();
-    }
-
+//package com.tus.jpa.controllers;
+//
+//import org.springframework.http.ResponseEntity;
+//
+//import java.util.Collections;
+//
+//import javax.validation.Valid;
+//
+//import org.springframework.http.HttpStatus;
+//import org.springframework.security.core.Authentication;
+//import org.springframework.security.core.context.SecurityContextHolder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.web.bind.annotation.CrossOrigin;
+//import org.springframework.web.bind.annotation.GetMapping;
+//import org.springframework.web.bind.annotation.PathVariable;
+//import org.springframework.web.bind.annotation.PostMapping;
+//import org.springframework.web.bind.annotation.RequestParam;
+//import org.springframework.web.bind.annotation.RestController;
+//
+//import com.tus.jpa.dto.Users;
+//import com.tus.jpa.repositories.UserRepository;
+//
+////@CrossOrigin(origins = "*", allowedHeaders = "*") // Enable CORS for all origins and headers
+//@RestController
+//public class LoginController {
+//
+//	private final UserRepository userRepo;
+//	private final PasswordEncoder passwordEncoder;
+//    
+//    public LoginController(UserRepository userRepo, PasswordEncoder passwordEncoder) {
+//		this.userRepo = userRepo;
+//		this.passwordEncoder = passwordEncoder;
+//	}
+//    
+//    @GetMapping("/login")
+//    public ResponseEntity<?> getLogin() {
+//        // Return whatever data is appropriate for a GET request to /login
+//        return ResponseEntity.ok().build();
+//    }
+//
 //    @GetMapping("/login/{login}")
 //    public boolean getUser(@PathVariable("login") String login){
 //		Users foundUser=userRepo.findByLogin(login);
@@ -50,28 +50,51 @@ public class LoginController {
 ////			return false;
 ////		}
 //	}
-    
-    @PostMapping("/login")  
-    public ResponseEntity<?> authenticate(@RequestParam String login, @RequestParam String password) {   
-        Users user = userRepo.findByLogin(login);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", "This user does not exist!"));
-        } else {
-        	if (passwordEncoder.matches(password, user.getPassword())) {
-        		String role = user.getRole(); // Get the user's role
-                return ResponseEntity.ok().body(Collections.singletonMap("role", role)); // Send the role back in the response
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("error", "Invalid username or password"));
-            }
-        } 
-    }
-	
-	@GetMapping("/role")
-	public String getUserRole(){
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		return auth.getAuthorities().toString();
-	}	
-	
+//    
+//    @PostMapping("/login")  
+//    public ResponseEntity<?> authenticate(@RequestParam String login, @RequestParam String password) {   
+//        Users user = userRepo.findByLogin(login);
+//        if (user == null) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", "This user does not exist!"));
+//        } else {
+//        	if (passwordEncoder.matches(password, user.getPassword())) {
+//        		String role = user.getRole(); // Get the user's role
+//        		System.out.println("USER SAVED: " + user);
+//                return ResponseEntity.ok().body(Collections.singletonMap("role", role)); // Send the role back in the response
+//            } else {
+//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("error", "Invalid username or password"));
+//            }
+//        } 
+//    }
+//	
+//    @PostMapping("/login")  
+//    public ResponseEntity<?> authenticate(@RequestParam String login, @RequestParam String password) {   
+//        Users user = userRepo.findByLogin(login);
+//        if (user == null) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.singletonMap("error", "This user does not exist!"));
+//        } else {
+//            if (passwordEncoder.matches(password, user.getPassword())) {
+//                String role = user.getRole(); // Get the user's role
+//                System.out.println("USER SAVED: " + user);
+//                if(role.equals("ADMIN")) {
+//                    return ResponseEntity.ok().body(Collections.singletonMap("role", "ADMIN"));
+//                } else if (role.equals("CUSTOMER")) {
+//                    return ResponseEntity.ok().body(Collections.singletonMap("role", "CUSTOMER"));
+//                } else {
+//                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("error", "Invalid role for user"));
+//                }
+//            } else {
+//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("error", "Invalid username or password"));
+//            }
+//        } 
+//    }
+//    
+//	@GetMapping("/role")
+//	public String getUserRole(){
+//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//		return auth.getAuthorities().toString();
+//	}	
+//	
 //    @PostMapping("/login")  
 //    public ResponseEntity authenticate(@Valid @RequestParam String login, @RequestParam String password) {   
 //    	
@@ -88,6 +111,4 @@ public class LoginController {
 //	        }
 //	    }	
 //	}
-}    	
-
-
+//}    	

@@ -24,6 +24,10 @@ import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,6 +50,7 @@ import com.tus.jpa.wine_validator.ErrorMessages;
 import com.tus.jpa.wine_validator.wineValidator;
 
 @RestController
+@RequestMapping("/wines")
 public class WinesController {
 
 	@Autowired
@@ -62,13 +67,30 @@ public class WinesController {
 	
     private static final String UPLOAD_DIR = "static/images/";
 	
-	@GetMapping("/wines")
-	public Iterable<Wines> getAllWines(){
-		return wineRepository.findAll();
-	}
+//	@GetMapping("/wines")
+//	public Iterable<Wines> getAllWines(){
+//		return wineRepository.findAll();
+//	}
+    
+    @GetMapping("/all")
+    public ResponseEntity<List<Wines>> findAll() {
+        List<Wines> wines = wineRepository.findAll();
+        return ResponseEntity.ok(wines);
+    }
 
-	@PostMapping("/wines/createNewWine")
-	public ResponseEntity<?> createWine(@Valid @RequestParam("name") String name, @RequestParam("grapes") String grapes,@RequestParam("country") String country, @RequestParam("year") int year, @RequestParam("color") String color, @RequestParam("winery") String winery, @RequestParam("region") String region, @RequestPart("pictureFile") MultipartFile pictureFile) throws WineValidationException, IOException {
+    @GetMapping("/wines")
+    public ResponseEntity<Iterable<Wines>> getAllWines() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) {
+            Iterable<Wines> wines = wineRepository.findAll();
+            return ResponseEntity.ok(wines);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+    }
+
+	@PostMapping("/createNewWine")
+	public ResponseEntity<?> createWine(@Valid @RequestParam("name") String name, @RequestParam("grapes") String grapes,@RequestParam("country") String country, @RequestParam("year") int year, @RequestParam("color") String color, @RequestParam("winery") String winery, @RequestParam("region") String region, @RequestParam("pictureFile") MultipartFile pictureFile) throws WineValidationException, IOException {
 	    try {	
 	        List<Wines> existingWines = wineRepository.findByName(name);
 	        if (!existingWines.isEmpty()) {
@@ -131,6 +153,17 @@ public class WinesController {
 //	    return fileName;
 //	}
 
+//	private String savePicture(MultipartFile pictureFile) throws WineValidationException {
+//	    try {
+//	        String fileName = StringUtils.cleanPath(pictureFile.getOriginalFilename());
+//	        Path uploadPath = Paths.get("src", "main", "resources", "static", "images", fileName);
+//	        Files.copy(pictureFile.getInputStream(), uploadPath, StandardCopyOption.REPLACE_EXISTING);
+//	        return fileName;
+//	    } catch (IOException e) {
+//	        throw new WineValidationException("Failed to save picture: " + e.getMessage());
+//	    }
+//	}
+	
 	private String savePicture(MultipartFile pictureFile) throws WineValidationException {
 	    try {
 	        String fileName = StringUtils.cleanPath(pictureFile.getOriginalFilename());
@@ -141,8 +174,9 @@ public class WinesController {
 	        throw new WineValidationException("Failed to save picture: " + e.getMessage());
 	    }
 	}
+
 	
-	@DeleteMapping("/wines/{name}")
+	@DeleteMapping("/{name}")
 	public ResponseEntity<String> deleteWineByName(@PathVariable("name") String name) {
 		try {
 	        List<Wines> wines = wineRepository.findByName(name);
@@ -161,7 +195,7 @@ public class WinesController {
         }
 	}
 	
-	@GetMapping("/wines/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<?> getWineById(@PathVariable(value = "id") Long wineId) {
 	    Optional<Wines> wine = wineRepository.findById(wineId);
 	    if (wine.isPresent())
@@ -170,7 +204,7 @@ public class WinesController {
 	        return ResponseEntity.notFound().build();
 	}
 	
-	@PutMapping("/wines/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<?> updateWine(@PathVariable Long id, @Valid @RequestBody Wines updatedWine) {
 	    try {
 	        // Find the existing wine by ID
@@ -227,7 +261,7 @@ public class WinesController {
 //	    return ResponseEntity.ok(updatedWine);
 //	}
 	
-	@RequestMapping("/wines/name/{name}")
+	@RequestMapping("/name/{name}")
 	public ResponseEntity<List<Wines>> getWineByName(@PathVariable("name") String name){
 		List<Wines> winesByName = new ArrayList<>();
 		//winesByName=wineRepo.findByName(name); this is exact match

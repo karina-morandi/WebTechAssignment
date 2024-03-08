@@ -42,7 +42,7 @@ var findAll = function(){
     console.log("Find all wines");
     $.ajax({
         type: 'GET',
-        url: rootURL + '/wines',
+        url: rootURL + '/wines/all',
         dataType: "json",
         success: function(data){
             console.log("AJAX request successful - Raw response:", data);
@@ -141,6 +141,9 @@ var renderGrid = function() {
 
 //When DOM is ready
 $(document).ready(function () {
+	
+    findAll();
+
 	$(document).on("click", "#homeButton", function () { 
         console.log("Home button clicked - list all");
         HomePageDashboard();
@@ -164,53 +167,97 @@ $(document).ready(function () {
 	    console.log("Login button on home page clicked");
 	    LoginDashboard(); // Show the login form
 	});
+	
+	// Intercept form submission
+	$('#loginForm').submit(function(event) {
+	    // Prevent the default form submission
+	    event.preventDefault();
+	    
+	    console.log("Login form submitted"); // Log the event
+	
+	    // Get the login credentials from the form
+	    var loginUsername = $('#loginUsername').val();
+	    var loginPassword = $('#loginPassword').val();
+	
+	    // Create an object with the login credentials
+	    var loginInfo = {
+	        username: loginUsername,
+	        password: loginPassword
+	    };
+	
+	    // Send a POST request to the login endpoint
+	    $.ajax({
+	        url: rootURL + "/user/login",
+	        type: "POST",
+	        contentType: "application/json",
+	        data: JSON.stringify(loginInfo),
+	        success: function(response) {
+	            // Handle successful login
+	            console.log('Login successful:', response);
+	            // Redirect or perform any other actions
+	            if (response === "Admin") {
+					AdminDashboard(); // Redirect to the admin dashboard
+					findAll();
+				} else if (response === "Customer") {
+					HomePageDashboard(); // Redirect to the home page
+				} else {
+					console.error("Login failed:", response);
+					alert("Login failed: " + response);
+			    }       
+	        },
+	        error: function(xhr, status, error) {
+	            // Handle login error
+	            console.error('Login failed:', error);
+	            // Display error message to the user
+	        }
+	    });
+	});
 	    
 	// Handle click on login button in the login form
-	$('#loginForm').submit(function (event) {
+	/*$('#loginForm').submit(function (event) {
 		event.preventDefault(); // Prevent default form submission behavior
 	
 	    console.log("Login button clicked");
-	    let login = $("#loginUsername").val().trim();
-	    console.log("login= ",login)
-	    let password = $("#loginPassword").val().trim();
-	    console.log("password= ", password)
+	    var loginUsername = $("#loginUsername").val();
+	    console.log("login= ",loginUsername)
+	    var loginPassword = $("#loginPassword").val();
+	    console.log("password= ", loginPassword)
 	
-	    if (!login || !password) {
+	    if (!loginUsername || !loginPassword) {
 	        console.error("Username or password cannot be empty");
 	        return;
 		}
-	
+		
+		var loginInfo = {
+		    username: loginUsername,
+		    password: loginPassword
+		};
+
 	    // Send login credentials via AJAX
 	     $.ajax({
-			 url: rootURL + "/login",
-		     type: 'POST',
-		     data: {
-				 login: login,
-				 password: password
+		    url: rootURL + '/user/login',
+		    type: 'POST',
+		    contentType: 'application/json',
+		    data: JSON.stringify(loginInfo),
+		    success: function(response) {
+				console.log("Login successful:", response);
+				if (data === "Admin") {
+					AdminDashboard(); // Redirect to the admin dashboard
+					findAll();
+				} else if (data === "Customer") {
+					HomePageDashboard(); // Redirect to the home page
+				} else {
+					console.error("Login failed:", data);
+					alert("Login failed: " + data);
+			    }           
 			 },
-		     /*contentType: 'application/json',
-		     data: JSON.stringify(loginInfo),*/
-		     dataType: 'json',
-   			 contentType: 'application/x-www-form-urlencoded; charset=UTF-8', // Set contentType to url-encoded
-		     success: function(data) {
-		             console.log("Login successful:", data);
-		              if (data === "ADMIN") {
-				        AdminDashboard(); // Redirect to the admin dashboard
-				        findAll();
-				    } else if (data === "CUSTOMER") {
-						HomePageDashboard();
-				    }
-				    else {
-						console.error("Invalid response from server:" + data);
-					}
-		     },
 		     error: function(xhr, status, error) {
 		         console.error("Login failed:", error);
 		         // Display appropriate error message to the user
 		         alert("Login failed: " + error);
 		     }
 		 });
-});
+});*/
 
 	
 	 // Handle click on register button in the login form
@@ -262,7 +309,9 @@ $(document).ready(function () {
 	        data: JSON.stringify(admin),
 	        success: function(data) {
 	            console.log("Registration successful:", login, email, password, role);
-	           	if (data === "Admin registered successfully") {
+	            LoginDashboard();
+	            event.preventDefault(); // Prevent default form submission behavior
+	           	/*if (data === "Admin registered successfully") {
 			        AdminDashboard(); // Redirect to the admin dashboard
 			        findAll();
 			    } else if (data === "Customer registered successfully") {
@@ -270,7 +319,7 @@ $(document).ready(function () {
 			    } else {
 			        console.error("Registration failed:", data);
 			        alert("Registration failed: " + data);
-			    }           
+			    }     */      
 	        },
 	        error: function(xhr, status, error) {
 	            console.error("Registration failed:", error);

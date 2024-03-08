@@ -64,7 +64,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 	@Test //Is this test valuable?
     void getAllWines() {
         when(wineRepo.findAll()).thenReturn(wineList);
-        Iterable<Wines> returnedWines = winesCont.getAllWines();
+        ResponseEntity<Iterable<Wines>> returnedWines = winesCont.getAllWines();
         assertEquals(2, ((List<Wines>) returnedWines).size());
         assertEquals(WINE_NAME, ((List<Wines>) returnedWines).get(0).getName());
         assertEquals("Mayo", ((List<Wines>) returnedWines).get(1).getName());
