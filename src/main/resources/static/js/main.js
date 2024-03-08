@@ -1,3 +1,28 @@
+class UserInfo {
+	
+	constructor() {
+		this.username = '';
+		this.password = '';
+	}
+	
+	setUsername(username) {
+		this.username = username;
+	}
+	
+	setPassword(password) {
+		this.password = password;
+	}
+	
+	toJSON() {
+		return {
+			username: this.username,
+			password: this.password
+		};
+	}
+}
+
+export default UserInfo;
+
 function HomePageDashboard() {
     $('#homePage').show();
     $('#loginFormDiv').hide();
@@ -165,54 +190,58 @@ $(document).ready(function () {
 	    LoginDashboard(); // Show the login form
 	});
 	    
-	// Handle click on login button in the login form
 	$('#loginForm').submit(function (event) {
-		event.preventDefault(); // Prevent default form submission behavior
-	
-	    console.log("Login button clicked");
-	    let login = $("#loginUsername").val().trim();
-	    console.log("login= ",login)
-	    let password = $("#loginPassword").val().trim();
-	    console.log("password= ", password)
-	
-	    if (!login || !password) {
-	        console.error("Username or password cannot be empty");
-	        return;
-		}
-	
-	    // Send login credentials via AJAX
-	     $.ajax({
-			 url: rootURL + "/login",
-		     type: 'POST',
-		     data: {
-				 login: login,
-				 password: password
-			 },
-		     /*contentType: 'application/json',
-		     data: JSON.stringify(loginInfo),*/
-		     dataType: 'json',
-   			 contentType: 'application/x-www-form-urlencoded; charset=UTF-8', // Set contentType to url-encoded
-		     success: function(data) {
-		             console.log("Login successful:", data);
-		              if (data === "ADMIN") {
-				        AdminDashboard(); // Redirect to the admin dashboard
-				        findAll();
-				    } else if (data === "CUSTOMER") {
-						HomePageDashboard();
-				    }
-				    else {
-						console.error("Invalid response from server:" + data);
-					}
-		     },
-		     error: function(xhr, status, error) {
-		         console.error("Login failed:", error);
-		         // Display appropriate error message to the user
-		         alert("Login failed: " + error);
-		     }
-		 });
-});
+    event.preventDefault(); // Prevent default form submission behavior
 
-	
+    console.log("Login button clicked");
+    var loginUsername = $("#loginUsername").val().trim();
+    console.log("login= ", loginUsername);
+    var passwordLog = $("#loginPassword").val().trim();
+    console.log("password= ", passwordLog);
+
+    if (!loginUsername || !passwordLog) {
+        console.error("Username or password cannot be empty");
+        return;
+    }
+
+   /* var loginInfo = {
+        username: loginUsername,
+        password: passwordLog
+    };*/
+    
+    var loginInfo = new UserInfo();
+    loginInfo.username = loginUsername;
+    loginInfo.password = passwordLog;
+
+    console.log(loginInfo);
+
+    // Send login credentials via AJAX
+    $.ajax({
+        url: rootURL + "/user/login",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(loginInfo),
+        dataType: "json",
+        success: function(data) {
+            console.log("Login successful:", data);
+            if (data === "Admin") {
+                console.log("Admin");
+                AdminDashboard(); // Redirect to the admin dashboard
+                findAll();
+            } else if (data === "Customer") {
+                console.log("Customer");
+                HomePageDashboard();
+            } else {
+                console.error("Invalid response from server:" + data);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Login failed:", error);
+            // Display appropriate error message to the user
+            alert("Login failed: " + error);
+        }
+    });
+});	
 	 // Handle click on register button in the login form
 	$(document).on("click", "#registerButton", function () { 
 	    console.log("Register button clicked");
@@ -262,7 +291,8 @@ $(document).ready(function () {
 	        data: JSON.stringify(admin),
 	        success: function(data) {
 	            console.log("Registration successful:", login, email, password, role);
-	           	if (data === "Admin registered successfully") {
+	            LoginDashboard(); // Show the login form
+	           	/*if (data === "Admin registered successfully") {
 			        AdminDashboard(); // Redirect to the admin dashboard
 			        findAll();
 			    } else if (data === "Customer registered successfully") {
@@ -270,7 +300,7 @@ $(document).ready(function () {
 			    } else {
 			        console.error("Registration failed:", data);
 			        alert("Registration failed: " + data);
-			    }           
+			    }         */  
 	        },
 	        error: function(xhr, status, error) {
 	            console.error("Registration failed:", error);
@@ -326,7 +356,7 @@ $(document).ready(function(){
 	    });
     });
 
-    findAll();
+   // findAll();
 });
 
 
