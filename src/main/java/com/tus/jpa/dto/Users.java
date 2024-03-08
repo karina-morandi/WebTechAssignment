@@ -21,20 +21,19 @@ public class Users {
 	@Column(nullable = false, length = 75)
 	private String password;
 	
-	@Column(name="role")
+	@Column(nullable = false)
 	private String role;
 
 	public Users () {
 		
 	}
 
-	public Users(String login, String email, String password, String role) {
-		super();
-		this.login = login;
-		this.email = email;
-		this.password = password;
-		this.role = role;
-	}
+	public Users(String login, String password, String email, String role) {
+        this.login = login;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+    }
 
 	public Long getId() {
 		return id;
@@ -68,13 +67,13 @@ public class Users {
 		this.password = password;
 	}
 
-	public String getRole() {
-		return role;
-	}
+    public String getRole() {
+        return role;
+    }
 
-	public void setRole(String role) {
-		this.role = role;
-	}
+    public void setRole(String role) {
+        this.role = role;
+    }
 	
 	@Override
 	public String toString() {

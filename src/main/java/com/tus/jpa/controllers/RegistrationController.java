@@ -2,13 +2,18 @@ package com.tus.jpa.controllers;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tus.jpa.dto.LoginRequest;
 import com.tus.jpa.dto.Users;
 import com.tus.jpa.repositories.UserRepository;
+import com.tus.jpa.user_details.CustomUserDetails;
 import com.tus.jpa.user_details.CustomUserDetailsService;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,12 +41,11 @@ public class RegistrationController {
 	@Autowired
 	private final UserRepository userRepo;
 	@Autowired
-	private final CustomUserDetailsService userService;
+	private AuthenticationManager authenticationManager;
 	private final PasswordEncoder passwordEncoder;
 	
 	public RegistrationController(UserRepository userRepo, CustomUserDetailsService userService, PasswordEncoder passwordEncoder) {
 		this.userRepo = userRepo;
-		this.userService = userService;
 		this.passwordEncoder = passwordEncoder;
 	}
 
@@ -71,7 +76,7 @@ public class RegistrationController {
 		
 	@GetMapping("/name/{login}")
 	public boolean getUserByName(@PathVariable("login") String login){
-		Users foundUser=userRepo.findByLogin(login);
+		Optional<Users> foundUser=userRepo.findByLogin(login);
 		return foundUser!=null;
 //		if(foundUser != null) {
 //			return true;
@@ -149,40 +154,63 @@ public class RegistrationController {
 //	    }
 //	}
 
+//	@PostMapping("/login")
+//    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
+//        // Validate login credentials and authenticate user
+//        // userService.login(loginRequest.getUsername(), loginRequest.getPassword());
+//        
+//        // Assuming userService.login() returns "Admin" or "Customer" based on successful login
+//	    UserDetails userDetails = userService.loadUserByUsername(loginRequest.getUsername());
+//
+//	    if (userDetails != null) {
+//	        // Extract user type from UserDetails (you need to implement this logic)
+//	        String userType = extractUserType(userDetails);
+//
+//	        if (userType != null) {
+//	            return ResponseEntity.ok(userType);
+//	        }
+//	    }
+//
+//	    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+//	}
+	
 	@PostMapping("/login")
-    public ResponseEntity<String> getLogin(@Valid @RequestBody LoginRequest loginRequest) {
-        // Validate login credentials and authenticate user
-        // userService.login(loginRequest.getUsername(), loginRequest.getPassword());
-        
-        // Assuming userService.login() returns "Admin" or "Customer" based on successful login
-	    UserDetails userDetails = userService.loadUserByUsername(loginRequest.getUsername());
+	public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+	    try {
+	        // Authenticate the user
+	        Authentication authentication = authenticationManager.authenticate(
+	                new UsernamePasswordAuthenticationToken(
+	                        loginRequest.getUsername(),
+	                        loginRequest.getPassword(),
+	                        Collections.emptyList()
+	                )
+	        );
 
-	    if (userDetails != null) {
-	        // Extract user type from UserDetails (you need to implement this logic)
-	        String userType = extractUserType(userDetails);
+	        // Set the authentication token in the response
+	        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+	        // Extract user type from CustomUserDetails
+	        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+	        String userType = customUserDetails.getRole(); // Change this line
 
 	        if (userType != null) {
 	            return ResponseEntity.ok(userType);
 	        }
+	    } catch (AuthenticationException e) {
+	        // Handle authentication exceptions
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
 	    }
 
-	    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+	    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed");
 	}
-    
-	
-	private String extractUserType(UserDetails userDetails) {
-	    // Logic to extract user type from UserDetails
-	    // For example, if UserDetails contains the role as a GrantedAuthority, you can extract it like this:
-	    for (GrantedAuthority authority : userDetails.getAuthorities()) {
-	        if (authority.getAuthority().equals("ADMIN")) {
-	            return "Admin";
-	        } else if (authority.getAuthority().equals("CUSTOMER")) {
-	            return "Customer";
-	        }
-	    }
-	    return null;
+
+	private CustomUserDetails extractUserType(CustomUserDetails userDetails) {
+	    // Logic to extract user type from CustomUserDetails
+	    String userType = userDetails.getRole(); // Change this line
+	    return userType != null ? userDetails : null;
 	}
-	
+
+
 	@GetMapping("/role")
 	public String getUserRole(){
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
