@@ -40,25 +40,23 @@ let rootURL = "http://localhost:9090";
 var currentViewType = 'list'; // Default view type
 var wineData;
 
-var findAll = function(){
+function findAll(){
     console.log("Find all wines");
     $.ajax({
-        type: 'GET',
-        url: rootURL + '/wines',
+        type: "GET",
+        url: rootURL + "/wines",
         dataType: "json",
-        success: function(data){
-			try {
-                wineData = JSON.parse(data); // Parse JSON response
-                console.log("AJAX request successful - Raw response:", data);
-                wineData = data; // If parsing is successful, assign the parsed data to wineData
-                renderContent();
-            } catch (error) {
-                console.error("Error parsing JSON response:", error);
-                alert("An error occurred while loading wines. Please try reloading the page.");
-            }
+        success: function(data) {
+            console.log('Success:', data);
+            // Process the wines data here
+            wineData = data;
+            renderContent();
         },
         error: function(xhr, status, error) {
-            console.error("AJAX request error:", error);
+            console.log('Error:', error);
+        },
+        complete: function(xhr, status) {
+            console.log('Raw response:', xhr.responseText);
         }
     });
 }
