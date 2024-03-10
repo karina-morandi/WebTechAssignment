@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<!-- <meta charset="UTF-8"> -->
 <meta charset="UTF-8">
-<title>Wines</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vinoteca Homepage</title>
 
 <!-- Bootstrap CSS  -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -24,18 +26,90 @@
 
 <body>
 
-
 <!-- HOME PAGE -->
-<div id="homePage" class="container-fluid homePage">
-    <div class="row">
-        <div class="col-md-8">
-            <p class="welcome-text">Welcome to</p>
-            <p class="vinoteca-text">Vinoteca</p>
+<div id="homePage">
+	<header class="top-nav">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <div class="logo-welcome">
+            <img src="../images/vinotecaLogo.png" alt="Logo" class="logo img-fluid">
+           <!--  <div class="welcome-text">
+                <p class="welcome-text">Welcome to</p>
+                <p class="vinoteca-text">Vinoteca</p>
+            </div> -->
         </div>
-        <div class="col-md-4 text-right">
-            <!-- Move the login button to the top right corner -->
-            <button type="button" class="btn btn-primary" id="loginButtonHome">Login</button>
+        <div class="user-tools ml-auto">
+            <a id="loginButtonHome" class="login-button">Login</a>
+            <a href="#" class="cart-button">Cart</a>
         </div>
+    </div>
+	</header>
+	<div class="parallax-container" style="height: 1000px;">
+		<div class="container-fluid homePage">
+		    <div class="background-image"></div>
+		    <button id="wineListButton" class="btn btn-primary">View Wines on Sale</button>			
+		</div>
+	</div>
+	<div class="wine-examples">
+	    <div class="container">
+	        <div class="row">
+	            <div class="col-md-4">
+	                <div class="wine-example">
+	                    <img src="../images/Blanco.png" alt="Wine Image">
+	                    <div class="wine-info">
+	                        <h3 class="wine-name">Wine Name</h3>
+	                        <p class="winery">Winery Name</p>
+	                        <p class="country">Country</p>
+	                        <a href="wine-page.html" class="editButton">View Wine</a>
+	                    </div>
+	                </div>
+	            </div>
+	            <div class="col-md-4">
+                <!-- Second wine example -->
+                <div class="wine-example">
+                    <img src="../images/Red.png" alt="Wine Image">
+                    <div class="wine-info">
+                        <h3 class="wine-name">Red Wine</h3>
+                        <p class="winery">Winery Name</p>
+                        <p class="country">Country</p>
+                        <a href="wine-page.html" class="editButton">View Wine</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <!-- Third wine example -->
+                <div class="wine-example">
+                    <img src="../images/Rose.png" alt="Wine Image">
+                    <div class="wine-info">
+                        <h3 class="wine-name">Rosé Wine</h3>
+                        <p class="winery">Winery Name</p>
+                        <p class="country">Country</p>
+                        <a href="wine-page.html" class="editButton">View Wine</a>
+                    </div>
+                </div>
+            </div>
+	        </div>
+	    </div>
+	</div>
+</div>
+
+<div class="content">
+
+<!-- Full wine list for customers! -->
+<div id="wineListDiv" style="display:none;" class="row justify-content-center">
+    <div class="col-md-8">
+        <button type="button" class="btn-close close-button" data-bs-dismiss="modal" aria-label="Close"></button>
+    <h2 class="text-center">Wines on Sale</h2>
+    <div class="sorting-options">
+        <label for="sortSelect">Sort by:</label>
+        <select id="sortSelect" onchange="sortWines()">
+            <option value="name">Name</option>
+            <option value="price">Price</option>
+            <!-- Add more options for sorting criteria -->
+        </select>
+    </div>
+    </div>
+    <div class="modal-body" id="wineListBody">
+        Wine list will be displayed here
     </div>
 </div>
 
@@ -336,6 +410,10 @@
         </div>
     </div>
 </div>
+</div>
 
+<footer class="footer">
+    <p> Made with quality </p>
+  </footer>
 </body>
 </html>

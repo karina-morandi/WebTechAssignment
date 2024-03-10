@@ -5,6 +5,7 @@ function HomePageDashboard() {
     $('#loginFormDiv').hide();
     $('#registrationForm').hide();
     $('#admin').hide();
+    $('#wineListDiv').hide();
 }
 
 function LoginDashboard() {
@@ -12,6 +13,7 @@ function LoginDashboard() {
     $('#loginFormDiv').show();
     $('#registrationForm').hide();
     $('#admin').hide();
+    $('#wineListDiv').hide();
 }
 
 function RegistrationDashboard() {
@@ -20,6 +22,7 @@ function RegistrationDashboard() {
     $('#loginFormDiv').hide();
     $('#registrationForm').show();
     $('#admin').hide();
+    $('#wineListDiv').hide();
 }
 
 function AdminDashboard() {
@@ -28,7 +31,18 @@ function AdminDashboard() {
     $('#loginFormDiv').hide();
     $('#registrationForm').hide();
     $('#admin').show();
+    $('#wineListDiv').hide();
 }
+
+function WineListCustomer(){
+	$('#homePage').hide();
+    $('#loginFormDiv').hide();
+    $('#registrationForm').hide();
+    $('#admin').hide();
+    $('#wineListDiv').show();
+}
+
+
 
 function clearList(){
 	console.log("Clear button clicked!");
@@ -637,3 +651,103 @@ function updateWineDetails(wineId, imagePath) {
     });
 }
 
+
+
+
+
+
+
+
+
+// Function to generate star rating based on a numeric value
+function generateStarRating(stars) {
+    let starHTML = '';
+    for (let i = 0; i < 5; i++) {
+        if (i < stars) {
+            starHTML += '<span class="fa fa-star checked"></span>';
+        } else {
+            starHTML += '<span class="fa fa-star"></span>';
+        }
+    }
+    return starHTML;
+}
+
+// Function to display wine list with star ratings
+function displayWineList() {
+    fetch('http://localhost:9090/customers/wines') // Update the endpoint to fetch wines for customers
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch wines');
+            }
+            return response.json();
+        })
+        .then(data => {
+			// Sort wines based on default criteria (e.g., name)
+            data.sort((a, b) => a.name.localeCompare(b.name));
+			
+            let wineListHTML = '<div class="row">';
+            data.forEach(wine => {
+                // Generate star rating HTML
+                const starRatingHTML = generateStarRating(wine.rating);
+                wineListHTML += `
+	                <div class="col-md-6">
+	                    <div class="wine-card">
+	                        <img src="../images/${wine.picture}" alt="Wine Image" class="wine-image">
+	                        <div class="wine-details">
+	                            <h3 class="wine-name">${wine.name}</h3>
+	                            <p class="wine-description">${wine.description}</p>
+	                            <p class="wine-price">$${wine.price}</p>
+	                            <div class="star-rating">${starRatingHTML}</div>
+	                            <div class="review-form">
+	                                <label for="review${wine.id}">Add Review (0-5 stars):</label>
+	                                <input type="number" id="review${wine.id}" min="0" max="5">
+	                                <button class="btn btn-primary" onclick="submitReview(${wine.id})">Submit Review</button>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+                `;
+            });
+            wineListHTML += '</div>'; // Close the row
+            document.getElementById('wineListBody').innerHTML = wineListHTML;
+            document.getElementById('wineListDiv').style.display = 'block'; // Display the wine list section
+        })
+        .catch(error => {
+            console.error('Error fetching wine list:', error);
+            // Handle errors or display error message to the user
+        });
+}
+
+function sortWines() {
+    const sortBy = document.getElementById('sortSelect').value;
+    fetch(`http://localhost:9090/customers/wines?sortBy=${sortBy}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch sorted wines');
+            }
+            return response.json();
+        })
+        .then(sortedData => {
+            // Update the wine list with sorted data
+            // You can use the same code as in displayWineList() function
+            // but with sortedData instead of data
+            // Display the sorted wine list
+        })
+        .catch(error => {
+            console.error('Error fetching sorted wine list:', error);
+            // Handle errors or display error message to the user
+        });
+}
+
+// Call displayWineList() function to initially display the wine list
+displayWineList();
+
+
+// Event listener for the wineListButton
+document.getElementById('wineListButton').addEventListener('click', function() {
+    $('#homePage').hide(); // Hide the homepage
+    displayWineList(); // Display the list of wines
+});/*
+// Event listener for the wineListButton
+document.getElementById('wineListButton').addEventListener('click', WineListCustomer);
+*/
