@@ -49,9 +49,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
             .authorizeRequests()
-                .antMatchers("/", "/css/**", "/js/**", "/images/**", "/user/register","/user/login","/wines/**","/uploadImage","/customers/**").permitAll()
+                .antMatchers("/", "/css/**", "/js/**", "/images/**", "/user/register","/user/login","/wines/**","/uploadImage","/customers/**","/customers/wines/**").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN") 
-                .antMatchers("/customers/wines/{id}/rating").hasRole("CUSTOMER") // Allow only authenticated users to access this endpoint
+         //       .antMatchers("/customers/wines/{id}/rating").hasRole("CUSTOMER") // Allow only authenticated users to access this endpoint
                 .antMatchers(HttpMethod.POST, "/login").permitAll() // Allow only POST requests for login
                 .anyRequest().authenticated()
             .and()

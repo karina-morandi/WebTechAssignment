@@ -1,5 +1,7 @@
 package com.tus.jpa.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,39 +39,101 @@ public class WinesCustomerController {
 	        return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("/wines/{id}/average-rating")
-    public ResponseEntity<Double> getAverageRating(@PathVariable(value = "id") Long wineId) {
-        Optional<Wines> wine = wineRepository.findById(wineId);
-        if (wine.isPresent()) {
-            Double averageRating = wine.get().getAverageRating();
-            if (averageRating != null) {
-                return ResponseEntity.ok(averageRating);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+	@PostMapping("/wines/{id}/rating")
+	public ResponseEntity<String> submitRating(@PathVariable(value = "id") Long wineId, @RequestBody Map<String, Double> ratingMap) {
+	    // Extract rating from request body
+	    Double ratingValue = ratingMap.get("rating");
 
-    @PostMapping("/wines/{id}/rating")
-    public ResponseEntity<String> submitRating(@PathVariable(value = "id") Long wineId, @RequestBody Map<String, Integer> ratingMap) {
-        // Extract rating from request body
-    	Double rating = (double)ratingMap.get("rating");
+	    // Get the wine
+	    Optional<Wines> optionalWine = wineRepository.findById(wineId);
+	    if (optionalWine.isPresent()) {
+	        Wines wine = optionalWine.get();
+	        
+	        // Append the new rating to the list of ratings
+	        if (wine.getRatings() == null) {
+	            wine.setRatings(new ArrayList<>());
+	        }
+	        wine.getRatings().add(ratingValue);
+	        
+	        // Update the wine
+	        wineRepository.save(wine);
+	        
+	        return ResponseEntity.ok("Rating submitted successfully");
+	    } else {
+	        return ResponseEntity.notFound().build();
+	    }
+	}
 
-        // Update the wine with the new rating
-        wineRepository.updateRating(wineId, rating);
-
-        // Calculate the new average rating
-        Double newAverageRating = wineRepository.calculateAverageRating(wineId);
-        newAverageRating = (newAverageRating == null) ? (double) rating : (newAverageRating * (wineRepository.count() - 1) + rating.doubleValue()) / wineRepository.count();
-
-        // Update the wine with the new average rating
-        wineRepository.updateAverageRating(wineId, newAverageRating);
-
-        // Return success response
-        return ResponseEntity.ok("Rating submitted successfully");
-    }
+	@GetMapping("/wines/{id}/averageRating")
+	public ResponseEntity<Double> getAverageRating(@PathVariable(value = "id") Long wineId) {
+	    Optional<Wines> optionalWine = wineRepository.findById(wineId);
+	    if (optionalWine.isPresent()) {
+	        Wines wine = optionalWine.get();
+	        
+	        // Calculate average rating
+	        List<Double> ratings = wine.getRatings();
+	        if (ratings != null && !ratings.isEmpty()) {
+	            double sum = ratings.stream().mapToDouble(Double::doubleValue).sum();
+	            double averageRating = sum / ratings.size();
+	            return ResponseEntity.ok(averageRating);
+	        } else {
+	            return ResponseEntity.ok(0.0); // Or return some default value
+	        }
+	    } else {
+	        return ResponseEntity.notFound().build();
+	    }
+	}
+	
+//	@GetMapping("/wines/{id}/average-rating")
+//	public ResponseEntity<Double> getAverageRating(@PathVariable(value = "id") Long wineId) {
+//	    Optional<Wines> optionalWine = wineRepository.findById(wineId);
+//	    if (optionalWine.isPresent()) {
+//	        Wines wine = optionalWine.get();
+//	        
+//	        // Calculate average rating
+//	        List<Double> ratings = wine.getRatings();
+//	        if (ratings != null && !ratings.isEmpty()) {
+//	            Double averageRating = wineRepository.calculateAverageRating(wineId);
+//	            return ResponseEntity.ok(averageRating);
+//	        } else {
+//	            return ResponseEntity.ok(0.0); // Or return some default value
+//	        }
+//	    } else {
+//	        return ResponseEntity.notFound().build();
+//	    }
+//	}
+	
+//	@GetMapping("/wines/{id}/average-rating")
+//    public ResponseEntity<Double> getAverageRating(@PathVariable(value = "id") Long wineId) {
+//        Optional<Wines> wine = wineRepository.findById(wineId);
+//        if (wine.isPresent()) {
+//            Double averageRating = wine.get().getAverageRating();
+//            if (averageRating != null) {
+//                return ResponseEntity.ok(averageRating);
+//            } else {
+//                return ResponseEntity.notFound().build();
+//            }
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
+//
+//    @PostMapping("/wines/{id}/rating")
+//    public ResponseEntity<String> submitRating(@PathVariable(value = "id") Long wineId, @RequestBody Map<String, Integer> ratingMap) {
+//        // Extract rating from request body
+//    	Double rating = (double)ratingMap.get("rating");
+//
+//        // Update the wine with the new rating
+//        wineRepository.updateRating(wineId, rating);
+//
+//        // Calculate the new average rating
+//        Double newAverageRating = wineRepository.calculateAverageRating(wineId);
+//        newAverageRating = (newAverageRating == null) ? (double) rating : (newAverageRating * (wineRepository.count() - 1) + rating.doubleValue()) / wineRepository.count();
+//
+//        // Update the wine with the new average rating
+//        wineRepository.updateAverageRating(wineId, newAverageRating);
+//
+//        // Return success response
+//        return ResponseEntity.ok("Rating submitted successfully");
+//    }
 }
-
-

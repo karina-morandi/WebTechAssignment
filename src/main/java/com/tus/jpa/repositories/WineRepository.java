@@ -21,14 +21,23 @@ public interface WineRepository extends JpaRepository<Wines, Long> {
 	
 	@Modifying
     @Transactional
-    @Query("UPDATE Wines w SET w.averageRating = :rating WHERE w.id = :id")
-    void updateRating(@Param("id") Long wineId, @Param("rating") Double rating);
+    @Query("UPDATE Wines w SET w.ratings = :rating WHERE w.id = :id")
+    void updateRatings(@Param("id") Long id, @Param("rating") Double rating);
+//
+//    // Add method to calculate the average rating for a specific wine
+//	@Query("SELECT AVG(w.ratings) FROM Wines w WHERE w.id = :id")
+//    Double calculateAverageRating(@Param("id") Long id);
+//    
+//	@Modifying
+//    @Transactional
+//    @Query("UPDATE Wines w SET w.averageRating = :rating WHERE w.id = :id")
+//    void updateRating(@Param("id") Long wineId, @Param("rating") Double rating);
 
-    @Query("SELECT AVG(w.averageRating) FROM Wines w WHERE w.id = :id")
-    Double calculateAverageRating(@Param("id") Long wineId);
-
-    @Modifying
-    @Transactional
-    @Query("UPDATE Wines w SET w.averageRating = :newAverageRating WHERE w.id = :id")
-    void updateAverageRating(@Param("id") Long wineId, @Param("newAverageRating") Double newAverageRating);
+//    @Query("SELECT AVG(w.averageRating) FROM Wines w WHERE w.id = :id")
+//    Double calculateAverageRating(@Param("id") Long wineId);
+//
+//    @Modifying
+//    @Transactional
+//    @Query("UPDATE Wines w SET w.averageRating = :newAverageRating WHERE w.id = :id")
+//    void updateAverageRating(@Param("id") Long wineId, @Param("newAverageRating") Double newAverageRating);
 }

@@ -581,18 +581,13 @@ function updateWineDetails(wineId, imagePath) {
 
 
 
-// Function to generate star rating based on a numeric value
-function generateStarRating(stars) {
-    let starHTML = '';
-    for (let i = 0; i < 5; i++) {
-        if (i < stars) {
-            starHTML += '<span class="fa fa-star checked"></span>';
-        } else {
-            starHTML += '<span class="fa fa-star"></span>';
-        }
-    }
-    return starHTML;
-}
+
+
+
+
+
+
+
 
 // Function to display wine list without star ratings
 function displayWineList() {
@@ -698,6 +693,61 @@ document.getElementById('wineListButton').addEventListener('click', function() {
     displayWineList(); // Display the list of wines
 });
 
+// Function to display wine details with average rating
+/*function displayWineDetails(wineId) {
+    fetch(`http://localhost:9090/customers/wines/${wineId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch wine details');
+            }
+            return response.json();
+        })
+        .then(wine => {
+            // Fetch average rating
+            fetch(`http://localhost:9090/customers/wines/${wineId}/averageRating`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch average rating');
+                    }
+                    return response.json();
+                })
+                .then(averageRating => {
+                    const starRatingHTML = displayAverageStarRating(averageRating);
+                    const wineDetailsHTML = `
+                        <div class="wine-card">
+	                        <img src="../images/${wine.picture}" alt="Wine Image" class="wine-image">
+	                        <div class="wine-details">
+	                            <div class="average-rating">
+	                                <span>Average Rating:</span>
+	                                <div class="average-star-rating">${starRatingHTML}</div>
+	                                <span>(${averageRating.toFixed(1)})</span>
+	                            </div>
+	                            <h3 class="wine-name">${wine.name}</h3>
+	                            <p class="wine-description">${wine.description}</p>
+	                            <p class="wine-price">$${wine.price}</p>
+	                            <div class="star-rating">${starRatingHTML}</div>
+				                <!-- Rating input -->
+				                <label for="rating${wineId}">Rate this wine:</label>
+				                <input type="number" id="rating${wineId}" min="0" max="5" data-wine-id="${wineId}">
+				                <button id="submitRatingButton${wineId}" class="btn btn-primary">Submit Rating</button>
+				            </div>
+				        </div>
+                    `;
+                    document.getElementById('wineModalBody').innerHTML = wineDetailsHTML;
+                    $('#wineModal').modal('show'); // Show the modal
+                })
+                .catch(error => {
+                    console.error('Error fetching average rating:', error);
+                    // Handle errors or display error message to the user
+                });
+        })
+        .catch(error => {
+            console.error('Error fetching wine details:', error);
+            // Handle errors or display error message to the user
+        });
+}*/
+
+// Function to display wine details with average rating
 function displayWineDetails(wineId) {
     fetch(`http://localhost:9090/customers/wines/${wineId}`)
         .then(response => {
@@ -707,24 +757,34 @@ function displayWineDetails(wineId) {
             return response.json();
         })
         .then(wine => {
-            const starRatingHTML = generateStarRating(wine.rating);
-            const wineDetailsHTML = `
-                <img src="../images/${wine.picture}" alt="Wine Image" class="wine-image">
-                <div class="wine-details">
-                    <h3 class="wine-name">${wine.name}</h3>
-                    <p class="wine-description">${wine.description}</p>
-                    <p class="wine-price">$${wine.price}</p>
-                    <div class="star-rating">${starRatingHTML}</div>
-                    <!-- Rating input -->
-                    <label for="rating${wineId}">Rate this wine:</label>
-                    <input type="number" id="rating${wineId}" min="0" max="5" data-wine-id="${wineId}">
-                    <button id="submitRatingButton${wineId}" class="btn btn-primary">Submit Rating</button>
-                </div>
-            `;
-            document.getElementById('wineModalBody').innerHTML = wineDetailsHTML;
-            // Attach event listener to the submit rating button
-            document.getElementById(`submitRatingButton${wineId}`).addEventListener('click', () => submitRating(wineId));
-            $('#wineModal').modal('show'); // Show the modal
+            // Fetch average rating
+            fetch(`http://localhost:9090/customers/wines/${wineId}/averageRating`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch average rating');
+                    }
+                    return response.json();
+                })
+                .then(averageRating => {
+                    const starRatingHTML = displayAverageStarRating(averageRating);
+                    // Update wine details in the modal
+                    const wineModalBody = document.getElementById('wineModalBody');
+                    wineModalBody.querySelector('.wine-image').src = `../images/${wine.picture}`;
+                    wineModalBody.querySelector('.wine-name').textContent = wine.name;
+                    wineModalBody.querySelector('.wine-description').textContent = wine.description;
+                    wineModalBody.querySelector('.wine-price').textContent = `$${wine.price}`;
+                    wineModalBody.querySelector('.average-star-rating').innerHTML = starRatingHTML;
+                    wineModalBody.querySelector('.average-rating-value').textContent = `(${averageRating.toFixed(1)})`;
+                    // Set data attribute to the submit rating button for identification
+                    const submitRatingButton = wineModalBody.querySelector('.submit-rating-button');
+                    submitRatingButton.setAttribute('data-wine-id', wineId);
+                    // Show the modal
+                    $('#wineModal').modal('show');
+                })
+                .catch(error => {
+                    console.error('Error fetching average rating:', error);
+                    // Handle errors or display error message to the user
+                });
         })
         .catch(error => {
             console.error('Error fetching wine details:', error);
@@ -741,16 +801,22 @@ document.getElementById('wineListBody').addEventListener('click', function(event
 
 document.addEventListener("DOMContentLoaded", function() {
     // Attach event listener to the submit rating button
-    document.getElementById('wineListBody').addEventListener('click', function(event) {
-        if (event.target.hasAttribute('id') && event.target.id.startsWith('submitRatingButton')) {
-            const wineId = event.target.id.split('submitRatingButton')[1];
+    document.getElementById('wineModalBody').addEventListener('click', function(event) {
+        if (event.target.classList.contains('submit-rating-button')) {
+            const wineId = event.target.getAttribute('data-wine-id');
             submitRating(wineId);
         }
     });
- });
+});
 
 function submitRating(wineId) {
-    const rating = parseFloat(document.querySelector(`input[id="rating${wineId}"]`).value);
+    const rating = parseInt(document.getElementById('rating').value);
+    if (isNaN(rating) || rating < 1 || rating > 5) {
+        console.error('Invalid rating value. Rating must be between 1 and 5.');
+        // Handle error or display error message to the user
+        return;
+    }
+
     // Make a POST request to submit the rating
     fetch(`http://localhost:9090/customers/wines/${wineId}/rating`, {
         method: 'POST',
@@ -764,6 +830,7 @@ function submitRating(wineId) {
             throw new Error('Failed to submit rating');
         }
         // Handle success (e.g., update UI)
+        displayWineDetails(wineId); // Update the wine details to reflect the new rating
         // Maybe close the modal or display a success message
     })
     .catch(error => {
@@ -771,3 +838,65 @@ function submitRating(wineId) {
         // Handle errors or display error message to the user
     });
 }
+
+function displayAverageStarRating(averageRating) {
+    const roundedRating = Math.round(averageRating * 2) / 2;
+    let starHTML = '';
+    for (let i = roundedRating; i >= 1; i--) {
+        starHTML += '<i class="fa fa-star" style="color: gold"></i>';
+    }
+    if (roundedRating % 1 !== 0) {
+        starHTML += '<i class="fa fa-star-half-o" style="color: gold"></i>';
+    }
+    const remainingStars = 5 - Math.ceil(roundedRating);
+    for (let i = 0; i < remainingStars; i++) {
+        starHTML += '<i class="fa fa-star-o" style="color: gold"></i>';
+    }
+    return starHTML;
+}
+
+
+
+
+
+
+
+function getStars(rating) {
+    rating = Math.round(rating * 2)/2;
+    let output = '<div><h3>';
+    for (var i = rating; i >= 1; i--)
+        output += '<i class="fa fa-star" style="color:gold"></i>';
+    if(i==.5)
+        output += '<i class="fa fa-star-half-o" style="color:gold"></i>';
+    for(let i = (5-rating); i >= 1; i--)
+        output += '<i class="fa fa-star-o" style="color:gold"></i>'
+
+    return output;
+}
+
+$(window).on('load', function() {
+    // console.log("Hello World");
+
+    $(document).on("click", "#createStars", function() {
+        // console.log("Generate Clicked");
+        $('#theStars').html('');
+        let numericalStarValue = $('#starValue').val();
+        // console.log('Number of Stars = ' + numericalStarValue + 'stars');
+
+        if(isNaN(numericalStarValue) || numericalStarValue < 0 || numericalStarValue > 5) {
+            console.log("Something went wrong, all values must be numerical and between 1 and 5");
+            alert("Something went wrong, all values must be numerical and between 1 and 5");
+        }
+        else {
+            let stars = getStars(parseFloat(numericalStarValue));
+            console.log("Stars ----> " + stars)
+            $('#theStars').append(stars);
+        }
+    });
+
+    $(document).on("click", "#clearSelection", function() {
+        console.log("Reset button has been clicked");
+        $('#theStars').html('<br/>');
+        $('#starValue').val('');
+    });
+});

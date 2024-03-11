@@ -1,9 +1,8 @@
 package com.tus.jpa.dto;
 
+import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
-
-import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Table(name="Wines")
@@ -28,8 +27,10 @@ public class Wines {
     @Column(name = "picture") // Store the path to the image in the database
     private String picture;
     
-    @Column(name = "average_rating")
-    private Double averageRating;
+    @ElementCollection
+//    @CollectionTable(name="wine_ratings", joinColumns=@JoinColumn(name="wine_id"))
+    @Column(name="rating")
+    private List<Double> ratings;
 	
 //	@Lob
 //	private String picture;
@@ -38,7 +39,7 @@ public class Wines {
 		
 	}
 	
-	public Wines(Long id, String name, String winery, int year, String color, String grapes, String country, String region, double price, String description, String picture, Double averageRating) {
+	public Wines(Long id, String name, String winery, int year, String color, String grapes, String country, String region, double price, String description, String picture, List<Double> ratings) {
 	    this.id = id;
 	    this.name = name;
 	    this.winery = winery;
@@ -50,7 +51,7 @@ public class Wines {
 	    this.price = price;
 	    this.description = description;
 	    this.picture = picture;
-        this.averageRating = averageRating;
+        this.ratings = ratings;
 	}
 	
 	public Long getId() {
@@ -142,18 +143,18 @@ public class Wines {
         this.picture = picture;
     }
     
-    public Double getAverageRating() {
-        return averageRating;
+    public List<Double> getRatings() {
+        return ratings;
     }
 
-    public void setAverageRating(Double averageRating) {
-        this.averageRating = averageRating;
+    public void setRatings(List<Double> ratings) {
+        this.ratings = ratings;
     }
 
 	@Override
 	public String toString() {
 		return "Wines [id=" + id + ", year=" + year + ", color=" + color + ", name=" + name + ", winery=" + winery
 				+ ", grapes=" + grapes + ", country=" + country + ", region=" + region + ", price=" + price
-				+ ", description=" + description + ", picture=" + picture + ", average_rating=" + averageRating + "]";
+				+ ", description=" + description + ", picture=" + picture + ", ratings=" + ratings + "]";
 	}	
 }

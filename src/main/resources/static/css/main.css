@@ -31,6 +31,17 @@
     z-index: 100;
 }
 
+
+.average-rating {
+    margin-top: 10px;
+    display: flex;
+    align-items: right;
+}
+
+.average-star-rating {
+    margin: 0 5px;
+}
+  
  .main-menu {
    /* Your styles for the main menu */
 }
