@@ -611,7 +611,7 @@ function displayWineList() {
                             <div class="wine-details">
                                 <h3 class="wine-name">${wine.name}</h3>
                                 <p class="wine-description">${wine.description}</p>
-                                <p class="wine-price">$${wine.price}</p>
+                                <p class="wine-price">€${wine.price}</p>
                                 <button class="btn btn-primary view-details-button" data-wine-id="${wine.id}" data-bs-toggle="modal" data-bs-target="#wineModal">View Details</button>
                             </div>
                         </div>
@@ -660,7 +660,7 @@ function sortWines() {
                                 <div class="wine-details">
                                     <h3 class="wine-name">${wine.name}</h3>
                                     <p class="wine-description">${wine.description}</p>
-                                    <p class="wine-price">$${wine.price}</p>
+                                    <p class="wine-price">€${wine.price}</p>
                                     <div class="star-rating">${starRatingHTML}</div>
                                     <div class="review-form">
                                         <label for="review${wine.id}">Add Review (0-5 stars):</label>
@@ -694,60 +694,6 @@ document.getElementById('wineListButton').addEventListener('click', function() {
 });
 
 // Function to display wine details with average rating
-/*function displayWineDetails(wineId) {
-    fetch(`http://localhost:9090/customers/wines/${wineId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch wine details');
-            }
-            return response.json();
-        })
-        .then(wine => {
-            // Fetch average rating
-            fetch(`http://localhost:9090/customers/wines/${wineId}/averageRating`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch average rating');
-                    }
-                    return response.json();
-                })
-                .then(averageRating => {
-                    const starRatingHTML = displayAverageStarRating(averageRating);
-                    const wineDetailsHTML = `
-                        <div class="wine-card">
-	                        <img src="../images/${wine.picture}" alt="Wine Image" class="wine-image">
-	                        <div class="wine-details">
-	                            <div class="average-rating">
-	                                <span>Average Rating:</span>
-	                                <div class="average-star-rating">${starRatingHTML}</div>
-	                                <span>(${averageRating.toFixed(1)})</span>
-	                            </div>
-	                            <h3 class="wine-name">${wine.name}</h3>
-	                            <p class="wine-description">${wine.description}</p>
-	                            <p class="wine-price">$${wine.price}</p>
-	                            <div class="star-rating">${starRatingHTML}</div>
-				                <!-- Rating input -->
-				                <label for="rating${wineId}">Rate this wine:</label>
-				                <input type="number" id="rating${wineId}" min="0" max="5" data-wine-id="${wineId}">
-				                <button id="submitRatingButton${wineId}" class="btn btn-primary">Submit Rating</button>
-				            </div>
-				        </div>
-                    `;
-                    document.getElementById('wineModalBody').innerHTML = wineDetailsHTML;
-                    $('#wineModal').modal('show'); // Show the modal
-                })
-                .catch(error => {
-                    console.error('Error fetching average rating:', error);
-                    // Handle errors or display error message to the user
-                });
-        })
-        .catch(error => {
-            console.error('Error fetching wine details:', error);
-            // Handle errors or display error message to the user
-        });
-}*/
-
-// Function to display wine details with average rating
 function displayWineDetails(wineId) {
     fetch(`http://localhost:9090/customers/wines/${wineId}`)
         .then(response => {
@@ -771,8 +717,14 @@ function displayWineDetails(wineId) {
                     const wineModalBody = document.getElementById('wineModalBody');
                     wineModalBody.querySelector('.wine-image').src = `../images/${wine.picture}`;
                     wineModalBody.querySelector('.wine-name').textContent = wine.name;
+                    wineModalBody.querySelector('.wine-year').textContent = wine.year;
+                    wineModalBody.querySelector('.wine-color').textContent = wine.color;
+                    wineModalBody.querySelector('.wine-winery').textContent = wine.winery;
+                    wineModalBody.querySelector('.wine-grapes').textContent = wine.grapes;
+                    wineModalBody.querySelector('.wine-country').textContent = wine.country;
+                    wineModalBody.querySelector('.wine-region').textContent = wine.region;
                     wineModalBody.querySelector('.wine-description').textContent = wine.description;
-                    wineModalBody.querySelector('.wine-price').textContent = `$${wine.price}`;
+                    wineModalBody.querySelector('.wine-price').textContent = `€${wine.price}`;
                     wineModalBody.querySelector('.average-star-rating').innerHTML = starRatingHTML;
                     wineModalBody.querySelector('.average-rating-value').textContent = `(${averageRating.toFixed(1)})`;
                     // Set data attribute to the submit rating button for identification

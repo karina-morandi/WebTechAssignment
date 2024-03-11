@@ -31,6 +31,35 @@
     z-index: 100;
 }
 
+.wine-details-container {
+    display: flex;
+    align-items: center;
+}
+
+.user-actions {
+    display: flex; /* Add flex display */
+    flex-direction: column; /* Ensure items are stacked vertically */
+    align-items: center; /* Align items horizontally in the center */
+}
+
+.wine-image-container {
+    flex: 0 0 auto; /* Do not grow or shrink */
+    margin-right: 20px; /* Adjust as needed */
+}
+
+.wine-details {
+    flex: 1; /* Grow to fill remaining space */
+}
+
+.rating-section {
+    margin-bottom: 10px;
+}
+
+.average-rating {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+}
 
 .average-rating {
     margin-top: 10px;
@@ -39,11 +68,12 @@
 }
 
 .average-star-rating {
+	font-size: 50px; /* Adjust the font size to make the stars bigger */
     margin: 0 5px;
 }
-  
- .main-menu {
-   /* Your styles for the main menu */
+
+.submit-rating-button {
+    margin-top: 10px; /* Add some top margin for spacing */
 }
 
 .user-tools {
@@ -123,21 +153,6 @@
     align-items: center;
 }
 
-/* Style for the content section */
-.content {
-    /* Your styles for the content section */
-}
-
-/* Style for the stacked blocks */
-.stacked-blocks {
-    /* Your styles for the stacked blocks */
-}
-
-/* Style for the stacked image blocks */
-.stacked-blocks.images {
-    /* Your styles for the stacked image blocks */
-}
-
 .navbar {
     padding: 0;
 }
@@ -169,11 +184,7 @@
 	color: rgb(0, 0, 0);
 	background-color: #FFFFFF;
 }
-/* 
-.navbar-toggler-icon {
-    color: green; Change to your desired color
-}
- */
+
 .container mt-3{
 	padding:left;
 	border: 1em;
@@ -207,20 +218,6 @@
 
 .homePage {
 	margin-top: 80px;
-    /* color: black; Set text color to black
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    background-image: url('../images/Backg.png');
-    background-size: cover;
-    background-position: center; */
-    /* font-family: Arial, sans-serif;
-    font-size: 70px;
-    color: white;
-    padding: 0;
-    height: 100vh;
-    padding: 250px 100px;
-    position: relative; */ /* Add position relative to make absolute positioning work */
 }
 
 .logo {
@@ -240,14 +237,6 @@ html, body {
     justify-content: center;
     align-items: center;
 }
-
-/* Centering content horizontally */
-/* .homePage .col-md-15 {
-    display: flex;
-    flex-direction: column;
-    top: 1px;
-    right: 1px;
-} */
 
 .text-container {
     display: flex;
@@ -270,14 +259,6 @@ html, body {
 .welcome-text {
     margin-left: 20px;
 }
-
-/* .welcome-text,
-.vinoteca-text {
-    margin: 0;
-    font-size: 24px;
-    color: #722f37;
-    text-shadow: 2px 2px 4px #8B0000;
-} */
 
 .close-button {
     position: absolute;
