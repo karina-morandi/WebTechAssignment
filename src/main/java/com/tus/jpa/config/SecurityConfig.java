@@ -3,6 +3,7 @@ package com.tus.jpa.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@Import(PasswordEncoderConfig.class)
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
@@ -48,8 +50,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
             .authorizeRequests()
                 .antMatchers("/", "/css/**", "/js/**", "/images/**", "/user/register","/user/login","/wines/**","/uploadImage","/customers/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/login").permitAll() // Allow only POST requests for login
                 .antMatchers("/admin/**").hasRole("ADMIN") 
+                .antMatchers("/customers/wines/{id}/rating").hasRole("CUSTOMER") // Allow only authenticated users to access this endpoint
+                .antMatchers(HttpMethod.POST, "/login").permitAll() // Allow only POST requests for login
                 .anyRequest().authenticated()
             .and()
             	.formLogin()
@@ -63,40 +66,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		                .logout()
 		                .permitAll();
     }
-
 }
-    
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {  	
-//        http.csrf().disable()
-//            .authorizeRequests()
-//                .antMatchers("/", "/css/**", "/js/**", "../static/**","/src/main/resources/**", "/images/**", "/user/register").permitAll()
-//                //.antMatchers("/admin").hasRole("admin") // Redirect based on role
-//                .anyRequest().authenticated()
-//            .and()
-//        .formLogin()
-//            .loginPage("/login")
-//            .permitAll()
-//            .and()
-//        .logout()
-//            .permitAll();
-//        return http.build();
-//    }
-//    @Bean
-//    protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http.csrf().disable()
-//            .authorizeRequests()
-//                .antMatchers("/", "/uploadImage","/wines/" ,"/wines/**","/login","/login/**", "/user/register", "/css/**", "/js/**", "../static/**","/src/main/resources/**", "/images/**").permitAll()
-//                .antMatchers("/admin").hasRole("admin") // Redirect based on role
-//                .anyRequest().authenticated();
-////                .and()
-////            .formLogin()
-////                .loginPage("/login")
-////                .defaultSuccessUrl("/", true)
-////                .permitAll()
-////                .and()
-////            .logout();
-////                .permitAll();
-//        return http.build();
-//    }
-

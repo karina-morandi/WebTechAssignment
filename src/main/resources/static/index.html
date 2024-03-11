@@ -53,7 +53,7 @@
 	    <div class="container">
 	        <div class="row">
 	            <div class="col-md-4">
-	                <div class="wine-example">
+	                <div class="wine-example" data-wine-id="PLACEHOLDER_ID">
 	                    <img src="../images/Blanco.png" alt="Wine Image">
 	                    <div class="wine-info">
 	                        <h3 class="wine-name">Wine Name</h3>
@@ -65,7 +65,7 @@
 	            </div>
 	            <div class="col-md-4">
                 <!-- Second wine example -->
-                <div class="wine-example">
+                <div class="wine-example" data-wine-id="PLACEHOLDER_ID">
                     <img src="../images/Red.png" alt="Wine Image">
                     <div class="wine-info">
                         <h3 class="wine-name">Red Wine</h3>
@@ -77,7 +77,7 @@
             </div>
             <div class="col-md-4">
                 <!-- Third wine example -->
-                <div class="wine-example">
+                <div class="wine-example" data-wine-id="PLACEHOLDER_ID">
                     <img src="../images/Rose.png" alt="Wine Image">
                     <div class="wine-info">
                         <h3 class="wine-name">Rosé Wine</h3>
@@ -103,14 +103,40 @@
         <label for="sortSelect">Sort by:</label>
         <select id="sortSelect" onchange="sortWines()">
             <option value="name">Name</option>
-            <option value="price">Price</option>
-            <!-- Add more options for sorting criteria -->
+            <option value="price-asc">Price (Low to High)</option>
+   			<option value="price-desc">Price (High to Low)</option>
         </select>
     </div>
     </div>
     <div class="modal-body" id="wineListBody">
         Wine list will be displayed here
     </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="wineModal" tabindex="-1" aria-labelledby="wineModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="wineModalLabel">Wine Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="wineModalBody">
+		    <!-- Wine details will be displayed here -->
+		    <!-- Add comments, rating, and purchase option here -->
+		    <div class="user-actions">
+		        <div class="rating-section">
+		            <label for="rating">Rate this wine:</label>
+		            <input type="text" id="rating" min="0" max="5">
+					<button class="btn btn-primary" onclick="submitRating(this.getAttribute('data-wine-id'))">Submit Rating</button>
+		        </div>
+		        <!-- Add comment form here -->
+		        <!-- Add purchase option here -->
+		    </div>
+		</div>
+      <!-- You can add a form for comments, rating, and purchase option here -->
+    </div>
+  </div>
 </div>
 
 <!-- LOGIN FORM -->
@@ -314,6 +340,12 @@
                     <label>Region</label>
                     <input type="text" id="Region" name="Region"><br />
                     
+                    <label>Price</label>
+                    <input type="number" id="Price" name="Price"><br />
+                    
+                    <label>Description</label>
+                    <input type="text" id="Description" name="Description"><br />
+                    
                     <label>Picture</label>
                     <input type="file" id="Picture" name="pictureFile"><br />
                 </form>
@@ -398,6 +430,12 @@
                 
                 <label>Region</label>
                 <input type="text" id="editRegion" name="editRegion"><br />
+                
+                <label>Price</label>
+                <input type="number" id="editPrice" name="editPrice"><br />
+                
+                <label>Description</label>
+                <input type="text" id="editDescription" name="editDescription"><br />
                 
                 <label>Picture</label>
                 <input type="file" id="editPicture" name="editPicture"><br />

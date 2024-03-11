@@ -80,6 +80,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 	    String color = "Red";
 	    String winery = "New Winery";
 	    String region = "Henty";
+	    double price = 10.99;
+	    String description = "Nice wine";
 	    MultipartFile pictureFile = mock(MultipartFile.class); // Mock MultipartFile
 	    when(pictureFile.getInputStream()).thenReturn(mock(InputStream.class));
 	    doNothing().when(wineValidator).validateWine(any(Wines.class));
@@ -90,7 +92,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 	    when(wineRepo.save(any(Wines.class))).thenReturn(savedWine);
 
 	    // Call the createWine method with the prepared parameters
-	    ResponseEntity<?> response = winesCont.createWine(name, grapes, country, year, color, winery, region, pictureFile);
+	    ResponseEntity<?> response = winesCont.createWine(name, grapes, country, year, color, winery, region, price, description, pictureFile);
 
 	    // Assert the response
 	    assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -107,6 +109,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 	    String color = "Red";
 	    String winery = "New Winery";
 	    String region = "Henty";
+	    double price = 10.99;
+	    String description = "Nice wine";
 	    MultipartFile pictureFile = mock(MultipartFile.class); // Mock MultipartFile
 	    when(pictureFile.getInputStream()).thenReturn(mock(InputStream.class));
 
@@ -119,7 +123,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 	    // Call the createWine method with the prepared parameters
 	    WineValidationException exception = assertThrows(WineValidationException.class, () -> {
-	        winesCont.createWine(name, grapes, country, year, color, winery, region, pictureFile);
+	        winesCont.createWine(name, grapes, country, year, color, winery, region, price, description, pictureFile);
 	    });
 
 	    // Use assertEquals to verify the message of the thrown exception
@@ -136,6 +140,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 	    String color = "Red";
 	    String winery = "New Winery";
 	    String region = "Henty";
+	    double price = 10.99;
+	    String description = "Nice wine";
 	    MultipartFile pictureFile = mock(MultipartFile.class);
 
 	    // Mock WineRepository to return a wine with the same name
@@ -145,7 +151,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 	    // Call the createWine method
 	    try {
-	        winesCont.createWine(name, grapes, country, year, color, winery, region, pictureFile);
+	        winesCont.createWine(name, grapes, country, year, color, winery, region, price, description, pictureFile);
 	        // If no exception is thrown, fail the test
 	        fail("Expected WineValidationException");
 	    } catch (WineValidationException e) {

@@ -77,7 +77,7 @@ public class WinesController {
 //	}
 
 	@PostMapping("/wines/createNewWine")
-	public ResponseEntity<?> createWine(@Valid @RequestParam("name") String name, @RequestParam("grapes") String grapes,@RequestParam("country") String country, @RequestParam("year") int year, @RequestParam("color") String color, @RequestParam("winery") String winery, @RequestParam("region") String region, @RequestPart("pictureFile") MultipartFile pictureFile) throws WineValidationException, IOException {
+	public ResponseEntity<?> createWine(@Valid @RequestParam("name") String name, @RequestParam("grapes") String grapes,@RequestParam("country") String country, @RequestParam("year") int year, @RequestParam("color") String color, @RequestParam("winery") String winery, @RequestParam("region") String region, @RequestParam("price") double price, @RequestParam("description") String description, @RequestPart("pictureFile") MultipartFile pictureFile) throws WineValidationException, IOException {
 	    try {	
 	        List<Wines> existingWines = wineRepository.findByName(name);
 	        if (!existingWines.isEmpty()) {
@@ -89,6 +89,8 @@ public class WinesController {
 	        wine.setCountry(country);
 	        wine.setGrapes(grapes);
 	        wine.setRegion(region);
+	        wine.setPrice(price);
+	        wine.setDescription(description);
 	        wine.setWinery(winery);
 	        wine.setYear(year);
 
@@ -198,6 +200,8 @@ public class WinesController {
 	        existingWine.setColor(updatedWine.getColor());
 	        existingWine.setWinery(updatedWine.getWinery());
 	        existingWine.setRegion(updatedWine.getRegion());
+	        existingWine.setPrice(updatedWine.getPrice());
+	        existingWine.setDescription(updatedWine.getDescription());
 	        
 	        // Save the updated wine
 	        Wines savedWine = wineRepository.save(existingWine);

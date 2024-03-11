@@ -239,47 +239,6 @@ function login() {
         }
     });
 }
-/*    if (!loginUsername || !passwordLog) {
-        console.error("Username or password cannot be empty");
-        return;
-    }
-
-    var loginInfo = {
-        username: loginUsername,
-        password: passwordLog
-    };
-    
-    var loginInfo = new UserInfo();
-    loginInfo.username = loginUsername;
-    loginInfo.password = passwordLog;
-
-    console.log(loginInfo);
-
-    $.ajax({
-    url: rootURL + "/user/login",
-    type: "POST",
-    contentType: "application/json",
-    data: JSON.stringify(loginInfo),
-    dataType: "json",
-    success: function(data) {
-        console.log("Login successful:", data);
-        if (data === "Admin") {
-            console.log("Admin");
-            AdminDashboard(); // Redirect to the admin dashboard
-            findAll();
-        } else if (data === "Customer") {
-            console.log("Customer");
-            HomePageDashboard();
-        } else {
-            console.error("Invalid response from server: " + data);
-        }
-    },
-    error: function(xhr, status, error) {
-        console.error("Login failed:", error);
-        // Display appropriate error message to the user
-        alert("Login failed: " + error);
-    }
-});*/
 
 	 // Handle click on register button in the login form
 	$(document).on("click", "#registerButton", function () { 
@@ -330,16 +289,7 @@ function login() {
 	        data: JSON.stringify(admin),
 	        success: function(data) {
 	            console.log("Registration successful:", login, email, password, role);
-	            LoginDashboard(); // Show the login form
-	           	/*if (data === "Admin registered successfully") {
-			        AdminDashboard(); // Redirect to the admin dashboard
-			        findAll();
-			    } else if (data === "Customer registered successfully") {
-			        HomePageDashboard(); // Redirect to the home page
-			    } else {
-			        console.error("Registration failed:", data);
-			        alert("Registration failed: " + data);
-			    }         */  
+	            LoginDashboard(); // Show the login form 
 	        },
 	        error: function(xhr, status, error) {
 	            console.error("Registration failed:", error);
@@ -351,7 +301,6 @@ function login() {
 
 function logout() {
 	console.log('Logout');
-  //	window.location.href = rootURL + "/logout";
     HomePageDashboard();
 }
 
@@ -373,6 +322,8 @@ $(document).ready(function(){
 	    formWine.append('color', $('#Color').val());
 	    formWine.append('winery', $('#Winery').val());
 	    formWine.append('region', $('#Region').val());
+	    formWine.append('price', $('#Price').val());
+	    formWine.append('description', $('#Description').val());
 	    formWine.append('pictureFile', $('#Picture')[0].files[0]); // Append the picture file to the form data
 		
 		$.ajax({
@@ -394,8 +345,6 @@ $(document).ready(function(){
 	        }
 	    });
     });
-
-   // findAll();
 });
 
 
@@ -457,12 +406,7 @@ $(document).ready(function() {
 	        }
 	    });
 	});   
-	
-	
-	
-	
-	
-	
+
 	// Function to render search results
 	function renderSearchResults(data) {
 	    $('#winesContent').empty(); // Clear previous search results
@@ -535,6 +479,8 @@ $(document).on("click", ".editButton", function(event) {
             $('#editColor').val(data.color);
             $('#editWinery').val(data.winery);
             $('#editRegion').val(data.region);
+            $('#editPrice').val(data.price);
+            $('#editDescription').val(data.description);
             // Assuming you have a picture preview element in your modal
             $('#editPicturePreview').attr('src', rootURL + '../images/' + data.picture);
 
@@ -590,38 +536,6 @@ $(document).on("click", "#submitEditWine", function(event) {
  });
 });
 
-// Function to update wine details
-/*function updateWineDetails(wineId, imagePath) {
-    // Get updated wine information from the modal fields
-    var updatedWine = {
-	    name: $('#editName').val(),
-	    grapes: $('#editGrapes').val(),
-	    country: $('#editCountry').val(),
-	    year: $('#editYear').val(),
-	    color: $('#editColor').val(),
-	    winery: $('#editWinery').val(),
-	    region: $('#editRegion').val(),
-    };
-    updatedWine.picture = imagePath; // Update the picture property with the new image path
-
-    // Send AJAX request to update the wine
-    $.ajax({
-        type: "PUT",
-        url: rootURL + "/wines/" + wineId,
-        contentType: "application/json",
-        data: JSON.stringify(updatedWine),
-        success: function(data) {
-            console.log("Wine updated successfully:", data);
-            $('#editWineModal').modal('hide'); // Hide the edit modal
-            findAll(); // Refresh wine list or perform necessary updates
-        },
-        error: function(xhr, status, error) {
-            console.error("Error updating wine:", error);
-            alert("Error updating wine: " + error);
-        }
-    });
-}*/
-
 function updateWineDetails(wineId, imagePath) {
     var updatedWine = {
         name: $('#editName').val(),
@@ -631,6 +545,8 @@ function updateWineDetails(wineId, imagePath) {
         color: $('#editColor').val(),
         winery: $('#editWinery').val(),
         region: $('#editRegion').val(),
+        price: $('#editPrice').val(),
+        description: $('#editDescription').val(),
         picture: imagePath // Assuming imagePath contains the new image path
     };
 
@@ -659,6 +575,12 @@ function updateWineDetails(wineId, imagePath) {
 
 
 
+
+
+
+
+
+
 // Function to generate star rating based on a numeric value
 function generateStarRating(stars) {
     let starHTML = '';
@@ -672,7 +594,7 @@ function generateStarRating(stars) {
     return starHTML;
 }
 
-// Function to display wine list with star ratings
+// Function to display wine list without star ratings
 function displayWineList() {
     fetch('http://localhost:9090/customers/wines') // Update the endpoint to fetch wines for customers
         .then(response => {
@@ -682,30 +604,23 @@ function displayWineList() {
             return response.json();
         })
         .then(data => {
-			// Sort wines based on default criteria (e.g., name)
+            // Sort wines based on default criteria (e.g., name)
             data.sort((a, b) => a.name.localeCompare(b.name));
-			
+
             let wineListHTML = '<div class="row">';
             data.forEach(wine => {
-                // Generate star rating HTML
-                const starRatingHTML = generateStarRating(wine.rating);
                 wineListHTML += `
-	                <div class="col-md-6">
-	                    <div class="wine-card">
-	                        <img src="../images/${wine.picture}" alt="Wine Image" class="wine-image">
-	                        <div class="wine-details">
-	                            <h3 class="wine-name">${wine.name}</h3>
-	                            <p class="wine-description">${wine.description}</p>
-	                            <p class="wine-price">$${wine.price}</p>
-	                            <div class="star-rating">${starRatingHTML}</div>
-	                            <div class="review-form">
-	                                <label for="review${wine.id}">Add Review (0-5 stars):</label>
-	                                <input type="number" id="review${wine.id}" min="0" max="5">
-	                                <button class="btn btn-primary" onclick="submitReview(${wine.id})">Submit Review</button>
-	                            </div>
-	                        </div>
-	                    </div>
-	                </div>
+                    <div class="col-md-6">
+                        <div class="wine-card">
+                            <img src="../images/${wine.picture}" alt="Wine Image" class="wine-image">
+                            <div class="wine-details">
+                                <h3 class="wine-name">${wine.name}</h3>
+                                <p class="wine-description">${wine.description}</p>
+                                <p class="wine-price">$${wine.price}</p>
+                                <button class="btn btn-primary view-details-button" data-wine-id="${wine.id}" data-bs-toggle="modal" data-bs-target="#wineModal">View Details</button>
+                            </div>
+                        </div>
+                    </div>
                 `;
             });
             wineListHTML += '</div>'; // Close the row
@@ -719,35 +634,140 @@ function displayWineList() {
 }
 
 function sortWines() {
-    const sortBy = document.getElementById('sortSelect').value;
-    fetch(`http://localhost:9090/customers/wines?sortBy=${sortBy}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch sorted wines');
-            }
-            return response.json();
-        })
-        .then(sortedData => {
-            // Update the wine list with sorted data
-            // You can use the same code as in displayWineList() function
-            // but with sortedData instead of data
-            // Display the sorted wine list
-        })
-        .catch(error => {
-            console.error('Error fetching sorted wine list:', error);
-            // Handle errors or display error message to the user
-        });
+    try {
+        const sortBy = document.getElementById('sortSelect').value;
+        fetch(`http://localhost:9090/customers/wines?sortBy=${sortBy}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch sorted wines');
+                }
+                return response.json();
+            })
+            .then(sortedData => {
+                // Sort the data based on the selected criteria
+                if (sortBy === 'price-asc') {
+                    sortedData.sort((a, b) => a.price - b.price);
+                } else if (sortBy === 'price-desc') {
+                    sortedData.sort((a, b) => b.price - a.price);
+                } else if (sortBy === 'name') {
+                    sortedData.sort((a, b) => a.name.localeCompare(b.name));
+                }
+
+                // Update the wine list with sorted data
+                let wineListHTML = '<div class="row">';
+                sortedData.forEach(wine => {
+                    // Generate star rating HTML
+                    const starRatingHTML = generateStarRating(wine.rating);
+                    wineListHTML += `
+                        <div class="col-md-6">
+                            <div class="wine-card">
+                                <img src="../images/${wine.picture}" alt="Wine Image" class="wine-image">
+                                <div class="wine-details">
+                                    <h3 class="wine-name">${wine.name}</h3>
+                                    <p class="wine-description">${wine.description}</p>
+                                    <p class="wine-price">$${wine.price}</p>
+                                    <div class="star-rating">${starRatingHTML}</div>
+                                    <div class="review-form">
+                                        <label for="review${wine.id}">Add Review (0-5 stars):</label>
+                                        <input type="number" id="review${wine.id}" min="0" max="5">
+                                        <button class="btn btn-primary" onclick="submitReview(${wine.id})">Submit Review</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                wineListHTML += '</div>'; // Close the row
+                document.getElementById('wineListBody').innerHTML = wineListHTML;
+                document.getElementById('wineListDiv').style.display = 'block'; // Display the wine list section
+            })
+            .catch(error => {
+                console.error('Error fetching sorted wine list:', error);
+                // Handle errors or display error message to the user
+            });
+    } catch (error) {
+        console.error('Error in sortWines:', error);
+    }
 }
 
-// Call displayWineList() function to initially display the wine list
-displayWineList();
-
+document.getElementById('sortSelect').addEventListener('change', sortWines);
 
 // Event listener for the wineListButton
 document.getElementById('wineListButton').addEventListener('click', function() {
     $('#homePage').hide(); // Hide the homepage
     displayWineList(); // Display the list of wines
-});/*
-// Event listener for the wineListButton
-document.getElementById('wineListButton').addEventListener('click', WineListCustomer);
-*/
+});
+
+function displayWineDetails(wineId) {
+    fetch(`http://localhost:9090/customers/wines/${wineId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch wine details');
+            }
+            return response.json();
+        })
+        .then(wine => {
+            const starRatingHTML = generateStarRating(wine.rating);
+            const wineDetailsHTML = `
+                <img src="../images/${wine.picture}" alt="Wine Image" class="wine-image">
+                <div class="wine-details">
+                    <h3 class="wine-name">${wine.name}</h3>
+                    <p class="wine-description">${wine.description}</p>
+                    <p class="wine-price">$${wine.price}</p>
+                    <div class="star-rating">${starRatingHTML}</div>
+                    <!-- Rating input -->
+                    <label for="rating${wineId}">Rate this wine:</label>
+                    <input type="number" id="rating${wineId}" min="0" max="5" data-wine-id="${wineId}">
+                    <button id="submitRatingButton${wineId}" class="btn btn-primary">Submit Rating</button>
+                </div>
+            `;
+            document.getElementById('wineModalBody').innerHTML = wineDetailsHTML;
+            // Attach event listener to the submit rating button
+            document.getElementById(`submitRatingButton${wineId}`).addEventListener('click', () => submitRating(wineId));
+            $('#wineModal').modal('show'); // Show the modal
+        })
+        .catch(error => {
+            console.error('Error fetching wine details:', error);
+            // Handle errors or display error message to the user
+        });
+}
+
+document.getElementById('wineListBody').addEventListener('click', function(event) {
+    if (event.target.classList.contains('view-details-button')) {
+        const wineId = event.target.dataset.wineId;
+        displayWineDetails(wineId);
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Attach event listener to the submit rating button
+    document.getElementById('wineListBody').addEventListener('click', function(event) {
+        if (event.target.hasAttribute('id') && event.target.id.startsWith('submitRatingButton')) {
+            const wineId = event.target.id.split('submitRatingButton')[1];
+            submitRating(wineId);
+        }
+    });
+ });
+
+function submitRating(wineId) {
+    const rating = parseFloat(document.querySelector(`input[id="rating${wineId}"]`).value);
+    // Make a POST request to submit the rating
+    fetch(`http://localhost:9090/customers/wines/${wineId}/rating`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ rating: rating })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to submit rating');
+        }
+        // Handle success (e.g., update UI)
+        // Maybe close the modal or display a success message
+    })
+    .catch(error => {
+        console.error('Error submitting rating:', error);
+        // Handle errors or display error message to the user
+    });
+}

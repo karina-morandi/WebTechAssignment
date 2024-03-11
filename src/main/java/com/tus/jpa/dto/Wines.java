@@ -22,9 +22,14 @@ public class Wines {
 	private String grapes;
 	private String country;
 	private String region;
+	private double price;
+	private String description;
 	
     @Column(name = "picture") // Store the path to the image in the database
     private String picture;
+    
+    @Column(name = "average_rating")
+    private Double averageRating;
 	
 //	@Lob
 //	private String picture;
@@ -33,7 +38,7 @@ public class Wines {
 		
 	}
 	
-	public Wines(Long id, String name, String winery, int year, String color, String grapes, String country, String region, String picture) {
+	public Wines(Long id, String name, String winery, int year, String color, String grapes, String country, String region, double price, String description, String picture, Double averageRating) {
 	    this.id = id;
 	    this.name = name;
 	    this.winery = winery;
@@ -42,7 +47,10 @@ public class Wines {
 	    this.grapes = grapes;
 	    this.country = country;
 	    this.region = region;
+	    this.price = price;
+	    this.description = description;
 	    this.picture = picture;
+        this.averageRating = averageRating;
 	}
 	
 	public Long getId() {
@@ -108,14 +116,22 @@ public class Wines {
 	public void setRegion(String region) {
 		this.region = region;
 	}
+	
+	public double getPrice() {
+		return price;
+	}
 
-//	public String getPicture() {
-//		return picture;
-//	}
-//
-//	public void setPicture(String picture) {
-//		this.picture = picture;
-//	}
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
     // Getters and setters for picturePath
     public String getPicture() {
@@ -125,10 +141,19 @@ public class Wines {
     public void setPicture(String picture) {
         this.picture = picture;
     }
-	
+    
+    public Double getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(Double averageRating) {
+        this.averageRating = averageRating;
+    }
+
 	@Override
 	public String toString() {
-		return "Wine [id = " + id + " winery " + winery + " name " + name + " grapes " + grapes + "color" + color + " country " + country + " region " + region + "]";
-	}
-	
+		return "Wines [id=" + id + ", year=" + year + ", color=" + color + ", name=" + name + ", winery=" + winery
+				+ ", grapes=" + grapes + ", country=" + country + ", region=" + region + ", price=" + price
+				+ ", description=" + description + ", picture=" + picture + ", average_rating=" + averageRating + "]";
+	}	
 }
