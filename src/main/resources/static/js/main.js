@@ -588,7 +588,7 @@ function updateWineDetails(wineId, imagePath) {
 
 
 
-
+let selectedWineId;
 // Function to display wine list without star ratings
 function displayWineList() {
     fetch('http://localhost:9090/customers/wines') // Update the endpoint to fetch wines for customers
@@ -612,6 +612,7 @@ function displayWineList() {
                                 <h3 class="wine-name">${wine.name}</h3>
                                 <p class="wine-description">${wine.description}</p>
                                 <p class="wine-price">€${wine.price}</p>
+                                <button class="btn btn-primary add-to-cart-button" data-wine-id="${wine.id}">Add to Cart</button> <!-- Add to Cart button -->
                                 <button class="btn btn-primary view-details-button" data-wine-id="${wine.id}" data-bs-toggle="modal" data-bs-target="#wineModal">View Details</button>
                             </div>
                         </div>
@@ -621,11 +622,19 @@ function displayWineList() {
             wineListHTML += '</div>'; // Close the row
             document.getElementById('wineListBody').innerHTML = wineListHTML;
             document.getElementById('wineListDiv').style.display = 'block'; // Display the wine list section
-        })
-        .catch(error => {
-            console.error('Error fetching wine list:', error);
-            // Handle errors or display error message to the user
-        });
+        
+        	// Add event listeners to the "Add to Cart" buttons
+         	document.querySelectorAll('.add-to-cart-button').forEach(button => {
+             button.addEventListener('click', function() {
+                 // Get the wine ID from the button's data attribute
+                 selectedWineId = this.dataset.wineId;
+             });
+         });
+     })
+     .catch(error => {
+         console.error('Error fetching wine list:', error);
+         // Handle errors or display error message to the user
+     });
 }
 
 function sortWines() {
@@ -852,3 +861,106 @@ $(window).on('load', function() {
         $('#starValue').val('');
     });
 });
+
+
+
+
+
+
+
+
+
+
+//Check user authentication status when the Cart button is clicked
+document.getElementById('cartButtonHome').addEventListener('click', function() {
+ checkUserAuthenticationStatus();
+});
+
+// Function to add the selected wine to the cart
+function addToCart(wineId) {
+    // Get quantity from the input field
+    const quantity = parseInt(document.getElementById('quantity').value);
+    if (isNaN(quantity) || quantity < 1) {
+        alert('Please enter a valid quantity.');
+        return;
+    }
+
+    // Make a POST request to add the wine to the cart
+    fetch(`/cart/newOrder/${wineId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            quantity: quantity,
+            customerEmail: 'example@example.com', // Add customer email (can be retrieved from session)
+        }),
+    })
+    .then(response => {
+        if (response.ok) {
+            // Wine added to cart successfully
+            alert('Wine added to cart');
+            // Optionally, you can redirect to the cart page or update the UI to reflect the addition
+        } else {
+            // Handle error response
+            alert('Failed to add wine to cart');
+        }
+    })
+    .catch(error => {
+        console.error('Error adding wine to cart:', error);
+        alert('Failed to add wine to cart');
+    });
+}
+
+
+//Function to check user authentication status
+function checkUserAuthenticationStatus() {
+ $.ajax({
+     type: "GET",
+     url: "/user/login",
+     success: function(response) {
+         if (response === "Guest") {
+             // User is not logged in, display message
+             alert("Please log in to continue");
+         } else {
+             // User is logged in, proceed with adding wine to cart
+             // Call the function to add wine to cart
+             addToCart(selectedWineId);
+         }
+     },
+     error: function(xhr, status, error) {
+         console.error("Error checking user authentication status:", error);
+         // Display error message if unable to check authentication status
+         alert("Error checking user authentication status");
+     }
+ });
+}
+
+//Function to add the selected wine to the cart with a specified quantity
+function addToCartWithQuantity(wineId, quantity) {
+ // Make a POST request to add the wine to the cart with the specified quantity
+ fetch(`/cart/newOrder/${wineId}`, {
+     method: 'POST',
+     headers: {
+         'Content-Type': 'application/json',
+     },
+     body: JSON.stringify({
+         quantity: quantity,
+         customerEmail: 'example@example.com', // Add customer email (can be retrieved from session)
+     }),
+ })
+ .then(response => {
+     if (response.ok) {
+         // Wine added to cart successfully
+         alert('Wine added to cart');
+         // Optionally, you can redirect to the cart page or update the UI to reflect the addition
+     } else {
+         // Handle error response
+         alert('Failed to add wine to cart');
+     }
+ })
+ .catch(error => {
+     console.error('Error adding wine to cart:', error);
+     alert('Failed to add wine to cart');
+ });
+}

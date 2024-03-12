@@ -1,20 +1,5 @@
 @charset "UTF-8";
 
-/* .top-nav {
-	 background-color: #722f37;
-    background-color: white;
-    border-bottom: 1px solid #ccc;
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 100;
-} */
-
 .top-nav {
     /* background-color: #722f37; */
     background-color: white;
@@ -43,6 +28,7 @@
 }
 
 .wine-image-container {
+	padding: 30px;
     flex: 0 0 auto; /* Do not grow or shrink */
     margin-right: 20px; /* Adjust as needed */
 }
@@ -368,7 +354,7 @@ html, body {
  }
  
  .wine-details {
-    padding: 10px;
+    padding: 70px;
 }
 
 .sorting-options {

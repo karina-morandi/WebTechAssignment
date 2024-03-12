@@ -1,7 +1,8 @@
 package com.tus.jpa.dto;
 
+import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 
 @Entity
 @Table(name="Users")
@@ -20,6 +21,10 @@ public class Users {
 
 	@Column(nullable = false, length = 75)
 	private String password;
+	
+	@OneToMany(mappedBy = "customer")
+    @JsonIgnore // Add this annotation to ignore the orders field during serialization
+	private List<Orders> orders;
 	
 	@Column(name="role")
 	private String role;
@@ -76,4 +81,11 @@ public class Users {
 		this.role = role;
 	}
 	
+	public List<Orders> getOrders(){
+		return orders;
+	}
+
+	public void setOrders(List<Orders> orders) {
+		this.orders = orders;
+	}
 }

@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 	
 @Entity
@@ -16,35 +18,35 @@ public class Orders {
 	@Column(name="id", unique = true)
     private Long id;
 	
-	@Column(nullable = false, length = 45)
-	private String product;
+	@ManyToOne
+	@JoinColumn(name = "wine_id")
+	private Wines wine;
 	
 	@Column(nullable = false, length = 45)
 	private int quantity;
-
-	@Column(nullable = false, length = 75)
-	private String customerEmail;
+ 
+	@ManyToOne
+	@JoinColumn(name = "customer_id")
+	private Users customer;
 	
-	@Column(nullable = false, length = 75)
-	private int total;
+	@Column(nullable = false)
+	private double total;
 
 	public Orders() {
 		
 	}
 
-	public Orders(String product, int quantity, String customerEmail, int total) {
-		this.product = product;
+	public Orders(Long id, int quantity) {
+		this.id = id;
 		this.quantity = quantity;
-		this.customerEmail = customerEmail;
-		this.total = total;
 	}
 
-	public String getProduct() {
-		return product;
+	public Wines getWine() {
+		return wine;
 	}
 
-	public void setProduct(String product) {
-		this.product = product;
+	public void setWine(Wines wine) {
+		this.wine = wine;
 	}
 
 	public int getQuantity() {
@@ -55,25 +57,25 @@ public class Orders {
 		this.quantity = quantity;
 	}
 
-	public String getCustomerEmail() {
-		return customerEmail;
+	public Users getCustomer() {
+		return customer;
 	}
 
-	public void setCustomerEmail(String customerEmail) {
-		this.customerEmail = customerEmail;
+	public void setCustomer(Users customer) {
+		this.customer = customer;
 	}
 
-	public int getTotal() {
+	public double getTotal() {
 		return total;
 	}
 
-	public void setTotal(int total) {
+	public void setTotal(double total) {
 		this.total = total;
 	}
 
 	@Override
 	public String toString() {
-		return "Orders [id=" + id + ", product=" + product + ", quantity=" + quantity + ", customerEmail="
-				+ customerEmail + ", total=" + total + "]";
+		return "Orders [id=" + id + ", wine=" + wine + ", quantity=" + quantity + ", customer="
+				+ customer + ", total=" + total + "]";
 	}
 }
