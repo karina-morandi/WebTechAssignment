@@ -49,47 +49,76 @@
 		    <button id="wineListButton" class="btn btn-primary">View Wines on Sale</button>			
 		</div>
 	</div>
-	<div class="wine-examples">
-	    <div class="container">
+	<div class="wine-container">
+    <div class="wine-item">
+        <img src="../images/Blanco.png" alt="Wine Image" class="wine-image">
+        <div class="wine-details">
+            <h3 class="wine-name">Blanco</h3>
+            <p class="winery">Alma Negra</p>
+            <p class="country">Argentina</p>
+            <a href="#" class="view-details-button">View Details</a>
+        </div>
+    </div>
+    <div class="wine-item">
+        <img src="../images/BurgoViejo.png" alt="Wine Image" class="wine-image">
+        <div class="wine-details">
+            <h3 class="wine-name">Rioja Reserva</h3>
+            <p class="winery">Burgo Viejo</p>
+            <p class="country">Spain</p>
+            <a href="#" class="view-details-button">View Details</a>
+        </div>
+    </div>
+    <div class="wine-item">
+        <img src="../images/Costa dei Trabocchi.png" alt="Wine Image" class="wine-image">
+        <div class="wine-details">
+            <h3 class="wine-name">Costa dei Trabocchi</h3>
+            <p class="winery">Vallevò</p>
+            <p class="country">Italy</p>
+            <a href="#" class="view-details-button">View Details</a>
+        </div>
+    </div>
+</div>
+<!-- 	<div class="wine-examples">
+	    <div class="wine-container">
 	        <div class="row">
 	            <div class="col-md-4">
 	                <div class="wine-example" data-wine-id="PLACEHOLDER_ID">
 	                    <img src="../images/Blanco.png" alt="Wine Image">
 	                    <div class="wine-info">
-	                        <h3 class="wine-name">Wine Name</h3>
-	                        <p class="winery">Winery Name</p>
-	                        <p class="country">Country</p>
+	                        <h3 class="wine-name">Blanco</h3>
+	                        <p class="winery">Alma Negra</p>
+	                        <p class="country">Argentina</p>
 	                        <a href="wine-page.html" class="editButton">View Wine</a>
 	                    </div>
 	                </div>
 	            </div>
 	            <div class="col-md-4">
-                <!-- Second wine example -->
+                Second wine example
                 <div class="wine-example" data-wine-id="PLACEHOLDER_ID">
-                    <img src="../images/Red.png" alt="Wine Image">
+                    <img src="../images/BurgoViejo.png" alt="Wine Image">
                     <div class="wine-info">
-                        <h3 class="wine-name">Red Wine</h3>
-                        <p class="winery">Winery Name</p>
-                        <p class="country">Country</p>
+                        <h3 class="wine-name">Rioja Reserva</h3>
+                        <p class="winery">Burgo Viejo</p>
+                        <p class="country">Spain</p>
                         <a href="wine-page.html" class="editButton">View Wine</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <!-- Third wine example -->
+                Third wine example
                 <div class="wine-example" data-wine-id="PLACEHOLDER_ID">
-                    <img src="../images/Rose.png" alt="Wine Image">
+                    <img src="../images/Costa dei Trabocchi.png" alt="Wine Image">
                     <div class="wine-info">
-                        <h3 class="wine-name">Rosé Wine</h3>
-                        <p class="winery">Winery Name</p>
-                        <p class="country">Country</p>
+                        <h3 class="wine-name">Costa dei Trabocchi</h3>
+                        <p class="winery">Vallevò</p>
+                        <p class="country">Italy</p>
                         <a href="wine-page.html" class="editButton">View Wine</a>
                     </div>
                 </div>
             </div>
 	        </div>
 	    </div>
-	</div>
+	</div> -->
 </div>
 
 <div class="content">
@@ -148,7 +177,8 @@
 	                           </div>
 	                           <button class="btn btn-primary submit-rating-button">Submit Rating</button>
 	                           <input type="number" id="quantity" min="1" value="1">
-	                           <button class="btn btn-success add-to-cart-modal-button">Add to Cart</button>
+	                           <div class="add-to-cart-button-container">
+   		                       </div>
                            <!-- Add comment form here -->
                            <!-- Add purchase option here -->
                        </div>
@@ -272,20 +302,64 @@
 		</div>
 	  </div>
 	  <div class="container theScroll">
-	      <table class="table" id="winesTable">
-        <thead>
-           <!--  <tr>
-                <th>Winery</th>
-                <th>Name</th>
-                <th>Country</th>
-                <th>Edit</th>
-            </tr> -->
-        </thead>
-        <tbody id="winesContent">
-            <!-- Wine entries will be dynamically added here -->
-        </tbody>
-    </table>
+		  <table class="table" id="winesTable">
+	        <thead>
+	           <!--  <tr>
+	                <th>Winery</th>
+	                <th>Name</th>
+	                <th>Country</th>
+	                <th>Edit</th>
+	            </tr> -->
+	        </thead>
+	        <tbody id="winesContent">
+	            <!-- Wine entries will be dynamically added here -->
+	        </tbody>
+	    </table>
 	  </div>
+	    
+	  <div id="customers" class="container mt-3">
+	  
+	  </div>
+	  
+	  <div id="orders" class="container mt-3">
+	  
+	  </div>
+	  
+	    
+	  <div class="container theScroll" id="detailsTable">    
+	    <table class="table" id="ordersTable">
+			<tr id="orderID_row">
+				<td>Order Id</td>
+				<td><input type="text" id="orderID"></td>
+			</tr>
+			<tr>
+				<td>Product Id</td>
+				<td><input type="text" id="prodID"></td>
+			</tr>
+			<tr>
+				<td>Item</td>
+				<td><input type="text" id="prodName"></td>
+			</tr>
+			<tr>
+				<td>Price</td>
+				<td><input type="text" id="prodPrice"></td>
+			</tr>
+			<tr>
+				<td>Quantity</td>
+				<td><input type="text" id="prodQuantity"></td>
+			</tr>
+			<tr>
+				<td><button class="w3-button w3-orange" id="UpdateOrder">Update</button></td> 
+				<td><button class="w3-button w3-red" id="deleteOrder">Delete</button></td>
+			</tr>
+		</table>
+	  </div>
+	  
+	  
+	  
+	  
+	  
+	  
 	</nav>
 	
 	<!-- Side Navbar -->
@@ -303,6 +377,12 @@
 	        </li>
 	        <li class="nav-item">
 	          <button type="button" class="form-control btn btn-primary submit px-3" id="findallWine">All Wines</button>
+	        </li>
+	       <!--  <li class="nav-item">
+	          <button type="button" class="form-control btn btn-primary submit px-3" id="viewOrders">View Orders</button>
+	        </li> -->
+	        <li class="nav-item">
+	          <button type="button" class="form-control btn btn-primary submit px-3" id="fetchCustomersBtn">View Customers</button>
 	        </li>
 	        <li class="nav-item dropdown">
 	          <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">

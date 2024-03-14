@@ -17,8 +17,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.hateoas.CollectionModel; 
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+
 import com.tus.jpa.dto.Orders;
 import com.tus.jpa.dto.Users;
+import com.tus.jpa.dto.Wines;
 import com.tus.jpa.repositories.OrdersRepository;
 import com.tus.jpa.repositories.UserRepository;
 import com.tus.jpa.service.CustomerService;
@@ -45,10 +53,22 @@ public class CustomersController {
 	}
 	
 	@GetMapping("/customers/{id}")
-	public Users getCustomerById(@PathVariable Long id) {
-		return customerService.getCustomerById(id)
+	public EntityModel<Users> getCustomerById(@PathVariable Long id) {
+		Users user = customerService.getCustomerById(id)
 				.orElseThrow(() -> new RuntimeException("Customer not found!!!"));
+		
+		return EntityModel.of(user,
+			WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CustomersController.class).getCustomerById(id)).withSelfRel(),
+			linkTo(methodOn(CustomersController.class).getAllCustomers()).withRel("customers"));
 	}
+	
+	@GetMapping("/customers/username/{login}")
+	public Long getUserByName(@PathVariable("login") String login){
+		Users foundUser=userRepo.findByLogin(login);
+		Long id = foundUser.getId();
+		return id;
+	}
+	
 	@PostMapping("/register")
 	public ResponseEntity createUser(@Valid @RequestBody Users user) {
 	    if (userRepo.findByLogin(user.getLogin()) != null) {
@@ -78,15 +98,27 @@ public class CustomersController {
 	}
 	
 	@GetMapping("/{customerId}/orders")
-	public List<Orders> getAllOrdersByCustomerId(@PathVariable Long customerId) {
-		return customerService.getAllOrdersByCustomerId(customerId);
+	public CollectionModel<Orders> getAllOrdersByCustomerId(@PathVariable Long customerId) {
+		List<Orders> orders = customerService.getAllOrdersByCustomerId(customerId);
+		for (Orders order : orders) {
+			Link selfLink = linkTo(methodOn(CustomersController.class).getOrderById(order.getId())).withSelfRel();
+			order.add(selfLink);
+		}
+		Link customerLink = linkTo(methodOn(CustomersController.class).getCustomerById(customerId)).withRel("customer");
+		return CollectionModel.of(orders, customerLink);
 	}
+	
+//	String user=request.getUserPrincipal().getName();
+
 	
 	@PostMapping("/{customerId}/newOrder")
 	public Orders createOrder(@PathVariable Long customerId, @RequestBody Orders order) {
 		Users user = customerService.getCustomerById(customerId)
 				.orElseThrow(() -> new RuntimeException("Customer not found!!!"));
 		order.setCustomer(user);
+	    Long wineId = order.getWine().getId(); // Extract the wineId from the request body
+	    order.setWineId(wineId);
+	    order.calculateTotal(); // Calculate the total before saving the order
 		return customerService.saveOrder(order);
 	}
 	
@@ -102,5 +134,11 @@ public class CustomersController {
 	@DeleteMapping("/orders/{orderId}")
 	public void deleteOrder(@PathVariable Long orderId) {
 		customerService.deleteOrder(orderId);
+	}
+	
+	@GetMapping("/{customerId}/orders-link")
+	public Link getOrdersLinkForCustomer(@PathVariable Long customerId) {
+	Link ordersLink = linkTo(methodOn(CustomersController.class).getAllOrdersByCustomerId(customerId)).withRel("orders");
+	return ordersLink;
 	}
 }

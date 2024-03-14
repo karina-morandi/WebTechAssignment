@@ -3,10 +3,11 @@ package com.tus.jpa.dto;
 import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import org.springframework.hateoas.RepresentationModel;
 
 @Entity
 @Table(name="Wines")
-public class Wines {
+public class Wines extends RepresentationModel<Wines> {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

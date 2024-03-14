@@ -55,11 +55,11 @@ public class RegistrationController {
 //	    }	
 //	}
 		
-	@GetMapping("/name/{login}")
-	public boolean getUserByName(@PathVariable("login") String login){
-		Users foundUser=userRepo.findByLogin(login);
-		return foundUser!=null;
-	}	
+//	@GetMapping("/name/{login}")
+//	public boolean getUserByName(@PathVariable("login") String login){
+//		Users foundUser=userRepo.findByLogin(login);
+//		return foundUser!=null;
+//	}	
   
 	@GetMapping("/login")
 	public ResponseEntity<?> getLoginPage(@RequestParam(name = "error", required = false) String error) {

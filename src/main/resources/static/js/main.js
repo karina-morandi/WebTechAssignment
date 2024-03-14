@@ -31,6 +31,7 @@ function AdminDashboard() {
     $('#loginFormDiv').hide();
     $('#registrationForm').hide();
     $('#admin').show();
+    $('#detailsTable').hide(); // Hide any existing tables
     $('#wineListDiv').hide();
 }
 
@@ -53,8 +54,10 @@ function clearList(){
 let rootURL = "http://localhost:9090";
 var currentViewType = 'list'; // Default view type
 var wineData;
+let customerId;
 
 function findAll(){
+	$('#detailsTable').hide(); // Hide any existing tables
     console.log("Find all wines");
     $.ajax({
         type: "GET",
@@ -74,16 +77,6 @@ function findAll(){
         }
     });
 }
-            /*console.log("AJAX request successful - Raw response:", data);
-            wineData = data;
-//            $('#dashboard_title').text("All Products");
-            renderContent();
-        },
-        error: function(xhr, status, error) {
-                console.error("AJAX request error:", error);
-        }
-    });
-}*/
 
 var renderContent = function() {
     if (currentViewType === 'list') {
@@ -205,6 +198,25 @@ $(document).ready(function () {
     login();
 });
 
+// Function to fetch customer ID after successful login
+function fetchCustomerId(username) {
+    $.ajax({
+        type: "GET",
+        url: "/serviceLayer/customers/username/" + username,
+        success: function (data) {
+            console.log("Customer ID:", data);
+            customerId = data;
+            // Pass the customer ID to other functions as needed
+            // For example, you can pass it to the addToCart function
+            // addToCart(data.id, wineId);
+        },
+        error: function (xhr, status, error) {
+            console.error("Error fetching customer ID:", error);
+            // Handle error appropriately
+        }
+    });
+}
+
 function login() {
     var username = document.getElementById("loginUsername").value;
     console.log("login= ", username);
@@ -226,6 +238,7 @@ function login() {
             findAll();
         } else if (data === "Customer") {
             console.log("Customer");
+            fetchCustomerId(username);
             HomePageDashboard();
         } else {
             console.error("Invalid response from server: " + data);
@@ -576,18 +589,6 @@ function updateWineDetails(wineId, imagePath) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 let selectedWineId;
 // Function to display wine list without star ratings
 function displayWineList() {
@@ -612,7 +613,6 @@ function displayWineList() {
                                 <h3 class="wine-name">${wine.name}</h3>
                                 <p class="wine-description">${wine.description}</p>
                                 <p class="wine-price">€${wine.price}</p>
-                                <button class="btn btn-primary add-to-cart-button" data-wine-id="${wine.id}">Add to Cart</button> <!-- Add to Cart button -->
                                 <button class="btn btn-primary view-details-button" data-wine-id="${wine.id}" data-bs-toggle="modal" data-bs-target="#wineModal">View Details</button>
                             </div>
                         </div>
@@ -622,15 +622,8 @@ function displayWineList() {
             wineListHTML += '</div>'; // Close the row
             document.getElementById('wineListBody').innerHTML = wineListHTML;
             document.getElementById('wineListDiv').style.display = 'block'; // Display the wine list section
-        
-        	// Add event listeners to the "Add to Cart" buttons
-         	document.querySelectorAll('.add-to-cart-button').forEach(button => {
-             button.addEventListener('click', function() {
-                 // Get the wine ID from the button's data attribute
-                 selectedWineId = this.dataset.wineId;
-             });
-         });
-     })
+                  
+             })
      .catch(error => {
          console.error('Error fetching wine list:', error);
          // Handle errors or display error message to the user
@@ -724,6 +717,7 @@ function displayWineDetails(wineId) {
                     const starRatingHTML = displayAverageStarRating(averageRating);
                     // Update wine details in the modal
                     const wineModalBody = document.getElementById('wineModalBody');
+                    console.log(wineModalBody);
                     wineModalBody.querySelector('.wine-image').src = `../images/${wine.picture}`;
                     wineModalBody.querySelector('.wine-name').textContent = wine.name;
                     wineModalBody.querySelector('.wine-year').textContent = wine.year;
@@ -739,6 +733,21 @@ function displayWineDetails(wineId) {
                     // Set data attribute to the submit rating button for identification
                     const submitRatingButton = wineModalBody.querySelector('.submit-rating-button');
                     submitRatingButton.setAttribute('data-wine-id', wineId);
+                    
+                    // Add "Add to Cart" button
+	                const addToCartButton = document.createElement('button');
+	                addToCartButton.textContent = 'Add to Cart';
+	                addToCartButton.classList.add('btn', 'btn-primary', 'add-to-cart-button');
+	                addToCartButton.setAttribute('data-wine-id', wineId);
+	                addToCartButton.addEventListener('click', function() {
+	                    const wineId = this.dataset.wineId;
+	                    addToCart(wineId);
+	                });
+	                wineModalBody.querySelector('.add-to-cart-button-container').innerHTML = ''; // Clear previous button if any
+	                wineModalBody.querySelector('.add-to-cart-button-container').appendChild(addToCartButton);
+                 
+                 
+                 
                     // Show the modal
                     $('#wineModal').modal('show');
                 })
@@ -816,68 +825,30 @@ function displayAverageStarRating(averageRating) {
     return starHTML;
 }
 
-
-
-
-
-
-
-function getStars(rating) {
-    rating = Math.round(rating * 2)/2;
-    let output = '<div><h3>';
-    for (var i = rating; i >= 1; i--)
-        output += '<i class="fa fa-star" style="color:gold"></i>';
-    if(i==.5)
-        output += '<i class="fa fa-star-half-o" style="color:gold"></i>';
-    for(let i = (5-rating); i >= 1; i--)
-        output += '<i class="fa fa-star-o" style="color:gold"></i>'
-
-    return output;
-}
-
-$(window).on('load', function() {
-    // console.log("Hello World");
-
-    $(document).on("click", "#createStars", function() {
-        // console.log("Generate Clicked");
-        $('#theStars').html('');
-        let numericalStarValue = $('#starValue').val();
-        // console.log('Number of Stars = ' + numericalStarValue + 'stars');
-
-        if(isNaN(numericalStarValue) || numericalStarValue < 0 || numericalStarValue > 5) {
-            console.log("Something went wrong, all values must be numerical and between 1 and 5");
-            alert("Something went wrong, all values must be numerical and between 1 and 5");
-        }
-        else {
-            let stars = getStars(parseFloat(numericalStarValue));
-            console.log("Stars ----> " + stars)
-            $('#theStars').append(stars);
-        }
-    });
-
-    $(document).on("click", "#clearSelection", function() {
-        console.log("Reset button has been clicked");
-        $('#theStars').html('<br/>');
-        $('#starValue').val('');
-    });
+// Event listener for the Cart button
+document.getElementById('cartButtonHome').addEventListener('click', function() {
+    // Implement your logic here to handle the Cart button click event
+    console.log("Cart button clicked");
 });
 
-
-
-
-
-
-
-
-
-
-//Check user authentication status when the Cart button is clicked
-document.getElementById('cartButtonHome').addEventListener('click', function() {
- checkUserAuthenticationStatus();
+// Event listener for the "Add to Cart" button within the wine details modal
+document.getElementById('wineModalBody').addEventListener('click', function(event) {
+    if (event.target.classList.contains('add-to-cart-button')) {
+		event.stopPropagation(); // Stop event propagation
+		const wineId = event.target.getAttribute('data-wine-id');
+ //       addToCart(wineId);
+    }
 });
 
 // Function to add the selected wine to the cart
 function addToCart(wineId) {
+	console.log("Adding wine with ID " + wineId + " to the cart...");
+	
+	if (customerId === null || isNaN(parseFloat(customerId))) {
+	    console.error('Invalid or missing customer ID');
+	    return;
+	}
+	
     // Get quantity from the input field
     const quantity = parseInt(document.getElementById('quantity').value);
     if (isNaN(quantity) || quantity < 1) {
@@ -886,14 +857,14 @@ function addToCart(wineId) {
     }
 
     // Make a POST request to add the wine to the cart
-    fetch(`/cart/newOrder/${wineId}`, {
+    fetch(`/serviceLayer/${customerId}/newOrder`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+            wineId: wineId, // Pass the wine ID in the request body
             quantity: quantity,
-            customerEmail: 'example@example.com', // Add customer email (can be retrieved from session)
         }),
     })
     .then(response => {
@@ -913,54 +884,208 @@ function addToCart(wineId) {
 }
 
 
-//Function to check user authentication status
-function checkUserAuthenticationStatus() {
- $.ajax({
-     type: "GET",
-     url: "/user/login",
-     success: function(response) {
-         if (response === "Guest") {
-             // User is not logged in, display message
-             alert("Please log in to continue");
-         } else {
-             // User is logged in, proceed with adding wine to cart
-             // Call the function to add wine to cart
-             addToCart(selectedWineId);
-         }
-     },
-     error: function(xhr, status, error) {
-         console.error("Error checking user authentication status:", error);
-         // Display error message if unable to check authentication status
-         alert("Error checking user authentication status");
-     }
- });
+
+
+
+
+
+
+
+
+var deleteOrder=function() {
+	$('#orders').hide(); // Hide orders table if it's visible
+    $('#customers').show(); // Show customers table
+	var orderid = $('#orderID').val();
+	console.log("Order to be deleted: "+orderid);
+	$.ajax({
+		type: 'DELETE',
+		url: rootURL +'/serviceLayer/orders/' + orderid, 
+		success: function(data, textStatus, jqXHR){
+			alert('Order deleted successfully');
+			$('#details Table').hide();
+			$('#' + orderid).closest('tr').remove(); // Remove the row with the order ID
+			findAllCustomers();
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				alert('delete Order error');
+			}
+		});
+};
+
+var tempOrderID; // Declare tempOrderID here
+
+var updateOrder = function(){
+	console.log('updating order');
+	tempOrderID = $('#orderID').val();
+	$.ajax({
+		type: 'PUT',
+		contentType: 'application/json',
+		url: rootURL + '/serviceLayer/orders/' + $('#orderID').val(),
+		dataType: 'json',
+		data: formToJSON(),
+		success: function(data, textStatus, jqXRH){
+			alert('Order Updated Successfully');
+			findOrderById(tempOrderID); // Fetch and update the order details
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			alert('updateOrder error: '+ textStatus);
+		}
+	});
+};
+
+var formToJSON = function() {
+    var orderId = $('#orderID').val();
+    var prodID = $('#prodID').val(); // Get wine ID from the prodID field
+    var quantity = parseInt($('#prodQuantity').val());
+    var price = parseFloat($('#prodPrice').val()); // Declare and initialize price here
+    return JSON.stringify({
+        "id": orderId == "" ? null: orderId,
+        "quantity": quantity,
+        "product":{
+            "id": prodID, // Set wine ID here
+            "name": $('#prodName').val(),
+            "price": price,
+        }
+    });
 }
 
-//Function to add the selected wine to the cart with a specified quantity
-function addToCartWithQuantity(wineId, quantity) {
- // Make a POST request to add the wine to the cart with the specified quantity
- fetch(`/cart/newOrder/${wineId}`, {
-     method: 'POST',
-     headers: {
-         'Content-Type': 'application/json',
-     },
-     body: JSON.stringify({
-         quantity: quantity,
-         customerEmail: 'example@example.com', // Add customer email (can be retrieved from session)
-     }),
- })
- .then(response => {
-     if (response.ok) {
-         // Wine added to cart successfully
-         alert('Wine added to cart');
-         // Optionally, you can redirect to the cart page or update the UI to reflect the addition
-     } else {
-         // Handle error response
-         alert('Failed to add wine to cart');
-     }
- })
- .catch(error => {
-     console.error('Error adding wine to cart:', error);
-     alert('Failed to add wine to cart');
- });
+var findOrderById = function (id) {
+	$.ajax({
+		type: 'GET', 
+		url: rootURL +"/serviceLayer/orders/"+id, 
+		dataType: "json", 
+		success: function (order) {
+			console.log(order);
+			editOrder(order);
+		},
+		error: function(xhr, status, error) {
+			console.error('Error fetching orders:', error);
+			$('#details').html('<h2 class="w3-row w3-red">Error</h2><p>Error fetching orders. Please try again later.</p>');
+		}
+	});
 }
+
+/*function editOrder(order){
+	$('#orderID').val(order.id);
+	$('#prodID').val(order.wine.id);
+	$('#prodName').val(order.wine.name);
+	$('#prodPrice').val(order.wine.price);
+	$('#prodQuantity').val(order.quantity);
+	console.log("This product is: "+order.wine.name+" \tQuantity: "+order.quantity);
+	$('orderID_row').hide();
+}*/
+
+
+function editOrder(order) {
+    $('#orderID').val(order.id);
+    if (order.wine) {
+        $('#prodID').val(order.wine.id);
+        $('#prodName').val(order.wine.name);
+        $('#prodPrice').val(order.wine.price);
+    } else {
+        // Handle case where wine information is missing
+        console.error('Wine information missing for order:', order);
+    }
+    $('#prodQuantity').val(order.quantity);
+    console.log("This product is: " + (order.wine ? order.wine.name : 'Unknown') + "\tQuantity: " + order.quantity);
+    $('orderID_row').hide();
+}
+
+
+
+function findAllCustomers(customerId) {
+	console.log('findAllCustomers!');
+    $('#winesTable').hide(); // Hide any existing tables
+    $('#orders').hide(); // Hide orders table if it's visible
+    $('#customers').show(); // Show customers table
+	$.ajax({
+		url: rootURL + '/serviceLayer/customers',
+		type: 'GET', 
+		success: function(customers) { 
+			renderCustomers(customers); 
+			console.log(customers);
+		},
+		error: function(xhr, status, error) {
+			console.error('Error fetching customers:', error);
+			$('#customers').html('<p>Error fetching customers. Please try again later.</p>');
+		}
+	});
+}
+
+function renderCustomers(customers) {
+    var customersHtml = "<table class='table'>";
+    customersHtml += "<tr><th>ID</th><th>Login</th><th>Email</th><th>Role</th><th>Actions</th></tr>";
+    $.each(customers, function (index, customer) {
+        customersHtml += '<tr><td>' + customer.id + '</td><td>' + customer.login + '</td><td>' + customer.email + '</td><td>' + '</td><td>' + customer.role + '</td><td><button class="viewOrdersButton w3-button w3-green" data-customer-id="' + customer.id + '">View Orders</button></td></tr>';
+    });
+    customersHtml += '</table>';
+    $('#customers').html(customersHtml);
+}
+
+// Function to fetch and render orders for a customer
+function viewOrders(customerId) {
+	$('#orders').show(); // Hide orders table if it's visible
+    $('#customers').hide(); // Show customers table
+    console.log('View orders for customer:', customerId);
+    $.ajax({
+        url: rootURL + '/serviceLayer/' + customerId + '/orders',
+        type: 'GET',
+        success: function (orders) {
+            renderOrders(orders);
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching orders:', error);
+            $('#orders').html('<p>Error fetching orders. Please try again later.</p>');
+        }
+    });
+}
+
+function renderOrders(response) {
+    var orders = response._embedded ? response._embedded.ordersList : []; // Check if orders exist in the response
+    console.log(orders); // Log the orders array
+    var ordersHtml = "<table class='w3-table'>";
+    ordersHtml += "<tr><th>Order ID</th><th>Product ID</th><th>Product Name</th><th>Price</th><th>Quantity</th><th>Total</th><th>Edit</th></tr>";
+    if (orders.length > 0) {
+        $.each(orders, function (index, order) {
+            console.log(order); // Log each order object
+            var total = order.quantity * order.wine.price;
+            ordersHtml += '<tr><td>' + order.id + '</td><td>' + order.wine.id + '</td><td>' + order.wine.name + '</td><td>' + order.wine.price + '</td><td>' + order.quantity + '</td><td>' + total + '</td><td><button class="editOrderButton w3-button w3-green" id=' + order.id + '>Edit</button></td></tr>';
+        });
+    } else {
+        // Display a message if there are no orders for the customer
+        ordersHtml += '<tr><td colspan="6">No orders found for this customer</td></tr>';
+    }
+    ordersHtml += '</table>';
+    $('#orders').html(ordersHtml); // Display orders in the #orders element
+}
+
+$(document).ready(function(){
+	// Attach click event listener to the button
+	$(document).on("click", "#fetchCustomersBtn", function () {
+    	findAllCustomers(); // Call your existing function here
+	});
+
+	$(document).on("click", ".viewOrdersButton", function () {
+		var customerId = $(this).data('customer-id');
+        viewOrders(customerId); // Fetch orders for the current user
+    });
+    
+    $(document).on("click", ".editOrderButton", function () {
+		console.log("Edit button clicked for order "+this.id);
+		findOrderById(this.id);
+		$('#detailsTable').show();
+		return false;
+	});
+	
+	$(document).on("click", "#UpdateOrder", function (){
+		updateOrder();
+		console.log("Update button clicked for order "+this.id); 
+		return false;
+	});
+		
+	$(document).on("click", "#deleteOrder", function () {
+		deleteOrder();
+		console.log("Delete button clicked for order "+this.id); 
+		return false;
+	});
+});

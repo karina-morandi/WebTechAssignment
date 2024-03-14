@@ -8,10 +8,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.springframework.hateoas.RepresentationModel;
 	
 @Entity
 @Table(name="Orders")
-public class Orders {
+public class Orders extends RepresentationModel<Orders>{
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,9 +38,18 @@ public class Orders {
 		
 	}
 
-	public Orders(Long id, int quantity) {
+	public Orders(Long id, Wines wine, int quantity) {
 		this.id = id;
+		this.wine = wine;
 		this.quantity = quantity;
+	}
+		
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public Wines getWine() {
@@ -72,7 +83,23 @@ public class Orders {
 	public void setTotal(double total) {
 		this.total = total;
 	}
-
+	
+	public void calculateTotal() {
+	    if (wine != null && getQuantity() > 0) {
+	        double winePrice = wine.getPrice();
+	        this.total = winePrice * getQuantity();
+	    } else {
+	        this.total = 0;
+	    }
+	}
+	
+	public void setWineId(Long id) {
+		if (wine == null) {
+	        wine = new Wines(); // Create a new Wines object if it's null
+	    }
+	    wine.setId(id); // Set the id of the Wines object
+	}
+	
 	@Override
 	public String toString() {
 		return "Orders [id=" + id + ", wine=" + wine + ", quantity=" + quantity + ", customer="
