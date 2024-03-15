@@ -39,7 +39,28 @@
         </div>
         <div class="user-tools ml-auto">
             <a id="loginButtonHome" class="login-button">Login</a>
-            <a id="cartButtonHome" class="cart-button">Cart</a>
+            
+            
+            
+            
+            
+            
+            <div class="cart-container">
+			    <button id="cartButtonHome" class="cart-button" style="display: none;">Cart</button>
+			    <div id="cartDropdown" class="cart-dropdown">
+			        <!-- Cart items will be dynamically inserted here -->
+			    </div>
+			</div>
+            
+            
+            
+            
+            
+            
+            
+            
+<!--             <a id="cartButtonHome" class="cart-button" style="display: none;">Cart</a> -->
+            <a id="logoutButtonHome" class="logout-button" style="display: none;">Logout</a>
         </div>
     </div>
 	</header>
@@ -78,76 +99,44 @@
         </div>
     </div>
 </div>
-<!-- 	<div class="wine-examples">
-	    <div class="wine-container">
-	        <div class="row">
-	            <div class="col-md-4">
-	                <div class="wine-example" data-wine-id="PLACEHOLDER_ID">
-	                    <img src="../images/Blanco.png" alt="Wine Image">
-	                    <div class="wine-info">
-	                        <h3 class="wine-name">Blanco</h3>
-	                        <p class="winery">Alma Negra</p>
-	                        <p class="country">Argentina</p>
-	                        <a href="wine-page.html" class="editButton">View Wine</a>
-	                    </div>
-	                </div>
-	            </div>
-	            <div class="col-md-4">
-                Second wine example
-                <div class="wine-example" data-wine-id="PLACEHOLDER_ID">
-                    <img src="../images/BurgoViejo.png" alt="Wine Image">
-                    <div class="wine-info">
-                        <h3 class="wine-name">Rioja Reserva</h3>
-                        <p class="winery">Burgo Viejo</p>
-                        <p class="country">Spain</p>
-                        <a href="wine-page.html" class="editButton">View Wine</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                Third wine example
-                <div class="wine-example" data-wine-id="PLACEHOLDER_ID">
-                    <img src="../images/Costa dei Trabocchi.png" alt="Wine Image">
-                    <div class="wine-info">
-                        <h3 class="wine-name">Costa dei Trabocchi</h3>
-                        <p class="winery">Vallevò</p>
-                        <p class="country">Italy</p>
-                        <a href="wine-page.html" class="editButton">View Wine</a>
-                    </div>
-                </div>
-            </div>
-	        </div>
-	    </div>
-	</div> -->
 </div>
 
 <div class="content">
 
 <!-- Full wine list for customers! -->
-<div id="wineListDiv" style="display:none;" class="row justify-content-center">
-    <div class="col-md-8">
-        <button type="button" class="btn-close close-button" data-bs-dismiss="modal" aria-label="Close"></button>
-    <h2 class="text-center">Wines on Sale</h2>
-    <div class="sorting-options">
-        <label for="sortSelect">Sort by:</label>
-        <select id="sortSelect" onchange="sortWines()">
-            <option value="name">Name</option>
-            <option value="price-asc">Price (Low to High)</option>
-   			<option value="price-desc">Price (High to Low)</option>
-        </select>
-    </div>
-    </div>
-    <div class="modal-body" id="wineListBody">
-        Wine list will be displayed here
+<div id="wineListDiv" class="wine-list-wrapper" style="display:none;">
+    <h1 class="wine-list-title">Our Wines</h1>
+    <div class="container wine-list-container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+	            <div class="sorting-options">
+	                    <label for="sortSelect">Sort by:</label>
+	                    <select id="sortSelect" onchange="sortWines()">
+	                        <option value="name">Name</option>
+	                        <option value="price-asc">Price (Low to High)</option>
+	                        <option value="price-desc">Price (High to Low)</option>
+	                    </select>
+	                </div>
+                <button id="closeWineListButton" type="button" class="btn-close close-button" aria-label="Close"></button>
+            </div>
+            <div class="col-md-8">
+                 <form id="search-by-name" role="search">
+				 	<input id="searchTextList" class="form-control me-2" type="search" placeholder="Search by name" aria-label="Search">
+				 	<button id="searchButtonList" class="btn btn-primary" type="submit">Search</button>
+				 </form>
+            </div>
+        </div>
+        <div class="row" id="wineListBody">
+            <!-- Wine list will be displayed here -->
+        </div>
     </div>
 </div>
 
 <!-- Modal -->
 <div class="modal fade" id="wineModal" tabindex="-1" aria-labelledby="wineModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-dialog-centered modal-md">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="wineModalLabel">Wine Details</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body" id="wineModalBody">
@@ -213,7 +202,7 @@
 	           	<label class="label" for="loginPassword">Password</label>
 	            <input type="password" class="form-control" id="loginPassword" name="loginPassword" required>
 	           	<div class="form-group">
-	           		<button type="submit" class="form-control btn btn-primary submit px-3">Login</button>
+	           		<button type="submit" class="btn btn-primary">Login</button>
           		</div>
        		</form>
        </div>
@@ -402,7 +391,7 @@
 	        <input id="searchInput" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
 	        <button id="searchButton" class="btn btn-outline-success" type="submit">Search</button>
 	      </form>
-	      <button type="button" class="btn btn-primary" id="logoutButton" onclick="logout()">
+	      <button type="button" class="btn btn-primary logout-button" id="logoutButton">
              <span class="align-text-bottom"></span>
              Logout
          </button>

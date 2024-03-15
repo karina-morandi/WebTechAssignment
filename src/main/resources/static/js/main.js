@@ -186,6 +186,15 @@ $(document).ready(function () {
 	    console.log("Login button on home page clicked");
 	    LoginDashboard(); // Show the login form
 	});
+	
+	// Handle click on logout button in the home page
+	$(document).on("click", "#logoutButtonHome", function () {
+	    console.log("Logout button on home page clicked");
+	    // Implement logout functionality here
+	    // For example, clear customerId and update button visibility
+	    customerId = null;
+	    updateLoginLogoutButtons();
+	});
 	    
 	$('#loginForm').submit(function (event) {
     event.preventDefault(); // Prevent default form submission behavior
@@ -206,6 +215,7 @@ function fetchCustomerId(username) {
         success: function (data) {
             console.log("Customer ID:", data);
             customerId = data;
+            updateLoginLogoutButtons(); // Update button visibility after fetching customer ID
             // Pass the customer ID to other functions as needed
             // For example, you can pass it to the addToCart function
             // addToCart(data.id, wineId);
@@ -216,6 +226,36 @@ function fetchCustomerId(username) {
         }
     });
 }
+
+// Function to check if the user is logged in
+function checkAuthenticationStatus() {
+	console.log("AUTHENTICATION!!!!")
+    // Perform your authentication status check here
+    // For example, you can check if a customerId exists
+    return customerId != null;
+}
+
+// Function to update the visibility of login and logout buttons
+function updateLoginLogoutButtons() {
+	console.log("UPDATE BUTTONS!!!")
+    if (checkAuthenticationStatus()) {
+        // Hide the login button and show the logout button
+        $("#loginButtonHome").hide();
+        $("#cartButtonHome").show();
+        $("#logoutButtonHome").show();
+    } else {
+        // Show the login button and hide the logout button
+        $("#loginButtonHome").show();
+        $("#cartButtonHome").hide();
+        $("#logoutButtonHome").hide();
+    }
+}
+
+// Call the function to update button visibility when the page loads
+$(document).ready(function () {
+	checkAuthenticationStatus();
+    updateLoginLogoutButtons();
+});
 
 function login() {
     var username = document.getElementById("loginUsername").value;
@@ -310,12 +350,28 @@ function login() {
 	        }
 	    });
 	});
-});
-
-function logout() {
+	
+	function logout() {
 	console.log('Logout');
-    HomePageDashboard();
+	customerId = null; // Clear customerId
+    updateLoginLogoutButtons(); // Update button visibility
 }
+
+	// Handle click on logout button in the home page
+	$(document).on("click", "#logoutButtonHome", function () {
+	    console.log("Logout button on home page clicked");
+	    logout(); // Call the logout function
+	});
+	
+	// Handle click on logout button in the home page
+	$(document).on("click", "#logoutButton", function () {
+	    console.log("Logout button clicked");
+	    customerId = null;
+	    HomePageDashboard();
+	    //logout(); // Call the logout function
+	});
+
+});
 
 $(document).ready(function(){
     $(document).on("click", '#newWine', function(){
@@ -589,6 +645,13 @@ function updateWineDetails(wineId, imagePath) {
 
 
 
+
+document.getElementById('closeWineListButton').addEventListener('click', function() {
+    document.getElementById('wineListDiv').style.display = 'none'; // Hide the wine list section
+    document.getElementById('homePage').style.display = 'block'; // Show the home page section
+});
+
+
 let selectedWineId;
 // Function to display wine list without star ratings
 function displayWineList() {
@@ -653,25 +716,18 @@ function sortWines() {
                 // Update the wine list with sorted data
                 let wineListHTML = '<div class="row">';
                 sortedData.forEach(wine => {
-                    // Generate star rating HTML
-                    const starRatingHTML = generateStarRating(wine.rating);
-                    wineListHTML += `
-                        <div class="col-md-6">
-                            <div class="wine-card">
-                                <img src="../images/${wine.picture}" alt="Wine Image" class="wine-image">
-                                <div class="wine-details">
-                                    <h3 class="wine-name">${wine.name}</h3>
-                                    <p class="wine-description">${wine.description}</p>
-                                    <p class="wine-price">€${wine.price}</p>
-                                    <div class="star-rating">${starRatingHTML}</div>
-                                    <div class="review-form">
-                                        <label for="review${wine.id}">Add Review (0-5 stars):</label>
-                                        <input type="number" id="review${wine.id}" min="0" max="5">
-                                        <button class="btn btn-primary" onclick="submitReview(${wine.id})">Submit Review</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+					wineListHTML += `
+	                    <div class="col-md-6">
+	                        <div class="wine-card">
+	                            <img src="../images/${wine.picture}" alt="Wine Image" class="wine-image">
+	                            <div class="wine-details">
+	                                <h3 class="wine-name">${wine.name}</h3>
+	                                <p class="wine-description">${wine.description}</p>
+	                                <p class="wine-price">€${wine.price}</p>
+	                                <button class="btn btn-primary view-details-button" data-wine-id="${wine.id}" data-bs-toggle="modal" data-bs-target="#wineModal">View Details</button>
+	                            </div>
+	                        </div>
+	                    </div>
                     `;
                 });
                 wineListHTML += '</div>'; // Close the row
@@ -783,6 +839,7 @@ function submitRating(wineId) {
     const rating = parseInt(document.getElementById('rating').value);
     if (isNaN(rating) || rating < 1 || rating > 5) {
         console.error('Invalid rating value. Rating must be between 1 and 5.');
+        alert('Please enter a valid value.');
         // Handle error or display error message to the user
         return;
     }
@@ -846,6 +903,7 @@ function addToCart(wineId) {
 	
 	if (customerId === null || isNaN(parseFloat(customerId))) {
 	    console.error('Invalid or missing customer ID');
+	    alert("Please, login to add a wine to cart!");
 	    return;
 	}
 	
@@ -1089,3 +1147,161 @@ $(document).ready(function(){
 		return false;
 	});
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$(document).ready(function() {
+	// Handle form submission for search
+	$('#search-by-name').submit(function(event) {
+	    event.preventDefault(); // Prevent default form submission behavior
+	
+	    let searchQuery = $('#searchTextList').val().trim(); // Get the search query from the input
+	
+		if(searchQuery === "") {
+			displayWineList(); // Display the list of wines
+		} else {
+		    // Send search query via AJAX
+		    $.ajax({
+		        type: "GET",
+		        url: rootURL + "/wines/name/" + searchQuery,
+		        success: function(data) {
+		            console.log("Search successful:", data);
+		            searchByName(data); // Render search results
+		        },
+		        error: function(xhr, status, error) {
+		            console.error("Search failed:", error);
+		            // Display appropriate error message to the user
+		            alert("Search failed: " + error);
+		        }
+		    });
+	    }
+	});   
+
+	// Function to render search results
+	function searchByName(data) {
+	    $('#wineListBody').empty(); // Clear previous search results
+	
+	    if (data.length > 0) {
+	        // Create a row to contain the search results
+	        var row = $('<div>').addClass('row');
+	        
+	        // Render each wine in the search results
+	        data.forEach(wine => {
+                var wineCardHtml = `
+                    <div class="col-md-6">
+                        <div class="wine-card">
+                            <img src="../images/${wine.picture}" alt="Wine Image" class="wine-image">
+                            <div class="wine-details">
+                                <h3 class="wine-name">${wine.name}</h3>
+                                <p class="wine-description">${wine.description}</p>
+                                <p class="wine-price">€${wine.price}</p>
+                                <button class="btn btn-primary view-details-button" data-wine-id="${wine.id}" data-bs-toggle="modal" data-bs-target="#wineModal">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                row.append(wineCardHtml);
+            });
+            
+            $('#wineListBody').append(row); // Append the row to the wine list body
+        	$('#wineListDiv').show(); // Display the wine list section
+            /*document.getElementById('wineListBody').innerHTML = row;
+            document.getElementById('wineListDiv').style.display = 'block'; // Display the wine list section*/
+	    } else {
+	        // If no wines found, display a message to the user
+	        $('#wineListBody').html('<p>No wines found</p>');
+	    }
+	}
+});
+
+
+
+
+
+
+
+
+
+
+
+// Function to toggle the visibility of the cart dropdown
+function toggleCartDropdown() {
+    var cartDropdown = document.getElementById("cartDropdown");
+    cartDropdown.classList.toggle("visible");
+}
+
+// Event listener to toggle cart dropdown when cart button is clicked
+document.getElementById("cartButtonHome").addEventListener("click", function() {
+	fetchCartData(customerId);
+    toggleCartDropdown();
+});
+
+// Function to fetch cart data from backend including orders by customer ID
+function fetchCartData(customerId) {
+	console.log('View orders for customer:', customerId);
+    // Make AJAX request to fetch orders for the specified customer ID
+    $.ajax({
+        type: "GET",
+        url: rootURL + "/serviceLayer/" + customerId + "/orders",
+        success: function(data) {
+            // Process the fetched orders data
+            displayCartData(data); // Call a function to display the cart data
+        },
+        error: function(xhr, status, error) {
+            console.error("Error fetching cart data:", error);
+            // Handle error appropriately
+        }
+    });
+}
+
+// Function to display cart data in the dropdown
+function displayCartData(data) {
+	var orders = data._embedded ? data._embedded.ordersList : []; // Check if orders exist in the response
+    console.log(orders); // Log the orders array
+    // Clear previous cart items from the dropdown
+    $("#cartDropdown").empty();
+    
+    var cartTable = $("<table class='cart-table'></table>");
+ 	
+ 	// Create table header
+    var tableHeader = "<tr><th>Wine</th><th>Quantity</th><th>Price</th></tr>";
+    cartTable.append(tableHeader);
+
+    // Iterate over the fetched orders and populate the dropdown
+    $.each(orders, function(index, order) {
+		console.log(order); // Log each order object
+		
+        // Create table row for each order
+        var tableRow = $("<tr></tr>");
+        tableRow.append("<td>" + order.wine.name + "</td>"); // Wine name
+        tableRow.append("<td>" + order.quantity + "</td>"); // Quantity
+        tableRow.append("<td>" + order.wine.price + "</td>"); // Price
+        // Add more details as needed
+
+        cartTable.append(tableRow);
+    });
+    $("#cartDropdown").append(cartTable);
+
+}
+
+// Call fetchCartData when page loads to populate the cart dropdown initially
+$(document).ready(function() {
+    fetchCartData(customerId);
+});
+
+// Call fetchCartData when page loads to populate the cart dropdown initially
+document.addEventListener("DOMContentLoaded", function() {
+    fetchCartData();
+});
+

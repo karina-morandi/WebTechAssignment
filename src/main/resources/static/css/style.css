@@ -8351,7 +8351,8 @@ h1, h2, h3, h4, h5,
     outline: none; }
   .btn.btn-primary {
 /*    background: #f35588;
-*/  margin-top: 25px;
+*/  margin-top: 10px;
+	margin-bottom: 10px;
 	border: 1px solid #ffffff;
     color: #fff;
     background: #722f37;
