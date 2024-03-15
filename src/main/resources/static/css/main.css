@@ -341,16 +341,72 @@ html, body {
 }
 
 .cart-dropdown {
-	width: 600px; /* Adjust the width as needed */
+	width: 800px; /* Adjust the width as needed */
     display: none;
     position: absolute;
     top: 100%;
     right: 0;
     background-color: #fff;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     padding: 10px;
     z-index: 1000;
+    border: 1px solid #ccc;
+}
+
+/* Style for each order item */
+.cart-item {
+    margin-bottom: 10px;
+}
+
+/* Style for quantity container */
+.quantity-container {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+/* Style for increase and decrease buttons */
+.quantity-button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 2px 2px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.quantity-button:hover {
+    background-color: #45a049; /* Darker Green */
+}
+
+/* Style for edit order button */
+.editOrderButtonCart {
+    background-color: #008CBA; /* Blue */
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 2px 0px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.editOrderButtonCart:hover {
+    background-color: #0073aa; /* Darker Blue */
+}
+
+/* Style for total section */
+.total-section {
+    margin-top: 10px;
+    font-weight: bold;
 }
 
 /* CSS for the cart table */
