@@ -11,4 +11,3 @@
 //	Admin findByLogin(String login);
 //}
 
-

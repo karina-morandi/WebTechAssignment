@@ -26,44 +26,26 @@
 
 <body>
 
-<!-- HOME PAGE -->
-<div id="homePage">
-	<header class="top-nav">
+<header class="top-nav">
     <div class="container-fluid d-flex justify-content-between align-items-center">
         <div class="logo-welcome">
             <img src="../images/vinotecaLogo.png" alt="Logo" class="logo img-fluid">
-           <!--  <div class="welcome-text">
-                <p class="welcome-text">Welcome to</p>
-                <p class="vinoteca-text">Vinoteca</p>
-            </div> -->
         </div>
         <div class="user-tools ml-auto">
             <a id="loginButtonHome" class="login-button">Login</a>
-            
-            
-            
-            
-            
-            
             <div class="cart-container">
 			    <button id="cartButtonHome" class="cart-button" style="display: none;">Cart</button>
 			    <div id="cartDropdown" class="cart-dropdown">
 			        <!-- Cart items will be dynamically inserted here -->
 			    </div>
-			</div>
-            
-            
-            
-            
-            
-            
-            
-            
-<!--             <a id="cartButtonHome" class="cart-button" style="display: none;">Cart</a> -->
+			</div>            
             <a id="logoutButtonHome" class="logout-button" style="display: none;">Logout</a>
         </div>
     </div>
-	</header>
+</header>
+
+<!-- HOME PAGE -->
+<div id="homePage">
 	<div class="parallax-container" style="height: 1000px;">
 		<div class="container-fluid homePage">
 		    <div class="background-image"></div>
@@ -104,7 +86,7 @@
 <div class="content">
 
 <!-- Full wine list for customers! -->
-<div id="wineListDiv" class="wine-list-wrapper" style="display:none;">
+<div id="wineListDiv" class="wine-list-wrapper" style="display:none;margin-top: 100px;">
     <h1 class="wine-list-title">Our Wines</h1>
     <div class="container wine-list-container">
         <div class="row justify-content-center">
@@ -175,6 +157,65 @@
                </div>
             </div>
             <!-- You can add a form for comments, rating, and purchase option here -->
+        </div>
+    </div>
+</div>
+
+<!-- PAYMENT PAGE -->
+<div id="paymentPage">
+	<div class="row">
+        <div class="col-xs-12 col-md-4 col-md-offset-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="row">
+                        <h3 class="text-center">Payment Details</h3>
+                        <img class="img-responsive cc-img" src="https://www.prepbootstrap.com/Content/images/shared/misc/creditcardicons.png">
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <form role="form">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <label>CARD NUMBER</label>
+                                    <div class="input-group">
+										<input type="tel" id="cardNumber" class="form-control" placeholder="Valid Card Number" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-7 col-md-7">
+                                <div class="form-group">
+                                    <label><span class="hidden-xs">EXPIRATION</span><span class="visible-xs-inline">EXP</span> DATE</label>
+                                    <input type="tel" id="expirationDate" class="form-control" placeholder="MM / YY" />
+                                </div>
+                            </div>
+                            <div class="col-xs-5 col-md-5 pull-right">
+                                <div class="form-group">
+                                    <label>CV CODE</label>
+                                    <input type="tel" id="cvvCode" class="form-control" placeholder="CVC" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <label>CARD OWNER</label>
+                                    <input type="text" class="form-control" placeholder="Card Owner Names" />
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <button id="processPayment" class="btn btn-warning btn-lg btn-block">Process payment</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

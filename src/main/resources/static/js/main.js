@@ -33,6 +33,7 @@ function AdminDashboard() {
     $('#admin').show();
     $('#detailsTable').hide(); // Hide any existing tables
     $('#wineListDiv').hide();
+    $('#header').hide();
 }
 
 function WineListCustomer(){
@@ -337,7 +338,7 @@ function login() {
 	    // Send registration data via AJAX
 	    $.ajax({
 	        type: "POST",
-	        url: rootURL + "/user/register",
+	        url: rootURL + "/serviceLayer/register",
 	        contentType: 'application/json',
 	        data: JSON.stringify(admin),
 	        success: function(data) {
@@ -1270,38 +1271,64 @@ function displayCartData(data) {
     
     var total = 0; // Initialize total price variable
     
-    // Iterate over the fetched orders and populate the dropdown
+    // Create table structure for cart items
+    var cartTable = $("<table class='cart-table'></table>");
+    var tableHeader = $("<tr class='cart-header'></tr>");
+    tableHeader.append("<th>Wine Name</th>");
+    tableHeader.append("<th>Price</th>");
+    tableHeader.append("<th>Quantity</th>");
+    tableHeader.append("<th>Actions</th>"); // Header for edit/delete buttons
+    cartTable.append(tableHeader);
+        
+    // Iterate over the fetched orders and populate the table
     $.each(orders, function (index, order) {
         console.log(order); // Log each order object
-        // Create HTML elements to display order details
-        var orderItem = $("<div class='cart-item'></div>");
-        orderItem.data('order-id', order.id); // Set the data-order-id attribute
-        orderItem.append("<span>" + order.wine.name + "</span>"); // Display wine name
-        orderItem.append("<span>Price: $" + order.wine.price + "</span>"); // Display price
-        orderItem.append("<span>Quantity: </span>");
+        
+        // Create HTML elements to display order details in a table row
+        var row = $("<tr class='cart-row'></tr>");
+        row.data('order-id', order.id);
+        row.append("<td>" + order.wine.name + "</td>"); // Display wine name
+        row.append("<td>€" + order.wine.price + "</td>"); // Display price
+//        row.append("<td>" + order.quantity + "</td>"); // Display quantity
+        
         var quantityContainer = $("<div class='quantity-container'></div>");
         var decreaseButton = $("<button class='quantity-button decrease'>-</button>");
         var quantityDisplay = $("<span type='number' id='quantityCart' class='quantity-display'>" + order.quantity + "</span>");
         var increaseButton = $("<button class='quantity-button increase'>+</button>");
         quantityContainer.append(decreaseButton, quantityDisplay, increaseButton);
+        
+//        row.append("<td>$" + totalPrice + "</td>"); // Display total price for this order
         var editOrderButtonCart = $("<button class='editOrderButtonCart'>Edit Order</button>");
-        editOrderButtonCart.attr('data-order-id', order.id); // Set the data-order-id attribute
-        editOrderButtonCart.attr('data-wine-id', order.wine.id); // Set the data-wine-id attribute
+        editOrderButtonCart.data('order-id', order.id); // Set the data-order-id attribute
+        editOrderButtonCart.data('wine-id', order.wine.id); // Set the data-wine-id attribute
+        
+        
         var deleteOrderButtonCart = $("<button class='deleteOrderButtonCart'>Delete Order</button>");
-		deleteOrderButtonCart.attr('data-order-id', order.id); // Set the data-order-id attribute      
-        orderItem.append(quantityContainer, editOrderButtonCart);
-        orderItem.append(deleteOrderButtonCart);
+        deleteOrderButtonCart.data('order-id', order.id); // Set the data-order-id attribute
+        
+        var actionsCell = $("<td></td>");
+        actionsCell.append(editOrderButtonCart, deleteOrderButtonCart);
+        row.append(quantityContainer, actionsCell);
 
-        $("#cartDropdown").append(orderItem);
+        cartTable.append(row);
+
+       // $("#cartTableBody").append(row);
         
         total += order.wine.price * order.quantity;
     });
     
-    // Add total section to the dropdown
+    // Append the table to the dropdown
+    $("#cartDropdown").append(cartTable);
+    
+    // Update total section
     var totalSection = $("<div class='total-section'></div>");
-    totalSection.text("Total: $" + total);
+    totalSection.text("Total: $" + total.toFixed(2));
     $("#cartDropdown").append(totalSection);
-
+    
+     // Add a checkout button to the dropdown
+	var checkoutButton = $("<button class='checkoutButton'>Checkout</button>");
+	$("#cartDropdown").append(checkoutButton);
+    
     // Add event listeners for quantity buttons
     $(".quantity-button.decrease").on("click", function () {
         var quantityDisplay = $(this).siblings(".quantity-display");
@@ -1320,12 +1347,34 @@ function displayCartData(data) {
     });
 }
 
+// Function to clear the dropdown after successful payment
+function clearDropdown() {
+ //   $("#cartDropdown").empty(); // Clear the dropdown
+    $("#paymentPage").hide(); // Hide the payment page
+}
+
+// Assume payment is confirmed and redirected back to the main page after payment
+$(document).ready(function() {
+    clearDropdown();
+});
+
+// Event listener for the checkout button
+$(document).on("click", ".checkoutButton", function() {
+    // Hide the cart dropdown
+    $("#cartDropdown").hide();
+    $('#homePage').hide();
+    $('#wineListDiv').hide();
+    // Show the payment page
+    $("#paymentPage").show();
+});
+
 // Event listener for the Edit Order button
 $(document).on("click", ".editOrderButtonCart", function() {
     var orderId = $(this).data('order-id'); // Get the order ID from the data attribute
     var wineId = $(this).data('wine-id'); // Get the wine ID from the data attribute
-    var quantity = $(this).siblings('.quantity-container').find('.quantity-display').text(); // Get the quantity from the adjacent quantity-display span
-    if (!orderId || !wineId || !quantity) {
+    var quantityDisplay = $(this).parent().prev().find('.quantity-display'); // Find the quantity display element
+    var quantity = parseInt(quantityDisplay.text()); // Extract the quantity from the display
+    if (!orderId || !wineId || isNaN(quantity)) {
         console.error("Invalid order, wine ID, or quantity");
         return;
     }
@@ -1392,12 +1441,50 @@ function formToJSONCart(orderId, wineId, quantity) {
     return JSON.stringify(formData);
 }
 
-/*// Call fetchCartData when page loads to populate the cart dropdown initially
-$(document).ready(function() {
-    fetchCartData(customerId);
-});*/
-
 // Call fetchCartData when page loads to populate the cart dropdown initially
 document.addEventListener("DOMContentLoaded", function() {
     fetchCartData();
 });
+
+$(document).on("click", "#processPayment", function() {
+    // Validate card number
+    var cardNumber = $("#cardNumber").val();
+    if (!isValidCardNumber(cardNumber)) {
+        alert("Invalid card number. Please enter a valid 16-digit card number.");
+        return;
+    }
+
+    // Validate expiration date
+    var expirationDate = $("#expirationDate").val();
+    if (!isValidExpirationDate(expirationDate)) {
+        alert("Invalid expiration date. Please enter a valid MM/YY format.");
+        return;
+    }
+
+    // Validate CVV code
+    var cvvCode = $("#cvvCode").val();
+    if (!isValidCVV(cvvCode)) {
+        alert("Invalid CVV code. Please enter a valid 3-digit CVV code.");
+        return;
+    }
+
+    // Payment processing successful, show success message and redirect
+    alert("Payment processed successfully!");
+    // Redirect to home page
+   	HomePageDashboard();
+   	$("#paymentPage").hide();
+});
+
+function isValidCardNumber(cardNumber) {
+    return /^\d{16}$/.test(cardNumber);
+}
+
+function isValidExpirationDate(expirationDate) {
+    // Assuming expirationDate is in MM/YY format
+    var regex = /^(0[1-9]|1[0-2])\/?([0-9]{2})$/;
+    return regex.test(expirationDate);
+}
+
+function isValidCVV(cvvCode) {
+    return /^\d{3}$/.test(cvvCode);
+}
