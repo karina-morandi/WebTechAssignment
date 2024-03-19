@@ -26,7 +26,7 @@
 
 <body>
 
-<header class="top-nav">
+<header id="header" class="top-nav">
     <div class="container-fluid d-flex justify-content-between align-items-center">
         <div class="logo-welcome">
             <img src="../images/vinotecaLogo.png" alt="Logo" class="logo img-fluid">
@@ -297,100 +297,77 @@
 </div>
 	    
 	    <!-- ADMIN DASHBOARD -->
-<div id="admin" class="container-fluid" style="display: none;">
+<div id="admin" class="container-fluid" style="display: none; padding-left: 0px; padding-right:0px;">
+    <div class="adminpage">
     <!-- Top Navbar -->
-    <nav class="navbar top-nav">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
-            <a class="navbar-brand" href="#">All Wines</a>
-            <button class="settings-button" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-                <div class="hamburger-icon"></div>
-                <div class="hamburger-icon"></div>
-                <div class="hamburger-icon"></div>
-            </button>
-	
-	
-		<!-- View Type Radio Buttons -->
-		<div class="container mt-3">
-			<div class="form-check">
-			  <input class="form-check-input" type="radio" name="exampleRadios" id="listView" value="list" checked>
-			  <label class="form-check-label" for="exampleRadios1">
-			    List
-			  </label>
+	    <nav class="navbar top-nav">
+	        <div class="adminpage container-fluid d-flex justify-content-between align-items-center">
+	            <h1 class="adminTitle">All Wines</h1>
+	            <button class="settings-button" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+	                <div class="hamburger-icon"></div>
+	                <div class="hamburger-icon"></div>
+	                <div class="hamburger-icon"></div>
+	            </button>
+		
+		
+			<!-- View Type Radio Buttons -->
+			<div class="container mt-3">
+				<div class="form-check">
+				  <input class="form-check-input" type="radio" name="exampleRadios" id="listView" value="list" checked>
+				  <label class="form-check-label" for="exampleRadios1">
+				    List
+				  </label>
+				</div>
+				<div class="form-check">
+				  <input class="form-check-input" type="radio" name="exampleRadios" id="gridView" value="grid">
+				  <label class="form-check-label" for="exampleRadios2">
+				    Grid
+				  </label>
+				</div>
 			</div>
-			<div class="form-check">
-			  <input class="form-check-input" type="radio" name="exampleRadios" id="gridView" value="grid">
-			  <label class="form-check-label" for="exampleRadios2">
-			    Grid
-			  </label>
-			</div>
-			<div class="form-check">
-			  <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios3" value="option3" disabled>
-			  <label class="form-check-label" for="exampleRadios3">
-			    Disabled radio
-			  </label>
-			</div>
+		  </div>		    
+		  <div class="container theScroll" id="detailsTable">    
+		    <table class="table" id="ordersTable">
+				<tr id="orderID_row">
+					<td>Order Id</td>
+					<td><input type="text" id="orderID"></td>
+				</tr>
+				<tr>
+					<td>Product Id</td>
+					<td><input type="text" id="prodID"></td>
+				</tr>
+				<tr>
+					<td>Item</td>
+					<td><input type="text" id="prodName"></td>
+				</tr>
+				<tr>
+					<td>Price</td>
+					<td><input type="text" id="prodPrice"></td>
+				</tr>
+				<tr>
+					<td>Quantity</td>
+					<td><input type="text" id="prodQuantity"></td>
+				</tr>
+				<tr>
+					<td><button class="w3-button w3-orange" id="UpdateOrder">Update</button></td> 
+					<td><button class="w3-button w3-red" id="deleteOrder">Delete</button></td>
+				</tr>
+			</table>
+		  </div>
+		</nav>
+	</div>
+		<div class="adminDashBody">
+			  <div class="container theScroll">
+				  <table class="table" id="winesTable">
+			        <thead>
+			        </thead>
+			        <tbody id="winesContent">
+			        </tbody>
+			    </table>
+			  </div>
 		</div>
-	  </div>
-	  <div class="container theScroll">
-		  <table class="table" id="winesTable">
-	        <thead>
-	           <!--  <tr>
-	                <th>Winery</th>
-	                <th>Name</th>
-	                <th>Country</th>
-	                <th>Edit</th>
-	            </tr> -->
-	        </thead>
-	        <tbody id="winesContent">
-	            <!-- Wine entries will be dynamically added here -->
-	        </tbody>
-	    </table>
-	  </div>
-	    
-	  <div id="customers" class="container mt-3">
-	  
-	  </div>
-	  
-	  <div id="orders" class="container mt-3">
-	  
-	  </div>
-	  
-	    
-	  <div class="container theScroll" id="detailsTable">    
-	    <table class="table" id="ordersTable">
-			<tr id="orderID_row">
-				<td>Order Id</td>
-				<td><input type="text" id="orderID"></td>
-			</tr>
-			<tr>
-				<td>Product Id</td>
-				<td><input type="text" id="prodID"></td>
-			</tr>
-			<tr>
-				<td>Item</td>
-				<td><input type="text" id="prodName"></td>
-			</tr>
-			<tr>
-				<td>Price</td>
-				<td><input type="text" id="prodPrice"></td>
-			</tr>
-			<tr>
-				<td>Quantity</td>
-				<td><input type="text" id="prodQuantity"></td>
-			</tr>
-			<tr>
-				<td><button class="w3-button w3-orange" id="UpdateOrder">Update</button></td> 
-				<td><button class="w3-button w3-red" id="deleteOrder">Delete</button></td>
-			</tr>
-		</table>
-	  </div>
-	  
-	  
-	  
-	  
-	  
-	  
-	</nav>
+		<div id="customers" class="customers container mt-3"></div>
+	    <div id="orders" class="orders container mt-3"></div>
 	
 	<!-- Side Navbar -->
 	<nav class="navbar side-nav">
@@ -581,7 +558,7 @@
 </div>
 </div>
 
-<footer class="footer">
+<footer id="footer" class="footer">
     <p> Made with quality </p>
   </footer>
 </body>
