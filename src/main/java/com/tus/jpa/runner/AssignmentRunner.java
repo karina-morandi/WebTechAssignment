@@ -29,7 +29,7 @@
 //	public void run(ApplicationArguments args) throws Exception {
 //		Users admin = new Users("admin", "admin@gmail.com", PWORD, "ADMIN");
 //        userRepo.save(admin);
-//        Users customer = new Users("custoner", "customer@gmail.com", PWORD, "CUSTOMER");
+//        Users customer = new Users("customer", "customer@gmail.com", PWORD, "CUSTOMER");
 //        userRepo.save(customer);
 //        logger.info("\u001B[32m Users Created \u001B[0m");
 //    }

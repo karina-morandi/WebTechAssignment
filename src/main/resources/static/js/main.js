@@ -52,6 +52,18 @@ function clearList(){
     $('#winesTable').hide(); // Hide the table containing the wines list
 }
 
+// Function to convert form data to JSON
+function formToJSONCart(orderId, wineId, quantity) {
+    var formData = {
+        id: orderId,
+        wine: { id: wineId },
+        quantity: quantity, // Include the quantity in the JSON data
+        // Add other fields here as needed
+    };
+    return JSON.stringify(formData);
+}
+
+
 let rootURL = "http://localhost:9090";
 var currentViewType = 'list'; // Default view type
 var wineData;
@@ -924,6 +936,7 @@ function addToCart(wineId) {
         body: JSON.stringify({
             wineId: wineId, // Pass the wine ID in the request body
             quantity: quantity,
+            status: "Placed"
         }),
     })
     .then(response => {
@@ -971,20 +984,27 @@ var deleteOrder=function() {
 		});
 };
 
-var tempOrderID; // Declare tempOrderID here
-
-var updateOrder = function(){
+var updateOrder = function(orderId, wineId, quantity){
+	
+	var wineId = $('#prodID').val(); // Fetch wine ID from the input field
+	var quantity = $('#prodQuantity').val(); // Fetch quantity from the input field
 	console.log('updating order');
-	tempOrderID = $('#orderID').val();
+	
+	if (!orderId || !wineId || !quantity) {
+	     console.error("Invalid order, wine ID, or quantity");
+	     return;
+	 }
+	 
+	 console.log("Order: ", orderId, "Wine:", wineId, "Quantity:", quantity)
 	$.ajax({
 		type: 'PUT',
 		contentType: 'application/json',
-		url: rootURL + '/serviceLayer/orders/' + $('#orderID').val(),
+		url: rootURL + '/serviceLayer/orders/' + orderId,
 		dataType: 'json',
-		data: formToJSON(),
+		data: formToJSONCart(orderId, wineId, quantity),
 		success: function(data, textStatus, jqXRH){
 			alert('Order Updated Successfully');
-			findOrderById(tempOrderID); // Fetch and update the order details
+			findOrderById(orderId); // Fetch and update the order details
 		},
 		error: function(jqXHR, textStatus, errorThrown) {
 			alert('updateOrder error: '+ textStatus);
@@ -992,29 +1012,14 @@ var updateOrder = function(){
 	});
 };
 
-var formToJSON = function() {
-    var orderId = $('#orderID').val();
-    var prodID = $('#prodID').val(); // Get wine ID from the prodID field
-    var quantity = parseInt($('#prodQuantity').val());
-    var price = parseFloat($('#prodPrice').val()); // Declare and initialize price here
-    return JSON.stringify({
-        "id": orderId == "" ? null: orderId,
-        "quantity": quantity,
-        "product":{
-            "id": prodID, // Set wine ID here
-            "name": $('#prodName').val(),
-            "price": price,
-        }
-    });
-}
-
 var findOrderById = function (id) {
+	console.log("Fetching order details for ID:", id); // Log the order ID being fetched
 	$.ajax({
 		type: 'GET', 
 		url: rootURL +"/serviceLayer/orders/"+id, 
 		dataType: "json", 
 		success: function (order) {
-			console.log(order);
+            console.log("Order details fetched successfully:", order); // Log the fetched order details
 			editOrder(order);
 		},
 		error: function(xhr, status, error) {
@@ -1035,8 +1040,8 @@ function editOrder(order) {
         console.error('Wine information missing for order:', order);
     }
     $('#prodQuantity').val(order.quantity);
-    console.log("This product is: " + (order.wine ? order.wine.name : 'Unknown') + "\tQuantity: " + order.quantity);
-    $('orderID_row').hide();
+    console.log("This product is: " + (order.wine.id ? order.wine.name : 'Unknown') + "\tQuantity: " + order.quantity);
+    $('#orderID_row').hide();
 }
 
 
@@ -1091,13 +1096,21 @@ function viewOrders(customerId) {
 function renderOrders(response) {
     var orders = response._embedded ? response._embedded.ordersList : []; // Check if orders exist in the response
     console.log(orders); // Log the orders array
+    
     var ordersHtml = "<table class='w3-table'>";
-    ordersHtml += "<tr><th>Order ID</th><th>Product ID</th><th>Product Name</th><th>Price</th><th>Quantity</th><th>Total</th><th>Edit</th></tr>";
+    ordersHtml += "<tr><th>Order ID</th><th>Product ID</th><th>Product Name</th><th>Price</th><th>Quantity</th><th>Total</th><th>Status</th><th>Edit</th></tr>";
     if (orders.length > 0) {
         $.each(orders, function (index, order) {
             console.log(order); // Log each order object
             var total = order.quantity * order.wine.price;
-            ordersHtml += '<tr><td>' + order.id + '</td><td>' + order.wine.id + '</td><td>' + order.wine.name + '</td><td>' + order.wine.price + '</td><td>' + order.quantity + '</td><td>' + total + '</td><td><button class="editOrderButton w3-button w3-green" id=' + order.id + '>Edit</button></td></tr>';
+            ordersHtml += '<tr><td>' + order.id + '</td><td>' + order.wine.id + '</td><td>' + order.wine.name + '</td><td>' + order.wine.price + '</td><td>' + order.quantity + '</td><td>' + total + '</td>';
+            // Add a dropdown menu for selecting the status
+            ordersHtml += '<td><select class="statusSelect">';
+            ordersHtml += '<option value="Placed"' + (order.status === "Placed" ? " selected" : "") + '>Placed</option>';
+            ordersHtml += '<option value="Accepted"' + (order.status === "Accepted" ? " selected" : "") + '>Accepted</option>';
+            ordersHtml += '<option value="Sent"' + (order.status === "Sent" ? " selected" : "") + '>Sent</option>';
+            ordersHtml += '</select></td>';
+			ordersHtml += '<td><button class="editOrderButton w3-button w3-green" order-id="' + order.id + '" wine-id="' + order.wine.id + '" quantity="' + order.quantity + '">Edit</button></td>';
         });
     } else {
         // Display a message if there are no orders for the customer
@@ -1119,17 +1132,45 @@ $(document).ready(function(){
     });
     
     $(document).on("click", ".editOrderButton", function () {
-		console.log("Edit button clicked for order "+this.id);
-		findOrderById(this.id);
+		var orderId = $(this).attr('order-id'); // Retrieve the order ID using the custom attribute
+		console.log("Edit button clicked for order " + orderId);
+		findOrderById(orderId);
 		$('#detailsTable').show();
 		return false;
 	});
 	
 	$(document).on("click", "#UpdateOrder", function (){
-		updateOrder();
-		console.log("Update button clicked for order "+this.id); 
-		return false;
+	    console.log("Updating order!!");
+	    var orderId = $('#orderID').val(); // Get the order ID from the input field
+	    console.log("Order:", orderId);
+	    var wineId = $('#prodID').val(); // Get the wine ID from the input field
+	    console.log("Wine:", wineId);
+	    var quantity = $('#prodQuantity').val(); // Get the quantity from the input field
+	    console.log("Quantity:", quantity);
+	    if (!orderId || !wineId || !quantity) {
+	        console.error("Invalid order, wine ID, or quantity");
+	        return;
+	    }
+	    updateOrder(orderId, wineId, quantity);
+	    console.log("Update button clicked for order " + orderId); 
 	});
+	
+/*	$(document).on("click", "#UpdateOrder", function (){
+		console.log("Updating order!!");
+		var orderId = $(this).data('order-id'); // Get the order ID from the data attribute
+		console.log("Order:", orderId);
+		var wineId = $(this).data('wine-id'); // Get the wine ID from the data attribute
+		console.log("Wine:", wineId);
+		var quantityDisplay = $(this).parent().prev().find('.quantity-display'); // Find the quantity display element
+		console.log("Quantity:", quantityDisplay);
+		var quantity = parseInt(quantityDisplay.text()); // Extract the quantity from the display
+		if (!orderId || !wineId || isNaN(quantity)) {
+		    console.error("Invalid order, wine ID, or quantity");
+		    return;
+		}
+		updateOrder(orderId, wineId, quantity);
+		console.log("Update button clicked for order "+this.id); 
+	});*/
 		
 	$(document).on("click", "#deleteOrder", function () {
 		deleteOrder();
@@ -1429,17 +1470,6 @@ var deleteOrderCart = function(orderId) {
         }
     });
 };
-
-// Function to convert form data to JSON
-function formToJSONCart(orderId, wineId, quantity) {
-    var formData = {
-        id: orderId,
-        wine: { id: wineId },
-        quantity: quantity, // Include the quantity in the JSON data
-        // Add other fields here as needed
-    };
-    return JSON.stringify(formData);
-}
 
 // Call fetchCartData when page loads to populate the cart dropdown initially
 document.addEventListener("DOMContentLoaded", function() {

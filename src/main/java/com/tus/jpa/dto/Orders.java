@@ -33,15 +33,19 @@ public class Orders extends RepresentationModel<Orders>{
 	
 	@Column(nullable = false)
 	private double total;
+	
+	@Column(name="Status")
+	private String status;
 
 	public Orders() {
 		
 	}
 
-	public Orders(Long id, Wines wine, int quantity) {
+	public Orders(Long id, Wines wine, int quantity, String status) {
 		this.id = id;
 		this.wine = wine;
 		this.quantity = quantity;
+		this.status = status;
 	}
 		
 	public Long getId() {
@@ -100,9 +104,18 @@ public class Orders extends RepresentationModel<Orders>{
 	    wine.setId(id); // Set the id of the Wines object
 	}
 	
+	
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
 	@Override
 	public String toString() {
 		return "Orders [id=" + id + ", wine=" + wine + ", quantity=" + quantity + ", customer="
-				+ customer + ", total=" + total + "]";
+				+ customer + ", total=" + total + ", stataus=" + status + "]";
 	}
 }
