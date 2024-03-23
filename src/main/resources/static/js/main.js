@@ -203,6 +203,7 @@ $(document).ready(function () {
 	// Handle click on logout button in the home page
 	$(document).on("click", "#logoutButtonHome", function () {
 	    console.log("Logout button on home page clicked");
+	    $("#paymentPage").hide();
 	    // Implement logout functionality here
 	    // For example, clear customerId and update button visibility
 	    customerId = null;
@@ -211,7 +212,7 @@ $(document).ready(function () {
 	    
 	$('#loginForm').submit(function (event) {
     event.preventDefault(); // Prevent default form submission behavior
-
+    $("#paymentPage").hide();
     console.log("Login button clicked");
     var loginUsername = $("#loginUsername").val().trim();
     console.log("login= ", loginUsername);
@@ -963,7 +964,6 @@ function addToCart(wineId) {
 
 
 
-
 var deleteOrder=function() {
 	$('#orders').hide(); // Hide orders table if it's visible
     $('#customers').show(); // Show customers table
@@ -972,6 +972,7 @@ var deleteOrder=function() {
 	$.ajax({
 		type: 'DELETE',
 		url: rootURL +'/serviceLayer/orders/' + orderid, 
+
 		success: function(data, textStatus, jqXHR){
 			alert('Order deleted successfully');
 			$('#details Table').hide();
@@ -1042,6 +1043,7 @@ function editOrder(order) {
     $('#prodQuantity').val(order.quantity);
     console.log("This product is: " + (order.wine.id ? order.wine.name : 'Unknown') + "\tQuantity: " + order.quantity);
     $('#orderID_row').hide();
+    $('#detailsTable').append('<button id="closeOrderButton" class="w3-button w3-red">Close</button>');
 }
 
 
@@ -1055,6 +1057,7 @@ function findAllCustomers(customerId) {
 		url: rootURL + '/serviceLayer/customers',
 		type: 'GET', 
 		success: function(customers) { 
+			$('#detailsTable').hide();
 			renderCustomers(customers); 
 			console.log(customers);
 		},
@@ -1155,28 +1158,24 @@ $(document).ready(function(){
 	    console.log("Update button clicked for order " + orderId); 
 	});
 	
-/*	$(document).on("click", "#UpdateOrder", function (){
-		console.log("Updating order!!");
-		var orderId = $(this).data('order-id'); // Get the order ID from the data attribute
-		console.log("Order:", orderId);
-		var wineId = $(this).data('wine-id'); // Get the wine ID from the data attribute
-		console.log("Wine:", wineId);
-		var quantityDisplay = $(this).parent().prev().find('.quantity-display'); // Find the quantity display element
-		console.log("Quantity:", quantityDisplay);
-		var quantity = parseInt(quantityDisplay.text()); // Extract the quantity from the display
-		if (!orderId || !wineId || isNaN(quantity)) {
-		    console.error("Invalid order, wine ID, or quantity");
-		    return;
-		}
-		updateOrder(orderId, wineId, quantity);
-		console.log("Update button clicked for order "+this.id); 
-	});*/
-		
 	$(document).on("click", "#deleteOrder", function () {
 		deleteOrder();
 		console.log("Delete button clicked for order "+this.id); 
 		return false;
 	});
+	
+	
+	$(document).on("click", "#closeOrderButton", function () {
+        closeOrderDetails(); // Call the function to close order details
+        return false; // Prevent default behavior of the button
+    });
+
+    // Function to close order details and show customers table
+    function closeOrderDetails() {
+        $('#detailsTable').hide(); // Hide the order details table
+        $('#orders').show(); // Hide orders table if it's visible
+        $('#customers').show(); // Show the customers table
+    }
 });
 
 
@@ -1518,3 +1517,13 @@ function isValidExpirationDate(expirationDate) {
 function isValidCVV(cvvCode) {
     return /^\d{3}$/.test(cvvCode);
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const viewDetailButtons = document.querySelectorAll('.view-details-button');
+    viewDetailButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const wineId = this.getAttribute('data-wine-id');
+            displayWineDetails(wineId);
+        });
+    });
+});
