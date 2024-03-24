@@ -13,40 +13,63 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.tus.jpa.controllers.RegistrationController;
-import com.tus.jpa.repositories.AdminRepository;
-import com.tus.jpa.dto.Admin;
+import com.tus.jpa.controllers.CustomersController;
+import com.tus.jpa.repositories.UserRepository;
+import com.tus.jpa.service.CustomerService;
+import com.tus.jpa.dto.Users;
 
 class RegistrationControllerTest {
 
-    private AdminRepository adminRepository;
+    private UserRepository userRepo;
     private PasswordEncoder passwordEncoder;
-    private RegistrationController registrationController;
-
+    private CustomersController registrationController;
+    private CustomerService customerService;
+    private final String LOGIN = "admin";
+    private final String EMAIL = "admin@root.ie";
+    private final String PASSWORD = "admin";
+    private final String ROLE = "ADMIN";
+    
     @BeforeEach
     void setUp() {
-        adminRepository = mock(AdminRepository.class);
+        userRepo = mock(UserRepository.class);
         passwordEncoder = mock(PasswordEncoder.class);
-        registrationController = new RegistrationController(adminRepository, passwordEncoder);
+        customerService = mock(CustomerService.class); // Mock CustomerService
+        registrationController = new CustomersController();
+        registrationController.setUserRepo(userRepo);
+        registrationController.setPasswordEncoder(passwordEncoder);
+        registrationController.setCustomerService(customerService); // Inject the mocked CustomerService
     }
 
     @Test
     void createUser_UserAlreadyExists_ReturnsBadRequest() {
-        when(adminRepository.findByLogin(anyString())).thenReturn(new Admin());
-        Admin admin = new Admin("username", "email@example.com", "password", "admin");
+        when(userRepo.findByLogin(anyString())).thenReturn(new Users(LOGIN, EMAIL, PASSWORD, ROLE));
+        Users admin = new Users("admin", "admin@root.ie", "admin", "ADMIN");
         ResponseEntity<?> response = registrationController.createUser(admin);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("This user already exists!!", response.getBody());
     }
-
+    
     @Test
     void createUser_NewUser_ReturnsOk() {
-        when(adminRepository.findByLogin(anyString())).thenReturn(null);
-        when(adminRepository.save(any())).thenReturn(new Admin());
-        when(passwordEncoder.encode(anyString())).thenAnswer(invocation -> invocation.getArgument(0));
-        Admin admin = new Admin("username", "email@example.com", "password", "admin");
+        when(userRepo.findByLogin(anyString())).thenReturn(null);
+        Users admin = new Users("username", "email@example.com", "password", "ADMIN");
+        when(customerService.saveUser(any(Users.class))).thenReturn(admin); // Mocking the behavior of saveUser
         ResponseEntity<?> response = registrationController.createUser(admin);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
     }
+    
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

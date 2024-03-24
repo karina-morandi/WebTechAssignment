@@ -37,29 +37,6 @@ public class RegistrationController {
 		this.userRepo = userRepo;
 		this.passwordEncoder = passwordEncoder;
 	}
-//
-//	@PostMapping("/register")
-//	public ResponseEntity createUser(@Valid @RequestBody Users user) {
-//	    if (userRepo.findByLogin(user.getLogin()) != null) {
-//	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This user already exists!!");
-//	    } else {
-//	    	user.setPassword(passwordEncoder.encode(user.getPassword())); // Set password before encoding
-//	    	user.setEmail(user.getEmail());
-//	    	user.setRole(user.getRole());
-//	        Users savedUser = userRepo.save(user);
-//	        if (savedUser.getRole().equals("ADMIN")) {
-//                return ResponseEntity.status(HttpStatus.OK).body("Admin registered successfully");
-//            } else {
-//                return ResponseEntity.status(HttpStatus.OK).body("Customer registered successfully");
-//            }
-//	    }	
-//	}
-		
-//	@GetMapping("/name/{login}")
-//	public boolean getUserByName(@PathVariable("login") String login){
-//		Users foundUser=userRepo.findByLogin(login);
-//		return foundUser!=null;
-//	}	
   
 	@GetMapping("/login")
 	public ResponseEntity<?> getLoginPage(@RequestParam(name = "error", required = false) String error) {

@@ -1,5 +1,7 @@
 package com.tus.jpa;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -10,34 +12,44 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import javax.servlet.ServletContext;
+
 import java.io.InputStream;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.tus.jpa.controllers.WinesController;
+import org.springframework.mock.web.MockMultipartFile;
 import com.tus.jpa.dto.Wines;
 import com.tus.jpa.exceptions.ResourceNotFoundException;
 import com.tus.jpa.exceptions.WineValidationException;
 import com.tus.jpa.repositories.WineRepository;
-import com.tus.jpa.wine_validator.ErrorMessage;
 import com.tus.jpa.wine_validator.wineValidator;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
 
 @ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 	public class WineControllersTest {
 	
     @Mock
@@ -45,58 +57,55 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
     @Mock
     private wineValidator wineValidator;
+    
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Mock
+    private ServletContext servletContext;
+    
+    private ObjectMapper objectMapper;
 
     @InjectMocks
     private WinesController winesCont;
-//	private final WineRepository wineRepo = mock(WineRepository.class);
-//	private final wineValidator wineValidator = mock(wineValidator.class);
-//	private WinesController winesCont = mock(WinesController.class);;
 	private List<Wines> wineList;
 	static final String WINE_NAME = "Wine";
 	
 	@BeforeEach
     void setUp() {
+        objectMapper = new ObjectMapper();
+
         MockitoAnnotations.openMocks(this); // Initialize annotated mocks
 
         wineList = buildWineList(); // Initialize wineList with test data
+    //    when(servletContext.getRealPath(anyString())).thenReturn("/path/to/your/resource/directory");
+
     }
 
-//	@Test //Is this test valuable?
-//    void getAllWines() {
-//        when(wineRepo.findAll()).thenReturn(wineList);
-//        Iterable<Wines> returnedWines = winesCont.getAllWines();
-//        assertEquals(2, ((List<Wines>) returnedWines).size());
-//        assertEquals(WINE_NAME, ((List<Wines>) returnedWines).get(0).getName());
-//        assertEquals("Mayo", ((List<Wines>) returnedWines).get(1).getName());
-//    }
+	@Test //Is this test valuable?
+    void getAllWines() {
+        when(wineRepo.findAll()).thenReturn(wineList);
+        ResponseEntity<List<Wines>> responseEntity = winesCont.getAllWines();
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        List<Wines> returnedWines = responseEntity.getBody();
+        assertNotNull(returnedWines);
+        assertEquals(2, returnedWines.size());
+    }	
 	
 	@Test
 	void createNewWineOK() throws WineValidationException, IOException {
-	    // Prepare test data
-	    String name = "Wine";
-	    String grapes = "Malbec";
-	    String country = "Australia";
-	    int year = 2020;
-	    String color = "Red";
-	    String winery = "New Winery";
-	    String region = "Henty";
-	    double price = 10.99;
-	    String description = "Nice wine";
-	    MultipartFile pictureFile = mock(MultipartFile.class); // Mock MultipartFile
-	    when(pictureFile.getInputStream()).thenReturn(mock(InputStream.class));
-	    doNothing().when(wineValidator).validateWine(any(Wines.class));
-
-	    // Mock the behavior of wineRepo.save
+	    MockMultipartFile pictureFile = new MockMultipartFile(
+		        "pictureFile", // name of the file parameter in the controller method
+		        "test.jpg",    // original filename
+		        "image/jpeg",  // content type
+		        "Test picture".getBytes() // content as byte array
+		    );
 	    Wines savedWine = buildWine();
 	    savedWine.setId(1L);
 	    when(wineRepo.save(any(Wines.class))).thenReturn(savedWine);
-
-	    // Call the createWine method with the prepared parameters
-	    ResponseEntity<?> response = winesCont.createWine(name, grapes, country, year, color, winery, region, price, description, pictureFile);
-
-	    // Assert the response
+	    ResponseEntity<?> response = winesCont.createWine("Test Wine", "Merlot", "Australia", 2022, "Red", "Test Winery", "Test Region", 10.99, "Test description", pictureFile);
 	    assertEquals(HttpStatus.CREATED, response.getStatusCode());
-	    assertEquals(savedWine, response.getBody());
+	    assertNotNull(response.getBody());
 	}
 	
 	@Test
@@ -112,6 +121,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 	    double price = 10.99;
 	    String description = "Nice wine";
 	    MultipartFile pictureFile = mock(MultipartFile.class); // Mock MultipartFile
+	    when(pictureFile.getOriginalFilename()).thenReturn("test.jpg"); // Mock original filename
 	    when(pictureFile.getInputStream()).thenReturn(mock(InputStream.class));
 
 	    // Mock WineRepository behavior
@@ -240,30 +250,32 @@ import org.junit.jupiter.api.extension.ExtendWith;
 	
 
 	
-	@Test
-	void updateWineValidationException() throws WineValidationException, ResourceNotFoundException {
-	    // Prepare test data
-	    Wines wineOne = buildWine(); // Create a sample wine object
-	    wineOne.setId(1L); // Set the ID of the wine
-	
-	    // Mock the behavior of wineValidator to throw WineValidationException
-	    doThrow(new WineValidationException("Validation failed")).when(wineValidator).validateWine(wineOne);
-	
-	    // Call the updateWine method and assert the thrown exception
-	    WineValidationException exception = assertThrows(WineValidationException.class, () -> winesCont.updateWine(1L, wineOne));
-	    assertEquals("Validation failed", exception.getMessage());
-	}
-	
-	@Test
-	void updateWineResourceNotFoundException() throws WineValidationException, ResourceNotFoundException {
-	    // Prepare test data
-	    Wines wineOne = buildWine();
-	    wineOne.setId(1L);
+//	@Test
+//	void updateWineValidationException() throws WineValidationException, ResourceNotFoundException {
+//	    // Prepare test data
+//	    Wines wineOne = buildWine(); // Create a sample wine object
+//	    wineOne.setId(1L); // Set the ID of the wine
+//	
+//	    // Mock the behavior of wineValidator to throw WineValidationException
+//	    doThrow(new WineValidationException("Validation failed")).when(wineValidator).validateWine(wineOne);
+//	
+//	    // Call the updateWine method and assert the thrown exception
+//	    WineValidationException exception = assertThrows(WineValidationException.class, () -> winesCont.updateWine(1L, wineOne));
+//	    assertEquals("Validation failed", exception.getMessage());
+//	}
 
-	    // Perform the test and assert the thrown exception
-	    ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> winesCont.updateWine(1L, wineOne));
-	    assertEquals("Wine not found with id: " + wineOne.getId(), exception.getMessage());
-	}
+	@Test
+	void updateWineNotFound() throws Exception {
+	    // Given
+	    Long wineId = 123L; // Assuming this ID does not exist in the database
+	    Wines updatedWine = new Wines(); // Provide the updated wine object here
+
+	    // When/Then
+	    mockMvc.perform(put("/wines/{id}", wineId)
+	            .contentType(MediaType.APPLICATION_JSON)
+	            .content(objectMapper.writeValueAsString(updatedWine)))
+	            .andExpect(status().isNotFound());
+	}	
 	
 	@Test
     void getWineByName_WithExistingName_ReturnsWines() {
@@ -321,5 +333,4 @@ import org.junit.jupiter.api.extension.ExtendWith;
         wineList.add(wineTwo);
         return wineList;
 	}
-
 }

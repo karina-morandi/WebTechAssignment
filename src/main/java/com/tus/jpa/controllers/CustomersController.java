@@ -47,6 +47,26 @@ public class CustomersController {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
+	@Autowired
+	public void setUserRepo(UserRepository userRepo) {
+	    this.userRepo = userRepo;
+	}
+	
+	@Autowired
+	public void setOrdersRepo(OrdersRepository ordersRepo) {
+	    this.ordersRepo = ordersRepo;
+	}
+	
+	@Autowired
+	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
+	    this.passwordEncoder = passwordEncoder;
+	}
+	
+	@Autowired
+	public void setCustomerService(CustomerService customerService) {
+	    this.customerService = customerService;
+	}
+	
 	@GetMapping("/customers")
 	public List<Users> getAllCustomers() {
 		return customerService.getAllCustomers();
@@ -62,11 +82,24 @@ public class CustomersController {
 			linkTo(methodOn(CustomersController.class).getAllCustomers()).withRel("customers"));
 	}
 	
+//	@GetMapping("/customers/username/{login}")
+//	public Long getUserByName(@PathVariable("login") String login){
+//		Users foundUser=userRepo.findByLogin(login);
+//		Long id = foundUser.getId();
+//		return id;
+//	}
+	
+	
 	@GetMapping("/customers/username/{login}")
 	public Long getUserByName(@PathVariable("login") String login){
-		Users foundUser=userRepo.findByLogin(login);
-		Long id = foundUser.getId();
-		return id;
+	    Users foundUser = userRepo.findByLogin(login);
+	    if (foundUser != null) {
+	        return foundUser.getId();
+	    } else {
+	        // Handle the case where no user is found with the given login
+	        // For example, you can throw an exception or return a specific value
+	        throw new RuntimeException("User with login " + login + " not found");
+	    }
 	}
 	
 	@PostMapping("/register")
@@ -97,17 +130,29 @@ public class CustomersController {
 				.orElseThrow(() -> new RuntimeException("Order not found!!!"));
 	}
 	
+//	@GetMapping("/{customerId}/orders")
+//	public CollectionModel<Orders> getAllOrdersByCustomerId(@PathVariable Long customerId) {
+//		List<Orders> orders = customerService.getAllOrdersByCustomerId(customerId);
+//		for (Orders order : orders) {
+//			Link selfLink = linkTo(methodOn(CustomersController.class).getOrderById(order.getId())).withSelfRel();
+//			order.add(selfLink);
+//		}
+//		Link customerLink = linkTo(methodOn(CustomersController.class).getCustomerById(customerId)).withRel("customer");
+//		return CollectionModel.of(orders, customerLink);
+//	}
+	
+	
 	@GetMapping("/{customerId}/orders")
 	public CollectionModel<Orders> getAllOrdersByCustomerId(@PathVariable Long customerId) {
-		List<Orders> orders = customerService.getAllOrdersByCustomerId(customerId);
-		for (Orders order : orders) {
-			Link selfLink = linkTo(methodOn(CustomersController.class).getOrderById(order.getId())).withSelfRel();
-			order.add(selfLink);
-		}
-		Link customerLink = linkTo(methodOn(CustomersController.class).getCustomerById(customerId)).withRel("customer");
-		return CollectionModel.of(orders, customerLink);
+	    List<Orders> orders = customerService.getAllOrdersByCustomerId(customerId);
+	    for (Orders order : orders) {
+	        // Link selfLink = linkTo(methodOn(CustomersController.class).getOrderById(order.getId())).withSelfRel();
+	        // order.add(selfLink); // Remove these lines
+	    }
+	    Link selfLink = linkTo(methodOn(CustomersController.class).getAllOrdersByCustomerId(customerId)).withSelfRel();
+	    Link customerLink = linkTo(methodOn(CustomersController.class).getCustomerById(customerId)).withRel("customer");
+	    return CollectionModel.of(orders, selfLink, customerLink); // Add selfLink here
 	}
-	
 //	String user=request.getUserPrincipal().getName();
 
 	

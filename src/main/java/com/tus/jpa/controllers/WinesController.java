@@ -70,11 +70,6 @@ public class WinesController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(wines, headers, HttpStatus.OK);
     }
-    
-//	@GetMapping("/wines")
-//	public Iterable<Wines> getAllWines(){
-//		return wineRepository.findAll();
-//	}
 
 	@PostMapping("/wines/createNewWine")
 	public ResponseEntity<?> createWine(@Valid @RequestParam("name") String name, @RequestParam("grapes") String grapes,@RequestParam("country") String country, @RequestParam("year") int year, @RequestParam("color") String color, @RequestParam("winery") String winery, @RequestParam("region") String region, @RequestParam("price") double price, @RequestParam("description") String description, @RequestPart("pictureFile") MultipartFile pictureFile) throws WineValidationException, IOException {
@@ -115,32 +110,6 @@ public class WinesController {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading image: " + e.getMessage());
 	    }
 	}
-	
-//	private String savePicture(MultipartFile pictureFile) throws WineValidationException {
-//	    // Get the filename
-//	    String fileName = StringUtils.cleanPath(pictureFile.getOriginalFilename());
-//
-//	    // Create the directory if it doesn't exist
-//	    String rootDirectory = servletContext.getRealPath(UPLOAD_DIR);
-//	    File directory = new File(rootDirectory);
-//	    if (!directory.exists()) {
-//	        directory.mkdirs();
-//	    }
-//
-//	    // Create the path where the file will be saved
-//	    Path uploadPath = Paths.get(rootDirectory, fileName);
-//
-//	    // Copy the file to the upload path
-//	    try {
-//	        Files.copy(pictureFile.getInputStream(), uploadPath);
-//	    } catch (IOException e) {
-//	        // Handle the case where the image cannot be saved
-//	        throw new WineValidationException("Failed to save picture: " + e.getMessage());
-//	    }
-//
-//	    // Return the path where the file was saved
-//	    return fileName;
-//	}
 
 	private String savePicture(MultipartFile pictureFile) throws WineValidationException {
 	    try {
@@ -213,33 +182,6 @@ public class WinesController {
 	    }
 	}
 
-	
-//	@PutMapping("/wines/{id}")
-//	public ResponseEntity<?> updateWine(Long id, @Valid @RequestBody Wines wine) throws WineValidationException, ResourceNotFoundException {
-//	    // Validate the wine object
-//	    wineValidator.validateWine(wine); // This may throw WineValidationException if validation fails
-//	    
-//	    // Update the wine in the repository
-//	    Optional<Wines> existingWine = wineRepository.findById(id);
-//	    if (!existingWine.isPresent()) {
-//	        throw new ResourceNotFoundException("Wine not found with id: " + id);
-//	    }
-//
-//	    Wines updatedWine = existingWine.get();
-//	    updatedWine.setName(wine.getName());
-//	    updatedWine.setGrapes(wine.getGrapes());
-//	    updatedWine.setCountry(wine.getCountry());
-//	    updatedWine.setYear(wine.getYear());
-//	    updatedWine.setColor(wine.getColor());
-//	    updatedWine.setWinery(wine.getWinery());
-//	    updatedWine.setRegion(wine.getRegion());
-//
-//	    wineRepository.save(updatedWine);
-//
-//	    // Return response entity
-//	    return ResponseEntity.ok(updatedWine);
-//	}
-	
 	@RequestMapping("/wines/name/{name}")
 	public ResponseEntity<List<Wines>> getWineByName(@PathVariable("name") String name){
 		List<Wines> winesByName = new ArrayList<>();
