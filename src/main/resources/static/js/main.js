@@ -364,11 +364,15 @@ function login() {
 	        }
 	    });
 	});
-	
+	//HERE!!!!!
 	function logout() {
 	console.log('Logout');
 	customerId = null; // Clear customerId
     updateLoginLogoutButtons(); // Update button visibility
+    // Clear login and password input fields
+    $("#loginUsername").val('');
+    $("#loginPassword").val('');
+    makeCartDropdownInvisible();
 }
 
 	// Handle click on logout button in the home page
@@ -382,7 +386,8 @@ function login() {
 	    console.log("Logout button clicked");
 	    customerId = null;
 	    HomePageDashboard();
-	    //logout(); // Call the logout function
+	    $('#header').show();
+	    logout(); // Call the logout function
 	});
 
 });
@@ -873,6 +878,15 @@ function submitRating(wineId) {
         // Handle success (e.g., update UI)
         displayWineDetails(wineId); // Update the wine details to reflect the new rating
         // Maybe close the modal or display a success message
+        
+        
+        
+        
+        
+        
+        // Clear the quantity and rating fields
+		document.getElementById('quantity').value = '';
+		document.getElementById('rating').value = '';
     })
     .catch(error => {
         console.error('Error submitting rating:', error);
@@ -944,6 +958,9 @@ function addToCart(wineId) {
         if (response.ok) {
             // Wine added to cart successfully
             alert('Wine added to cart');
+            // Clear the quantity and rating fields
+			document.getElementById('quantity').value = '';
+			document.getElementById('rating').value = '';
             // Optionally, you can redirect to the cart page or update the UI to reflect the addition
         } else {
             // Handle error response
@@ -1105,7 +1122,7 @@ function renderOrders(response) {
     if (orders.length > 0) {
         $.each(orders, function (index, order) {
             console.log(order); // Log each order object
-            var total = order.quantity * order.wine.price;
+            var total = (order.quantity * order.wine.price).toFixed(2);
             ordersHtml += '<tr><td>' + order.id + '</td><td>' + order.wine.id + '</td><td>' + order.wine.name + '</td><td>' + order.wine.price + '</td><td>' + order.quantity + '</td><td>' + total + '</td>';
             // Add a dropdown menu for selecting the status
             ordersHtml += '<td><select class="statusSelect">';
@@ -1276,6 +1293,11 @@ $(document).ready(function() {
 function toggleCartDropdown() {
     var cartDropdown = document.getElementById("cartDropdown");
     cartDropdown.classList.toggle("visible");
+}
+
+function makeCartDropdownInvisible() {
+    var cartDropdown = document.getElementById("cartDropdown");
+    cartDropdown.classList.remove("visible");
 }
 
 // Event listener to toggle cart dropdown when cart button is clicked
