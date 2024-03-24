@@ -1060,7 +1060,11 @@ function editOrder(order) {
     $('#prodQuantity').val(order.quantity);
     console.log("This product is: " + (order.wine.id ? order.wine.name : 'Unknown') + "\tQuantity: " + order.quantity);
     $('#orderID_row').hide();
-    $('#detailsTable').append('<button id="closeOrderButton" class="w3-button w3-red">Close</button>');
+
+	// Check if the close button already exists
+    if ($('#closeOrderButton').length === 0) {
+        $('#detailsTable').append('<button id="closeOrderButton" class="w3-button w3-red">Close</button>');
+    }
 }
 
 
@@ -1089,7 +1093,7 @@ function renderCustomers(customers) {
     var customersHtml = "<table class='table'>";
     customersHtml += "<tr><th>ID</th><th>Login</th><th>Email</th><th>Role</th><th>Actions</th></tr>";
     $.each(customers, function (index, customer) {
-        customersHtml += '<tr><td>' + customer.id + '</td><td>' + customer.login + '</td><td>' + customer.email + '</td><td>' + '</td><td>' + customer.role + '</td><td><button class="viewOrdersButton w3-button w3-green" data-customer-id="' + customer.id + '">View Orders</button></td></tr>';
+        customersHtml += '<tr><td>' + customer.id + '</td><td>' + customer.login + '</td><td>' + customer.email + '</td><td>' + customer.role + '</td><td><button class="viewOrdersButton w3-button w3-green" data-customer-id="' + customer.id + '">View Orders</button></td></tr>';
     });
     customersHtml += '</table>';
     $('#customers').html(customersHtml);
@@ -1154,6 +1158,7 @@ $(document).ready(function(){
     $(document).on("click", ".editOrderButton", function () {
 		var orderId = $(this).attr('order-id'); // Retrieve the order ID using the custom attribute
 		console.log("Edit button clicked for order " + orderId);
+		$('#orders').hide(); // Hide orders table if it's visible
 		findOrderById(orderId);
 		$('#detailsTable').show();
 		return false;
@@ -1184,13 +1189,14 @@ $(document).ready(function(){
 	
 	$(document).on("click", "#closeOrderButton", function () {
         closeOrderDetails(); // Call the function to close order details
+        $(this).remove(); // Remove the close button
         return false; // Prevent default behavior of the button
     });
 
     // Function to close order details and show customers table
     function closeOrderDetails() {
         $('#detailsTable').hide(); // Hide the order details table
-        $('#orders').show(); // Hide orders table if it's visible
+        $('#orders').hide(); // Hide orders table if it's visible
         $('#customers').show(); // Show the customers table
     }
 });

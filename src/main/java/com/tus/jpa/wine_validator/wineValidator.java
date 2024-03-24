@@ -24,6 +24,10 @@ public class wineValidator {
 	@Autowired
 	WineRepository wineRepo;
 	
+	public void setWineRepo(WineRepository wineRepo) {
+        this.wineRepo = wineRepo;
+    }
+	
 	private static final String UPLOAD_DIR = "src/main/resources/static/images/";
 
 	
@@ -31,7 +35,6 @@ public class wineValidator {
 		this.wine = wine;
 		checkEmptyFields(wine);
 		checkExistingWine(wine);
-//		savePicture(wine.getPicture());
 	}
 	
 
@@ -69,7 +72,7 @@ public class wineValidator {
 	}
 	
 	 //if wine with name and year already exists
-	private void checkExistingWine(Wines wine) throws WineValidationException {
+	public void checkExistingWine(Wines wine) throws WineValidationException {
 		this.wine = wine;
 		List<Wines> savedWine = wineRepo.findByName(wine.getName());
 		if (savedWine.size() > 0){
@@ -77,30 +80,30 @@ public class wineValidator {
 		}
 	}
 	
-	private String savePicture(MultipartFile pictureFile) throws WineValidationException {
-	    // Get the filename
-	    String fileName = StringUtils.cleanPath(pictureFile.getOriginalFilename());
-	    
-	    // Create the directory if it doesn't exist
-	    File directory = new File(UPLOAD_DIR);
-	    if (!directory.exists()) {
-	        directory.mkdirs();
-	    }
-
-	    // Create the path where the file will be saved
-	    Path uploadPath = Paths.get(UPLOAD_DIR + fileName);
-
-	    // Copy the file to the upload path
-	    try {
-	        Files.copy(pictureFile.getInputStream(), uploadPath);
-	    } catch (IOException e) {
-	        // Handle the case where the image cannot be saved
-	        throw new WineValidationException("Failed to save picture: " + e.getMessage());
-	    }
-
-	    // Return the path where the file was saved
-	    return fileName;
-	}
+//	private String savePicture(MultipartFile pictureFile) throws WineValidationException {
+//	    // Get the filename
+//	    String fileName = StringUtils.cleanPath(pictureFile.getOriginalFilename());
+//	    
+//	    // Create the directory if it doesn't exist
+//	    File directory = new File(UPLOAD_DIR);
+//	    if (!directory.exists()) {
+//	        directory.mkdirs();
+//	    }
+//
+//	    // Create the path where the file will be saved
+//	    Path uploadPath = Paths.get(UPLOAD_DIR + fileName);
+//
+//	    // Copy the file to the upload path
+//	    try {
+//	        Files.copy(pictureFile.getInputStream(), uploadPath);
+//	    } catch (IOException e) {
+//	        // Handle the case where the image cannot be saved
+//	        throw new WineValidationException("Failed to save picture: " + e.getMessage());
+//	    }
+//
+//	    // Return the path where the file was saved
+//	    return fileName;
+//	}
 
 }
 

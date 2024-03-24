@@ -33,7 +33,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.tus.jpa.controllers.WinesController;
 import org.springframework.mock.web.MockMultipartFile;
 import com.tus.jpa.dto.Wines;
-import com.tus.jpa.exceptions.ResourceNotFoundException;
 import com.tus.jpa.exceptions.WineValidationException;
 import com.tus.jpa.repositories.WineRepository;
 import com.tus.jpa.wine_validator.wineValidator;
@@ -228,7 +227,7 @@ import org.springframework.test.web.servlet.MockMvc;
 	}
 	
 	@Test
-	void updateWineOK() throws WineValidationException, ResourceNotFoundException {
+	void updateWineOK() throws WineValidationException{
 	    // Arrange
 	    Wines wineOne = buildWine(); // Initialize a sample wine
 	    wineOne.setId(1L); // Set the ID of the wine

@@ -140,7 +140,7 @@ class LoginControllerTest {
 	      Users user = new Users();
 	      user.setLogin("username");
 	      user.setPassword(encodedPassword);
-	      user.setRole("CUSTOMER"); // set a non-null role
+	      user.setRole("ADMIN"); // set a non-null role
 	      when(userRepo.findByLogin(anyString())).thenReturn(user);
 	      when(passwordEncoder.matches(password, encodedPassword)).thenReturn(true);
 
@@ -149,7 +149,7 @@ class LoginControllerTest {
 
 	      // Assert
 	      assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-	      assertEquals("Customer", responseEntity.getBody());
+	      assertEquals("Admin", responseEntity.getBody());
 	  }
     
 	  @Test

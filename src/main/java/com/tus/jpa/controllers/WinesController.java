@@ -3,17 +3,12 @@ package com.tus.jpa.controllers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import javax.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,10 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tus.jpa.exceptions.WineValidationException;
 import com.tus.jpa.dto.Wines;
-import com.tus.jpa.exceptions.ResourceNotFoundException;
-import com.tus.jpa.exceptions.WineException;
 import com.tus.jpa.repositories.WineRepository;
-import com.tus.jpa.wine_validator.ErrorMessage;
 import com.tus.jpa.wine_validator.ErrorMessages;
 import com.tus.jpa.wine_validator.wineValidator;
 
