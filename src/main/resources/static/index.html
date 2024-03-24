@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script type="module" src="js/main.js"></script>
 <link href="css/main.css" rel="stylesheet">
@@ -365,9 +366,11 @@
 			        </tbody>
 			    </table>
 			  </div>
+			  
+	  		<canvas id="ratingChart"></canvas>
 		</div>
 		<div id="customers" class="customers container mt-3"></div>
-	    <div id="orders" class="orders container mt-3"></div>
+	    <div id="orders" class="orders container mt-3"></div>   
 	
 	<!-- Side Navbar -->
 	<nav class="navbar side-nav">
@@ -385,12 +388,12 @@
 	        <li class="nav-item">
 	          <button type="button" class="form-control btn btn-primary submit px-3" id="findallWine">All Wines</button>
 	        </li>
-	       <!--  <li class="nav-item">
-	          <button type="button" class="form-control btn btn-primary submit px-3" id="viewOrders">View Orders</button>
-	        </li> -->
 	        <li class="nav-item">
 	          <button type="button" class="form-control btn btn-primary submit px-3" id="fetchCustomersBtn">View Customers</button>
 	        </li>
+	        <li class="nav-item">
+			    <button type="button" class="form-control btn btn-primary submit px-3" id="viewRatingsBtn">View Ratings</button>
+			</li>
 	        <li class="nav-item dropdown">
 	          <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 	            Wine Management

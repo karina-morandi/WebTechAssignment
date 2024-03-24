@@ -981,6 +981,95 @@ function addToCart(wineId) {
 
 
 
+
+
+
+
+
+
+
+// Function to fetch and display wine ratings
+function viewWineRatings() {
+    fetch('http://localhost:9090/customers/averageRatings') // Corrected endpoint
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch average ratings');
+            }
+            return response.json();
+        })
+        .then(averageRatings => {
+            // Extract wine IDs and average ratings
+            const wineIds = Object.keys(averageRatings);
+            const ratings = Object.values(averageRatings);
+
+            // Create a graph using a chart library (e.g., Chart.js)
+            createRatingGraph(wineIds, ratings);
+        })
+        .catch(error => {
+            console.error('Error fetching average ratings:', error);
+            // Handle errors or display error message to the user
+        });
+}
+
+// Function to create a graph for displaying wine ratings
+function createRatingGraph(wineIds, ratings) {
+    // Assuming you're using Chart.js
+    var ctx = document.getElementById('ratingChart').getContext('2d');
+
+     // Check if a Chart instance already exists and if it's a valid object
+    if (window.ratingChart instanceof Chart) {
+        // Destroy the existing Chart instance
+        window.ratingChart.destroy();
+    }
+    
+    window.ratingChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: wineIds,
+            datasets: [{
+                label: 'Average Rating',
+                data: ratings,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)', // Example color
+                borderColor: 'rgba(255, 99, 132, 1)', // Example color
+                borderWidth: 1
+            }]
+        },
+        options: {
+			width: 15,
+    		height: 30, // This ensures the chart will adjust to the container size
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+
+// Event listener for the "View Ratings" button in the sidebar
+document.getElementById('viewRatingsBtn').addEventListener('click', function() {
+	$('#customers').hide(); // Hide the homepage
+	$('#orders').hide(); // Hide the homepage
+//	$('#winesTable').hide(); // Hide the homepage
+	$('#detailsTable').hide(); // Hide the homepage
+    viewWineRatings();
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var deleteOrder=function() {
 	$('#orders').hide(); // Hide orders table if it's visible
     $('#customers').show(); // Show customers table
@@ -1079,6 +1168,7 @@ function findAllCustomers(customerId) {
 		type: 'GET', 
 		success: function(customers) { 
 			$('#detailsTable').hide();
+			$('#ratingChart').hide();
 			renderCustomers(customers); 
 			console.log(customers);
 		},
@@ -1108,6 +1198,7 @@ function viewOrders(customerId) {
         url: rootURL + '/serviceLayer/' + customerId + '/orders',
         type: 'GET',
         success: function (orders) {
+			$('#ratingChart').hide();
             renderOrders(orders);
         },
         error: function (xhr, status, error) {

@@ -1,6 +1,7 @@
 package com.tus.jpa.controllers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -83,5 +84,25 @@ public class WinesCustomerController {
 	        return ResponseEntity.notFound().build();
 	    }
 	}
+	
+	@GetMapping("/averageRatings")
+	public ResponseEntity<Map<Long, Double>> getAverageRatingsForAllWines() {
+	    List<Wines> wines = wineRepository.findAll();
+	    Map<Long, Double> averageRatingsMap = new HashMap<>();
 
+	    // Calculate average rating for each wine
+	    for (Wines wine : wines) {
+	        List<Double> ratings = wine.getRatings();
+	        if (ratings != null && !ratings.isEmpty()) {
+	            double sum = ratings.stream().mapToDouble(Double::doubleValue).sum();
+	            double averageRating = sum / ratings.size();
+	            averageRatingsMap.put(wine.getId(), averageRating);
+	        } else {
+	            // If no ratings are available, set the average rating to 0.0
+	            averageRatingsMap.put(wine.getId(), 0.0);
+	        }
+	    }
+
+	    return ResponseEntity.ok(averageRatingsMap);
+	}
 }
